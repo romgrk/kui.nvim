@@ -27,8 +27,7 @@ h.add_image(surface, { buffer = 0, row = 0, col = 0 })
 
 
 
-
--- h.add_image('/home/romgrk/img/lena.png', { buf = 0, row = 32, col = 0 })
+-- h.add_image('/home/romgrk/img/lena.png', { buffer = 0, row = 31, col = 0 })
 
 
 -- Send a custom created bitmap
