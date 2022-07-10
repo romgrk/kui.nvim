@@ -21,7 +21,7 @@ function m.on_read()
 
   vim.api.nvim_buf_set_lines(0, 0, 0, false, {'PNG file: ' .. filepath})
   vim.defer_fn(function()
-    api.add_image(0, filepath, 1, 0)
+    api.add_image(filepath, { buffer = 0, row = 1, col = 0 })
   end, 100)
 end
 
