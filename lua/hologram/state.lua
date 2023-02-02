@@ -1,5 +1,6 @@
-local Job = require('hologram.job')
+local ffi = require('ffi')
 local Rectangle = require('hologram.rectangle')
+
 
 local state = {
   dimensions = {
@@ -30,24 +31,29 @@ function state.update_dimensions()
     height = vim.api.nvim_get_option('lines'),
   }
 
-  Job:new({
-    cmd = 'kitty',
-    args = { '+kitten', 'icat', '--print-window-size' },
-    on_data = function(data)
-      data = { data:match("(.+)x(.+)") }
+  -- Use `ioctl` to retrieve the current window size
+  -- https://sw.kovidgoyal.net/kitty/graphics-protocol/#getting-the-window-size
 
-      state.dimensions.screen_pixels.width  = tonumber(data[1])
-      state.dimensions.screen_pixels.height = tonumber(data[2])
+  local TIOCGWINSZ = 0x5413
+  ffi.cdef[[
+    int ioctl(int fildes, int request, uint16_t *winsize);
+  ]]
+  local libc = ffi.load('c')
+  local winsize = ffi.new('uint16_t[?]', 4)
+  libc.ioctl(0, TIOCGWINSZ, winsize)
+  local x_pixels = winsize[2]
+  local y_pixels = winsize[3]
 
-      state.dimensions.cell_pixels = {
-        width  = state.dimensions.screen_pixels.width  / state.dimensions.screen_cells.width,
-        height = state.dimensions.screen_pixels.height / state.dimensions.screen_cells.height,
-      }
+  state.dimensions.screen_pixels.width  = x_pixels
+  state.dimensions.screen_pixels.height = y_pixels
 
-      state.dimensions.screen = Rectangle.new(
-        0, 0, state.dimensions.screen_pixels.width, state.dimensions.screen_pixels.height)
-    end,
-  }):start()
+  state.dimensions.cell_pixels = {
+    width  = state.dimensions.screen_pixels.width  / state.dimensions.screen_cells.width,
+    height = state.dimensions.screen_pixels.height / state.dimensions.screen_cells.height,
+  }
+
+  state.dimensions.screen = Rectangle.new(
+    0, 0, state.dimensions.screen_pixels.width, state.dimensions.screen_pixels.height)
 end
 
 function state.pixels_to_cells(point)
