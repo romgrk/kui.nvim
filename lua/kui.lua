@@ -3974,6 +3974,7 @@ return ____exports
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
+local cairo = require("kui.cairo.cairo")
 local ____math = require("math.index")
 local Rectangle = ____math.Rectangle
 function ____exports.setup(self)
@@ -3984,6 +3985,9 @@ function ____exports.setup(self)
         10,
         10
     ))
+    local image = cairo.image_surface("argb32", 100, 100)
+    local context = image:context()
+    print(vim.inspect(context))
 end
 return ____exports
  end,

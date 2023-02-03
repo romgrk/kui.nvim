@@ -5,8 +5,7 @@
     "lib": ["esnext"],
     "moduleResolution": "node",
     "types": [
-      "lua-types/jit",
-      "./types/vim"
+      "lua-types/jit"
     ],
     "baseUrl": "./src",
     "rootDir": "./src"
