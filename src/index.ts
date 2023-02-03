@@ -1,5 +1,5 @@
 import * as cairo from 'kui.cairo.cairo'
-import { Rectangle } from './math'
+import { Rectangle } from 'src/math'
 
 export function setup() {
   print(new Rectangle(1, 0, 10, 10))

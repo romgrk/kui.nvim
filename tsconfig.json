@@ -5,9 +5,11 @@
     "lib": ["esnext"],
     "moduleResolution": "node",
     "types": [
-      "lua-types/jit"
+      "lua-types/jit",
+      "./types/vim",
+      "./types/cairo"
     ],
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "rootDir": "./src"
   },
   "tstl": {
