@@ -1,12 +1,12 @@
-local api = require('hologram.api')
+local api = require('kui.api')
 
 local m = {}
 
 function m.enable()
   vim.cmd("augroup Hologram_PNG")
   vim.cmd("autocmd!")
-  vim.cmd("autocmd BufReadCmd  *.png :lua require('hologram.ft.png').on_read()")
-  vim.cmd("autocmd BufWriteCmd *.png :lua require('hologram.ft.png').on_write()")
+  vim.cmd("autocmd BufReadCmd  *.png :lua require('kui.ft.png').on_read()")
+  vim.cmd("autocmd BufWriteCmd *.png :lua require('kui.ft.png').on_write()")
   vim.cmd("augroup END")
 end
 

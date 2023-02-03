@@ -7,13 +7,13 @@
 
 local vim = _G.vim
 local ffi = require('ffi')
-local fs = require('hologram.fs')
-local state = require('hologram.state')
-local utils = require('hologram.utils')
-local cairo = require('hologram.cairo.cairo')
-local base64 = require('hologram.base64')
-local terminal = require('hologram.terminal')
-local Rectangle = require('hologram.rectangle')
+local fs = require('kui.fs')
+local state = require('kui.state')
+local utils = require('kui.utils')
+local cairo = require('kui.cairo.cairo')
+local base64 = require('kui.base64')
+local terminal = require('kui.terminal')
+local Rectangle = require('kui.rectangle')
 local defaults = utils.defaults
 local keys_to_string = utils.keys_to_string
 local bytes_to_string = utils.bytes_to_string
@@ -80,7 +80,7 @@ local function create(opts)
   if buffer then
     extmark = vim.api.nvim_buf_set_extmark(
       buffer,
-      vim.g.hologram_extmark_ns,
+      vim.g.kui_extmark_ns,
       opts.row,
       opts.col,
       {}
@@ -405,7 +405,7 @@ function Image:delete(opts)
   end
 
   if opts.free and self.extmark then
-    vim.api.nvim_buf_del_extmark(self.buffer, vim.g.hologram_extmark_ns, self.extmark)
+    vim.api.nvim_buf_del_extmark(self.buffer, vim.g.kui_extmark_ns, self.extmark)
   end
 end
 
@@ -445,7 +445,7 @@ function Image:move(row, col)
   if not self.extmark then
     return
   end
-  vim.api.nvim_buf_set_extmark(self.buffer, vim.g.hologram_extmark_ns, row, col, {
+  vim.api.nvim_buf_set_extmark(self.buffer, vim.g.kui_extmark_ns, row, col, {
     id = self.extmark
   })
 end
@@ -456,7 +456,7 @@ function Image:pos()
     return
   end
   return vim.api.nvim_buf_get_extmark_by_id(
-    self.buffer, vim.g.hologram_extmark_ns, self.extmark, {})
+    self.buffer, vim.g.kui_extmark_ns, self.extmark, {})
 end
 
 return Image

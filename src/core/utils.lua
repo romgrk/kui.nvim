@@ -1,8 +1,8 @@
 local vim = _G.vim
 local bit = _G.bit
 local ffi = require('ffi')
-local cairo = require('hologram.cairo.cairo')
-local Rectangle = require('hologram.rectangle')
+local cairo = require('kui.cairo.cairo')
+local Rectangle = require('kui.rectangle')
 
 local m = {}
 

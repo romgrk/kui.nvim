@@ -1,6 +1,6 @@
-local api = require('hologram.api')
-local png = require('hologram.ft.png')
-local state = require('hologram.state')
+local api = require('kui.api')
+local png = require('kui.ft.png')
+local state = require('kui.state')
 
 local did_init = false
 
@@ -9,7 +9,7 @@ local function initialize()
     return
   end
 
-  vim.g.hologram_extmark_ns = vim.api.nvim_create_namespace('hologram_extmark')
+  vim.g.kui_extmark_ns = vim.api.nvim_create_namespace('kui_extmark')
 
   api.create_autocmds()
   state.update_dimensions()

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "esnext",
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "types": [
+      "lua-types/jit",
+      "./types/vim"
+    ],
+    "baseUrl": "./src",
+    "rootDir": "./src"
+  },
+  "tstl": {
+    "luaTarget": "JIT",
+    "luaBundle": "./lua/kui.lua",
+    "luaBundleEntry": "./src/index.ts"
+  }
+}

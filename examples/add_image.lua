@@ -1,8 +1,8 @@
 -- !exe [luafile %]
 
-local h = require('hologram')
-local state = require('hologram.state')
-local cairo = require('hologram.cairo.cairo')
+local h = require('kui')
+local state = require('kui.state')
+local cairo = require('kui.cairo.cairo')
 
 -- Draw image using cairo
 

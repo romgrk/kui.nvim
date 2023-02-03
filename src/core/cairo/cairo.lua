@@ -8,7 +8,7 @@
 
 local ffi = require'ffi'
 local bit = require'bit'
-require'hologram.cairo.cairo_h'
+require'kui.cairo.cairo_h'
 local C = ffi.load'cairo'
 local M = {C = C}
 

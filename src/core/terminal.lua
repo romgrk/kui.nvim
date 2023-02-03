@@ -1,4 +1,4 @@
-local utils = require('hologram.utils')
+local utils = require('kui.utils')
 local winpos_to_screenpos = utils.winpos_to_screenpos
 
 local stdout = vim.loop.new_pipe(false)

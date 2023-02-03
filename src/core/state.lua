@@ -1,5 +1,5 @@
 local ffi = require('ffi')
-local Rectangle = require('hologram.rectangle')
+local Rectangle = require('kui.rectangle')
 
 
 local state = {
