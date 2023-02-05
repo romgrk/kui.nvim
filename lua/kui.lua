@@ -2526,6 +2526,2062 @@ return {
   __TS__Unpack = __TS__Unpack
 }
  end,
+["typedarray.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__StringReplace = ____lualib.__TS__StringReplace
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
+local __TS__Number = ____lualib.__TS__Number
+local __TS__ArrayReverse = ____lualib.__TS__ArrayReverse
+local __TS__StringSubstring = ____lualib.__TS__StringSubstring
+local __TS__ParseInt = ____lualib.__TS__ParseInt
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+globalNamespace = _G
+MAX_ARRAY_LENGTH = 100000
+ECMAScript = (function(self)
+    local function toString(____, o)
+        return tostring(o)
+    end
+    local function hasProp(____, o, f)
+        return rawget(o, f) ~= nil
+    end
+    return {
+        Class = function(self, v)
+            return __TS__StringReplace(
+                __TS__StringReplace(
+                    toString(nil, v),
+                    "[object ",
+                    ""
+                ),
+                "]",
+                ""
+            )
+        end,
+        HasProperty = function(self, o, p)
+            return o[p] ~= nil
+        end,
+        HasOwnProperty = function(self, o, p)
+            return hasProp(nil, o, p)
+        end,
+        IsCallable = function(self, o)
+            return type(o) == "function"
+        end,
+        ToInt32 = function(self, v)
+            return bit.arshift(v, 0)
+        end,
+        ToUint32 = function(self, v)
+            return bit.rshift(v, 0)
+        end
+    }
+end)(nil)
+LN2 = 0.6931471805599453
+function clamp(self, v, minimum, max)
+    return v < minimum and minimum or (v > max and max or v)
+end
+getOwnPropNames = function(self, o)
+    if o ~= Object(nil, o) then
+        error(
+            __TS__New(TypeError, "Object.getOwnPropertyNames called on non-object"),
+            0
+        )
+    end
+    local props = {}
+    for p in pairs(o) do
+        if ECMAScript:HasOwnProperty(o, p) then
+            props[#props + 1] = p
+        end
+    end
+    return props
+end
+defineProp = function(____, o, prop, descriptor) return __TS__ObjectDefineProperty(o, prop, descriptor) end
+function makeArrayAccessors(self, obj)
+    if not defineProp then
+        return
+    end
+    if obj.length > MAX_ARRAY_LENGTH then
+        error(
+            __TS__New(RangeError, "Array too large for polyfill"),
+            0
+        )
+    end
+    local function makeArrayAccessor(self, index)
+        defineProp(
+            nil,
+            obj,
+            index,
+            {
+                get = function(self)
+                    return obj:_getter(index)
+                end,
+                set = function(self, v)
+                    obj:_setter(index, v)
+                end,
+                enumerable = true,
+                configurable = false
+            }
+        )
+    end
+    do
+        local i = 0
+        while i < obj.length do
+            makeArrayAccessor(nil, i)
+            i = i + 1
+        end
+    end
+end
+function as_signed(self, value, bits)
+    local s = 32 - bits
+    return bit.arshift(
+        bit.lshift(value, s),
+        s
+    )
+end
+function as_unsigned(self, value, bits)
+    local s = 32 - bits
+    return bit.rshift(
+        bit.lshift(value, s),
+        s
+    )
+end
+function packI8(self, n)
+    return {bit.band(n, 255)}
+end
+function unpackI8(self, bytes)
+    return as_signed(nil, bytes[1], 8)
+end
+function packU8(self, n)
+    return {bit.band(n, 255)}
+end
+function unpackU8(self, bytes)
+    return as_unsigned(nil, bytes[1], 8)
+end
+function packU8Clamped(self, n)
+    n = math.floor(__TS__Number(n) + 0.5)
+    return {n < 0 and 0 or (n > 255 and 255 or bit.band(n, 255))}
+end
+function packI16(self, n)
+    return {
+        bit.band(
+            bit.arshift(n, 8),
+            255
+        ),
+        bit.band(n, 255)
+    }
+end
+function unpackI16(self, bytes)
+    return as_signed(
+        nil,
+        bit.bor(
+            bit.lshift(bytes[1], 8),
+            bytes[2]
+        ),
+        16
+    )
+end
+function packU16(self, n)
+    return {
+        bit.band(
+            bit.arshift(n, 8),
+            255
+        ),
+        bit.band(n, 255)
+    }
+end
+function unpackU16(self, bytes)
+    return as_unsigned(
+        nil,
+        bit.bor(
+            bit.lshift(bytes[1], 8),
+            bytes[2]
+        ),
+        16
+    )
+end
+function packI32(self, n)
+    return {
+        bit.band(
+            bit.arshift(n, 24),
+            255
+        ),
+        bit.band(
+            bit.arshift(n, 16),
+            255
+        ),
+        bit.band(
+            bit.arshift(n, 8),
+            255
+        ),
+        bit.band(n, 255)
+    }
+end
+function unpackI32(self, bytes)
+    return as_signed(
+        nil,
+        bit.bor(
+            bit.bor(
+                bit.bor(
+                    bit.lshift(bytes[1], 24),
+                    bit.lshift(bytes[2], 16)
+                ),
+                bit.lshift(bytes[3], 8)
+            ),
+            bytes[4]
+        ),
+        32
+    )
+end
+function packU32(self, n)
+    return {
+        bit.band(
+            bit.arshift(n, 24),
+            255
+        ),
+        bit.band(
+            bit.arshift(n, 16),
+            255
+        ),
+        bit.band(
+            bit.arshift(n, 8),
+            255
+        ),
+        bit.band(n, 255)
+    }
+end
+function unpackU32(self, bytes)
+    return as_unsigned(
+        nil,
+        bit.bor(
+            bit.bor(
+                bit.bor(
+                    bit.lshift(bytes[1], 24),
+                    bit.lshift(bytes[2], 16)
+                ),
+                bit.lshift(bytes[3], 8)
+            ),
+            bytes[4]
+        ),
+        32
+    )
+end
+function packIEEE754(self, v, ebits, fbits)
+    local bias = bit.lshift(1, ebits - 1) - 1
+    local s
+    local e
+    local f
+    local i
+    local bits
+    local str
+    local bytes
+    local function roundToEven(self, n)
+        local w = math.floor(n)
+        local fl = n - w
+        if fl < 0.5 then
+            return w
+        end
+        if fl > 0.5 then
+            return w + 1
+        end
+        return w % 2 ~= 0 and w + 1 or w
+    end
+    if v ~= v then
+        e = bit.lshift(1, ebits) - 1
+        f = 2 ^ (fbits - 1)
+        s = 0
+    elseif v == math.huge or v == -math.huge then
+        e = bit.lshift(1, ebits) - 1
+        f = 0
+        s = v < 0 and 1 or 0
+    elseif v == 0 then
+        e = 0
+        f = 0
+        s = 1 / v == -math.huge and 1 or 0
+    else
+        s = v < 0
+        v = math.abs(v)
+        if v >= 2 ^ (1 - bias) then
+            e = math.min(
+                math.floor(math.log(v) / LN2),
+                1023
+            )
+            f = roundToEven(nil, v / 2 ^ e * 2 ^ fbits)
+            if f / 2 ^ fbits >= 2 then
+                e = e + 1
+                f = 1
+            end
+            if e > bias then
+                e = bit.lshift(1, ebits) - 1
+                f = 0
+            else
+                e = e + bias
+                f = f - 2 ^ fbits
+            end
+        else
+            e = 0
+            f = roundToEven(nil, v / 2 ^ (1 - bias - fbits))
+        end
+    end
+    bits = {}
+    do
+        i = fbits
+        while i do
+            bits[#bits + 1] = f % 2 ~= 0 and 1 or 0
+            f = math.floor(f / 2)
+            i = i - 1
+        end
+    end
+    do
+        i = ebits
+        while i do
+            bits[#bits + 1] = e % 2 ~= 0 and 1 or 0
+            e = math.floor(e / 2)
+            i = i - 1
+        end
+    end
+    bits[#bits + 1] = s and 1 or 0
+    __TS__ArrayReverse(bits)
+    str = table.concat(bits, "")
+    bytes = {}
+    while #str > 0 do
+        bytes[#bytes + 1] = __TS__ParseInt(
+            __TS__StringSubstring(str, 0, 8),
+            2
+        )
+        str = __TS__StringSubstring(str, 8)
+    end
+    return bytes
+end
+function unpackIEEE754(self, bytes, ebits, fbits)
+    local bits = {}
+    local i
+    local j
+    local b
+    local str
+    local bias
+    local s
+    local e
+    local f
+    do
+        i = #bytes
+        while i do
+            b = bytes[i]
+            do
+                j = 8
+                while j do
+                    bits[#bits + 1] = b % 2 ~= 0 and 1 or 0
+                    b = bit.arshift(b, 1)
+                    j = j - 1
+                end
+            end
+            i = i - 1
+        end
+    end
+    __TS__ArrayReverse(bits)
+    str = table.concat(bits, "")
+    bias = bit.lshift(1, ebits - 1) - 1
+    s = __TS__ParseInt(
+        __TS__StringSubstring(str, 0, 1),
+        2
+    ) ~= 0 and -1 or 1
+    e = __TS__ParseInt(
+        __TS__StringSubstring(str, 1, 1 + ebits),
+        2
+    )
+    f = __TS__ParseInt(
+        __TS__StringSubstring(str, 1 + ebits),
+        2
+    )
+    if e == bit.lshift(1, ebits) - 1 then
+        return f == 0 and s * math.huge or 0 / 0
+    elseif e > 0 then
+        return s * 2 ^ (e - bias) * (1 + f / 2 ^ fbits)
+    elseif f ~= 0 then
+        return s * 2 ^ (-(bias - 1)) * (f / 2 ^ fbits)
+    end
+    return s < 0 and -0 or 0
+end
+function unpackF64(self, b)
+    return unpackIEEE754(nil, b, 11, 52)
+end
+function packF64(self, v)
+    return packIEEE754(nil, v, 11, 52)
+end
+function unpackF32(self, b)
+    return unpackIEEE754(nil, b, 8, 23)
+end
+function packF32(self, v)
+    return packIEEE754(nil, v, 8, 23)
+end
+ArrayBufferClass = __TS__Class()
+ArrayBufferClass.name = "ArrayBufferClass"
+function ArrayBufferClass.prototype.____constructor(self, length)
+    length = ECMAScript:ToInt32(length)
+    if length < 0 then
+        error(
+            __TS__New(RangeError, "ArrayBufferClass size is not a small enough positive integer"),
+            0
+        )
+    end
+    self.byteLength = length
+    self._bytes = {}
+    __TS__ArraySetLength(self._bytes, length)
+    do
+        local i = 0
+        while i < self.byteLength do
+            self._bytes[i + 1] = 0
+            i = i + 1
+        end
+    end
+end
+globalNamespace.ArrayBuffer = ArrayBufferClass
+ArrayBufferView = __TS__Class()
+ArrayBufferView.name = "ArrayBufferView"
+function ArrayBufferView.prototype.____constructor(self, buffer, byteOffset, byteLength)
+    self.buffer = buffer
+    self.byteOffset = byteOffset
+    self.byteLength = byteLength
+end
+function makeConstructor(self, bytesPerElement, pack, ____unpack)
+    local TypedArrayClass = __TS__Class()
+    TypedArrayClass.name = "TypedArrayClass"
+    __TS__ClassExtends(TypedArrayClass, ArrayBufferView)
+    function TypedArrayClass.prototype.____constructor(self, buffer, byteOffset, length)
+        self.BYTES_PER_ELEMENT = bytesPerElement
+        self._pack = pack
+        self._unpack = ____unpack
+        self.get = self._getter
+        local i
+        local s
+        if type(buffer) == "number" then
+            local ownLength = length or 0
+            if ownLength < 0 then
+                error(
+                    __TS__New(RangeError, "ArrayBufferView size is not a small enough positive integer"),
+                    0
+                )
+            end
+            local byteLength = ownLength * bytesPerElement
+            ArrayBufferView.prototype.____constructor(
+                self,
+                __TS__New(ArrayBuffer, byteLength),
+                0,
+                ownLength
+            )
+            self.byteLength = byteLength
+            self.length = ECMAScript:ToInt32(buffer)
+        elseif type(buffer) == "table" and buffer.constructor == TypedArrayClass then
+            local length = buffer.length
+            local byteLength = length * bytesPerElement
+            local ownBuffer = __TS__New(ArrayBuffer, byteLength)
+            ArrayBufferView.prototype.____constructor(self, ownBuffer, 0, byteLength)
+            self.length = length
+            do
+                i = 0
+                while i < self.length do
+                    self:_setter(
+                        i,
+                        buffer:_getter(i)
+                    )
+                    i = i + 1
+                end
+            end
+        elseif type(buffer) == "table" and not (__TS__InstanceOf(buffer, ArrayBuffer) or ECMAScript:Class(buffer) == "ArrayBuffer") then
+            local sequence = buffer
+            local length = ECMAScript:ToUint32(sequence.length)
+            local byteLength = length * bytesPerElement
+            local ownBuffer = __TS__New(ArrayBuffer, byteLength)
+            ArrayBufferView.prototype.____constructor(self, ownBuffer, 0, byteLength)
+            self.length = length
+            do
+                local i = 0
+                while i < self.length do
+                    s = sequence[i]
+                    self:_setter(
+                        i,
+                        __TS__Number(s)
+                    )
+                    i = i + 1
+                end
+            end
+        elseif type(buffer) == "table" and (__TS__InstanceOf(buffer, ArrayBuffer) or ECMAScript:Class(buffer) == "ArrayBuffer") then
+            ArrayBufferView.prototype.____constructor(
+                self,
+                buffer,
+                ECMAScript:ToUint32(byteOffset),
+                buffer.byteLength
+            )
+            if self.byteOffset > self.buffer.byteLength then
+                error(
+                    __TS__New(RangeError, "byteOffset out of range"),
+                    0
+                )
+            end
+            if self.byteOffset % self.BYTES_PER_ELEMENT ~= 0 then
+                error(
+                    __TS__New(RangeError, "ArrayBuffer length minus the byteOffset is not a multiple of the element size."),
+                    0
+                )
+            end
+            if length == nil then
+                self.byteLength = self.buffer.byteLength - self.byteOffset
+                if self.byteLength % self.BYTES_PER_ELEMENT ~= 0 then
+                    error(
+                        __TS__New(RangeError, "length of buffer minus byteOffset not a multiple of the element size"),
+                        0
+                    )
+                end
+                self.length = self.byteLength / self.BYTES_PER_ELEMENT
+            else
+                self.length = ECMAScript:ToUint32(length)
+                self.byteLength = self.length * self.BYTES_PER_ELEMENT
+            end
+            if self.byteOffset + self.byteLength > self.buffer.byteLength then
+                error(
+                    __TS__New(RangeError, "byteOffset and length reference an area beyond the end of the buffer"),
+                    0
+                )
+            end
+        else
+            error(
+                __TS__New(TypeError, "Unexpected argument type(s)"),
+                0
+            )
+        end
+        self.constructor = TypedArrayClass
+        makeArrayAccessors(nil, self)
+    end
+    function TypedArrayClass.prototype._getter(self, index)
+        if arguments.length < 1 then
+            error(
+                __TS__New(SyntaxError, "Not enough arguments"),
+                0
+            )
+        end
+        index = ECMAScript:ToUint32(index)
+        if index >= self.length then
+            return 0
+        end
+        local bytes = {}
+        do
+            local i = 0
+            local o = self.byteOffset + index * self.BYTES_PER_ELEMENT
+            while i < self.BYTES_PER_ELEMENT do
+                bytes[#bytes + 1] = self.buffer._bytes[o + 1]
+                do
+                    i = i + 1
+                    o = o + 1
+                end
+            end
+        end
+        return self:_unpack(bytes)
+    end
+    function TypedArrayClass.prototype._setter(self, index, value)
+        index = ECMAScript:ToUint32(index)
+        if index < self.length then
+            local bytes = self:_pack(value)
+            local i
+            local o
+            do
+                do
+                    i = 0
+                    o = self.byteOffset + index * self.BYTES_PER_ELEMENT
+                end
+                while i < self.BYTES_PER_ELEMENT do
+                    self.buffer._bytes[o + 1] = bytes[i + 1]
+                    do
+                        i = i + 1
+                        o = o + 1
+                    end
+                end
+            end
+        end
+    end
+    function TypedArrayClass.prototype.set(self, index, value)
+        if arguments.length < 1 then
+            error(
+                __TS__New(SyntaxError, "Not enough arguments"),
+                0
+            )
+        end
+        local array
+        local sequence
+        local offset
+        local len
+        local i
+        local s
+        local d
+        local byteOffset
+        local byteLength
+        local tmp
+        if type(arguments[0]) == "table" and arguments[0].constructor == self.constructor then
+            array = arguments[0]
+            offset = ECMAScript:ToUint32(arguments[1])
+            if offset + array.length > self.length then
+                error(
+                    __TS__New(RangeError, "Offset plus length of array is out of range"),
+                    0
+                )
+            end
+            byteOffset = self.byteOffset + offset * self.BYTES_PER_ELEMENT
+            byteLength = array.length * self.BYTES_PER_ELEMENT
+            if array.buffer == self.buffer then
+                tmp = {}
+                do
+                    do
+                        i = 0
+                        s = array.byteOffset
+                    end
+                    while i < byteLength do
+                        tmp[i + 1] = array.buffer._bytes[s]
+                        do
+                            i = i + 1
+                            s = s + 1
+                        end
+                    end
+                end
+                do
+                    do
+                        i = 0
+                        d = byteOffset
+                    end
+                    while i < byteLength do
+                        self.buffer._bytes[d + 1] = tmp[i + 1]
+                        do
+                            i = i + 1
+                            d = d + 1
+                        end
+                    end
+                end
+            else
+                do
+                    do
+                        do
+                            i = 0
+                            s = array.byteOffset
+                        end
+                        d = byteOffset
+                    end
+                    while i < byteLength do
+                        self.buffer._bytes[d + 1] = array.buffer._bytes[s]
+                        do
+                            do
+                                i = i + 1
+                                s = s + 1
+                            end
+                            d = d + 1
+                        end
+                    end
+                end
+            end
+        elseif type(arguments[0]) == "table" and type(arguments[0].length) ~= "nil" then
+            sequence = arguments[0]
+            len = ECMAScript:ToUint32(sequence.length)
+            offset = ECMAScript:ToUint32(arguments[1])
+            if offset + len > self.length then
+                error(
+                    __TS__New(RangeError, "Offset plus length of array is out of range"),
+                    0
+                )
+            end
+            do
+                i = 0
+                while i < len do
+                    s = sequence[i]
+                    self:_setter(
+                        offset + i,
+                        __TS__Number(s)
+                    )
+                    i = i + 1
+                end
+            end
+        else
+            error(
+                __TS__New(TypeError, "Unexpected argument type(s)"),
+                0
+            )
+        end
+    end
+    function TypedArrayClass.prototype.subarray(self, start, ____end)
+        start = ECMAScript:ToInt32(start)
+        ____end = ECMAScript:ToInt32(____end)
+        if arguments.length < 1 then
+            start = 0
+        end
+        if arguments.length < 2 then
+            ____end = self.length
+        end
+        if start < 0 then
+            start = self.length + start
+        end
+        if ____end < 0 then
+            ____end = self.length + ____end
+        end
+        start = clamp(nil, start, 0, self.length)
+        ____end = clamp(nil, ____end, 0, self.length)
+        local len = ____end - start
+        if len < 0 then
+            len = 0
+        end
+        return __TS__New(TypedArrayClass, self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, len)
+    end
+    function TypedArrayClass.prototype.fill(self, value)
+        print(vim.inspect({value, self.length, self.buffer}))
+        do
+            local i = 0
+            while i < self.length do
+                self:_setter(i, value)
+                i = i + 1
+            end
+        end
+    end
+    TypedArrayClass.BYTES_PER_ELEMENT = bytesPerElement
+    return TypedArrayClass
+end
+globalNamespace.Int8Array = makeConstructor(nil, 1, packI8, unpackI8)
+globalNamespace.Uint8Array = makeConstructor(nil, 1, packU8, unpackU8)
+globalNamespace.Uint8ClampedArray = makeConstructor(nil, 1, packU8Clamped, unpackU8)
+globalNamespace.Int16Array = makeConstructor(nil, 2, packI16, unpackI16)
+globalNamespace.Uint16Array = makeConstructor(nil, 2, packU16, unpackU16)
+globalNamespace.Int32Array = makeConstructor(nil, 4, packI32, unpackI32)
+globalNamespace.Uint32Array = makeConstructor(nil, 4, packU32, unpackU32)
+globalNamespace.Float32Array = makeConstructor(nil, 4, packF32, unpackF32)
+globalNamespace.Float64Array = makeConstructor(nil, 8, packF64, unpackF64)
+ end,
+["colord.types"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["colord.constants"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- We used to work with 2 digits after the decimal point, but it wasn't accurate enough,
+-- so the library produced colors that were perceived differently.
+____exports.ALPHA_PRECISION = 3
+--- Valid CSS <angle> units.
+-- https://developer.mozilla.org/en-US/docs/Web/CSS/angle
+____exports.ANGLE_UNITS = {grad = 360 / 400, turn = 360, rad = 360 / (math.pi * 2)}
+return ____exports
+ end,
+["colord.helpers"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local __TS__NumberIsFinite = ____lualib.__TS__NumberIsFinite
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ANGLE_UNITS = ____constants.ANGLE_UNITS
+____exports.isPresent = function(____, value)
+    if type(value) == "string" then
+        return #value > 0
+    end
+    if type(value) == "number" then
+        return true
+    end
+    return false
+end
+____exports.round = function(____, number, digits, base)
+    if digits == nil then
+        digits = 0
+    end
+    if base == nil then
+        base = 10 ^ digits
+    end
+    return math.floor(base * number + 0.5) / base + 0
+end
+____exports.floor = function(____, number, digits, base)
+    if digits == nil then
+        digits = 0
+    end
+    if base == nil then
+        base = 10 ^ digits
+    end
+    return math.floor(base * number) / base + 0
+end
+--- Clamps a value between an upper and lower bound.
+-- We use ternary operators because it makes the minified code
+-- is 2 times shorter then `Math.min(Math.max(a,b),c)`
+-- NaN is clamped to the lower bound
+____exports.clamp = function(____, number, min, max)
+    if min == nil then
+        min = 0
+    end
+    if max == nil then
+        max = 1
+    end
+    return number > max and max or (number > min and number or min)
+end
+--- Processes and clamps a degree (angle) value properly.
+-- Any `NaN` or `Infinity` will be converted to `0`.
+-- Examples: -1 => 359, 361 => 1
+____exports.clampHue = function(____, degrees)
+    degrees = __TS__NumberIsFinite(__TS__Number(degrees)) and degrees % 360 or 0
+    return degrees > 0 and degrees or degrees + 360
+end
+--- Converts a hue value to degrees from 0 to 360 inclusive.
+____exports.parseHue = function(____, value, unit)
+    if unit == nil then
+        unit = "deg"
+    end
+    return __TS__Number(value) * (ANGLE_UNITS[unit] or 1)
+end
+return ____exports
+ end,
+["colord.colorModels.rgb"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local round = ____helpers.round
+local clamp = ____helpers.clamp
+local isPresent = ____helpers.isPresent
+____exports.clampRgba = function(____, rgba) return {
+    r = clamp(nil, rgba.r, 0, 255),
+    g = clamp(nil, rgba.g, 0, 255),
+    b = clamp(nil, rgba.b, 0, 255),
+    a = clamp(nil, rgba.a)
+} end
+____exports.roundRgba = function(____, rgba) return {
+    r = round(nil, rgba.r),
+    g = round(nil, rgba.g),
+    b = round(nil, rgba.b),
+    a = round(nil, rgba.a, ALPHA_PRECISION)
+} end
+____exports.parseRgba = function(____, ____bindingPattern0)
+    local a
+    local b
+    local g
+    local r
+    r = ____bindingPattern0.r
+    g = ____bindingPattern0.g
+    b = ____bindingPattern0.b
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, r) or not isPresent(nil, g) or not isPresent(nil, b) then
+        return nil
+    end
+    return ____exports.clampRgba(
+        nil,
+        {
+            r = __TS__Number(r),
+            g = __TS__Number(g),
+            b = __TS__Number(b),
+            a = __TS__Number(a)
+        }
+    )
+end
+--- Converts an RGB channel [0-255] to its linear light (un-companded) form [0-1].
+-- Linearized RGB values are widely used for color space conversions and contrast calculations
+____exports.linearizeRgbChannel = function(____, value)
+    local ratio = value / 255
+    return ratio < 0.04045 and ratio / 12.92 or ((ratio + 0.055) / 1.055) ^ 2.4
+end
+--- Converts an linear-light sRGB channel [0-1] back to its gamma corrected form [0-255]
+____exports.unlinearizeRgbChannel = function(____, ratio)
+    local value = ratio > 0.0031308 and 1.055 * ratio ^ (1 / 2.4) - 0.055 or 12.92 * ratio
+    return value * 255
+end
+return ____exports
+ end,
+["colord.colorModels.hex"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__StringAccess = ____lualib.__TS__StringAccess
+local __TS__ParseInt = ____lualib.__TS__ParseInt
+local __TS__NumberToString = ____lualib.__TS__NumberToString
+local ____exports = {}
+local ____helpers = require("colord.helpers")
+local round = ____helpers.round
+local ____rgb = require("colord.colorModels.rgb")
+local roundRgba = ____rgb.roundRgba
+--- Parses any valid Hex3, Hex4, Hex6 or Hex8 string and converts it to an RGBA object
+____exports.parseHex = function(____, input)
+    local digits = string.sub(input, 2)
+    if #digits <= 4 then
+        return {
+            r = __TS__ParseInt(
+                __TS__StringAccess(digits, 0) .. __TS__StringAccess(digits, 0),
+                16
+            ),
+            g = __TS__ParseInt(
+                __TS__StringAccess(digits, 1) .. __TS__StringAccess(digits, 1),
+                16
+            ),
+            b = __TS__ParseInt(
+                __TS__StringAccess(digits, 2) .. __TS__StringAccess(digits, 2),
+                16
+            ),
+            a = #digits == 4 and round(
+                nil,
+                __TS__ParseInt(
+                    __TS__StringAccess(digits, 3) .. __TS__StringAccess(digits, 3),
+                    16
+                ) / 255,
+                2
+            ) or 1
+        }
+    end
+    if #digits == 6 or #digits == 8 then
+        return {
+            r = __TS__ParseInt(
+                string.sub(digits, 1, 2),
+                16
+            ),
+            g = __TS__ParseInt(
+                string.sub(digits, 3, 4),
+                16
+            ),
+            b = __TS__ParseInt(
+                string.sub(digits, 5, 6),
+                16
+            ),
+            a = #digits == 8 and round(
+                nil,
+                __TS__ParseInt(
+                    string.sub(digits, 7, 8),
+                    16
+                ) / 255,
+                2
+            ) or 1
+        }
+    end
+    return nil
+end
+--- Formats any decimal number (e.g. 128) as a hexadecimal string (e.g. "08")
+local function format(____, number)
+    local digits = __TS__NumberToString(number, 16)
+    return #digits < 2 and "0" .. digits or digits
+end
+--- Converts RGBA object to Hex6 or (if it has alpha channel) Hex8 string
+____exports.rgbaToHex = function(____, rgba)
+    local ____roundRgba_result_0 = roundRgba(nil, rgba)
+    local r = ____roundRgba_result_0.r
+    local g = ____roundRgba_result_0.g
+    local b = ____roundRgba_result_0.b
+    local a = ____roundRgba_result_0.a
+    local alphaHex = a < 1 and format(
+        nil,
+        round(nil, a * 255)
+    ) or ""
+    return ((("#" .. format(nil, r)) .. format(nil, g)) .. format(nil, b)) .. alphaHex
+end
+return ____exports
+ end,
+["colord.colorModels.hsv"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local clampHue = ____helpers.clampHue
+local isPresent = ____helpers.isPresent
+local round = ____helpers.round
+____exports.clampHsva = function(____, hsva) return {
+    h = clampHue(nil, hsva.h),
+    s = clamp(nil, hsva.s, 0, 100),
+    v = clamp(nil, hsva.v, 0, 100),
+    a = clamp(nil, hsva.a)
+} end
+____exports.roundHsva = function(____, hsva) return {
+    h = round(nil, hsva.h),
+    s = round(nil, hsva.s),
+    v = round(nil, hsva.v),
+    a = round(nil, hsva.a, ALPHA_PRECISION)
+} end
+____exports.parseHsva = function(____, ____bindingPattern0)
+    local a
+    local v
+    local s
+    local h
+    h = ____bindingPattern0.h
+    s = ____bindingPattern0.s
+    v = ____bindingPattern0.v
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, h) or not isPresent(nil, s) or not isPresent(nil, v) then
+        return nil
+    end
+    local hsva = ____exports.clampHsva(
+        nil,
+        {
+            h = __TS__Number(h),
+            s = __TS__Number(s),
+            v = __TS__Number(v),
+            a = __TS__Number(a)
+        }
+    )
+    return ____exports.hsvaToRgba(nil, hsva)
+end
+____exports.rgbaToHsva = function(____, ____bindingPattern0)
+    local a
+    local b
+    local g
+    local r
+    r = ____bindingPattern0.r
+    g = ____bindingPattern0.g
+    b = ____bindingPattern0.b
+    a = ____bindingPattern0.a
+    local max = math.max(r, g, b)
+    local delta = max - math.min(r, g, b)
+    local hh = delta ~= 0 and (max == r and (g - b) / delta or (max == g and 2 + (b - r) / delta or 4 + (r - g) / delta)) or 0
+    return {h = 60 * (hh < 0 and hh + 6 or hh), s = max ~= 0 and delta / max * 100 or 0, v = max / 255 * 100, a = a}
+end
+____exports.hsvaToRgba = function(____, ____bindingPattern0)
+    local a
+    local v
+    local s
+    local h
+    h = ____bindingPattern0.h
+    s = ____bindingPattern0.s
+    v = ____bindingPattern0.v
+    a = ____bindingPattern0.a
+    h = h / 360 * 6
+    s = s / 100
+    v = v / 100
+    local hh = math.floor(h)
+    local b = v * (1 - s)
+    local c = v * (1 - (h - hh) * s)
+    local d = v * (1 - (1 - h + hh) * s)
+    local module = hh % 6
+    return {r = ({
+        v,
+        c,
+        b,
+        b,
+        d,
+        v
+    })[module + 1] * 255, g = ({
+        d,
+        v,
+        v,
+        c,
+        b,
+        b
+    })[module + 1] * 255, b = ({
+        b,
+        b,
+        d,
+        v,
+        v,
+        c
+    })[module + 1] * 255, a = a}
+end
+return ____exports
+ end,
+["colord.colorModels.hsl"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local clampHue = ____helpers.clampHue
+local round = ____helpers.round
+local isPresent = ____helpers.isPresent
+local ____hsv = require("colord.colorModels.hsv")
+local hsvaToRgba = ____hsv.hsvaToRgba
+local rgbaToHsva = ____hsv.rgbaToHsva
+____exports.clampHsla = function(____, hsla) return {
+    h = clampHue(nil, hsla.h),
+    s = clamp(nil, hsla.s, 0, 100),
+    l = clamp(nil, hsla.l, 0, 100),
+    a = clamp(nil, hsla.a)
+} end
+____exports.roundHsla = function(____, hsla) return {
+    h = round(nil, hsla.h),
+    s = round(nil, hsla.s),
+    l = round(nil, hsla.l),
+    a = round(nil, hsla.a, ALPHA_PRECISION)
+} end
+____exports.parseHsla = function(____, ____bindingPattern0)
+    local a
+    local l
+    local s
+    local h
+    h = ____bindingPattern0.h
+    s = ____bindingPattern0.s
+    l = ____bindingPattern0.l
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, h) or not isPresent(nil, s) or not isPresent(nil, l) then
+        return nil
+    end
+    local hsla = ____exports.clampHsla(
+        nil,
+        {
+            h = __TS__Number(h),
+            s = __TS__Number(s),
+            l = __TS__Number(l),
+            a = __TS__Number(a)
+        }
+    )
+    return ____exports.hslaToRgba(nil, hsla)
+end
+____exports.hslaToHsva = function(____, ____bindingPattern0)
+    local a
+    local l
+    local s
+    local h
+    h = ____bindingPattern0.h
+    s = ____bindingPattern0.s
+    l = ____bindingPattern0.l
+    a = ____bindingPattern0.a
+    s = s * ((l < 50 and l or 100 - l) / 100)
+    return {h = h, s = s > 0 and 2 * s / (l + s) * 100 or 0, v = l + s, a = a}
+end
+____exports.hsvaToHsla = function(____, ____bindingPattern0)
+    local a
+    local v
+    local s
+    local h
+    h = ____bindingPattern0.h
+    s = ____bindingPattern0.s
+    v = ____bindingPattern0.v
+    a = ____bindingPattern0.a
+    local hh = (200 - s) * v / 100
+    return {h = h, s = hh > 0 and hh < 200 and s * v / 100 / (hh <= 100 and hh or 200 - hh) * 100 or 0, l = hh / 2, a = a}
+end
+____exports.hslaToRgba = function(____, hsla)
+    return hsvaToRgba(
+        nil,
+        ____exports.hslaToHsva(nil, hsla)
+    )
+end
+____exports.rgbaToHsla = function(____, rgba)
+    return ____exports.hsvaToHsla(
+        nil,
+        rgbaToHsva(nil, rgba)
+    )
+end
+return ____exports
+ end,
+["colord.colorModels.hslString"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____hsl = require("colord.colorModels.hsl")
+local rgbaToHsla = ____hsl.rgbaToHsla
+local roundHsla = ____hsl.roundHsla
+--- Parses a valid HSL[A] CSS color function/string
+-- https://www.w3.org/TR/css-color-4/#the-hsl-notation
+____exports.parseHslaString = function(____, input)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+____exports.rgbaToHslaString = function(____, rgba)
+    local ____roundHsla_result_0 = roundHsla(
+        nil,
+        rgbaToHsla(nil, rgba)
+    )
+    local h = ____roundHsla_result_0.h
+    local s = ____roundHsla_result_0.s
+    local l = ____roundHsla_result_0.l
+    local a = ____roundHsla_result_0.a
+    return a < 1 and ((((((("hsla(" .. tostring(h)) .. ", ") .. tostring(s)) .. "%, ") .. tostring(l)) .. "%, ") .. tostring(a)) .. ")" or ((((("hsl(" .. tostring(h)) .. ", ") .. tostring(s)) .. "%, ") .. tostring(l)) .. "%)"
+end
+return ____exports
+ end,
+["colord.colorModels.rgbString"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__StringTrim = ____lualib.__TS__StringTrim
+local __TS__StringReplace = ____lualib.__TS__StringReplace
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____rgb = require("colord.colorModels.rgb")
+local roundRgba = ____rgb.roundRgba
+local clampRgba = ____rgb.clampRgba
+--- Parses a valid RGB[A] CSS color function/string
+-- https://www.w3.org/TR/css-color-4/#rgb-functions
+____exports.parseRgbaString = function(____, input)
+    local parts = __TS__ArrayMap(
+        __TS__StringSplit(
+            __TS__StringReplace(
+                __TS__StringReplace(
+                    __TS__StringReplace(
+                        __TS__StringTrim(input),
+                        "rgba(",
+                        ""
+                    ),
+                    "rgb(",
+                    ""
+                ),
+                ")",
+                ""
+            ),
+            ","
+        ),
+        function(____, p) return __TS__StringTrim(p) end
+    )
+    return clampRgba(
+        nil,
+        {
+            r = __TS__Number(parts[2]),
+            g = __TS__Number(parts[3]),
+            b = __TS__Number(parts[4]),
+            a = parts[5] == nil and 1 or __TS__Number(parts[5])
+        }
+    )
+end
+____exports.rgbaToRgbaString = function(____, rgba)
+    local ____roundRgba_result_0 = roundRgba(nil, rgba)
+    local r = ____roundRgba_result_0.r
+    local g = ____roundRgba_result_0.g
+    local b = ____roundRgba_result_0.b
+    local a = ____roundRgba_result_0.a
+    return a < 1 and ((((((("rgba(" .. tostring(r)) .. ", ") .. tostring(g)) .. ", ") .. tostring(b)) .. ", ") .. tostring(a)) .. ")" or ((((("rgb(" .. tostring(r)) .. ", ") .. tostring(g)) .. ", ") .. tostring(b)) .. ")"
+end
+return ____exports
+ end,
+["colord.parse"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__StringTrim = ____lualib.__TS__StringTrim
+local ____exports = {}
+local ____hex = require("colord.colorModels.hex")
+local parseHex = ____hex.parseHex
+local ____rgb = require("colord.colorModels.rgb")
+local parseRgba = ____rgb.parseRgba
+local ____hsl = require("colord.colorModels.hsl")
+local parseHsla = ____hsl.parseHsla
+local ____hslString = require("colord.colorModels.hslString")
+local parseHslaString = ____hslString.parseHslaString
+local ____hsv = require("colord.colorModels.hsv")
+local parseHsva = ____hsv.parseHsva
+local ____rgbString = require("colord.colorModels.rgbString")
+local parseRgbaString = ____rgbString.parseRgbaString
+____exports.parsers = {string = {{parseHex, "hex"}, {parseRgbaString, "rgb"}, {parseHslaString, "hsl"}}, object = {{parseRgba, "rgb"}, {parseHsla, "hsl"}, {parseHsva, "hsv"}}}
+local function findValidColor(____, input, parsers)
+    do
+        local index = 0
+        while index < #parsers do
+            local ____self_0 = parsers[index + 1]
+            local result = ____self_0[1](____self_0, input)
+            if result then
+                return {result, parsers[index + 1][2]}
+            end
+            index = index + 1
+        end
+    end
+    return {nil, nil}
+end
+--- Tries to convert an incoming value into RGBA color by going through all color model parsers
+____exports.parse = function(____, input)
+    if type(input) == "string" then
+        return findValidColor(
+            nil,
+            __TS__StringTrim(input),
+            ____exports.parsers.string
+        )
+    end
+    if type(input) == "table" and input ~= nil then
+        return findValidColor(nil, input, ____exports.parsers.object)
+    end
+    return {nil, nil}
+end
+--- Returns a color model name for the input passed to the function.
+____exports.getFormat = function(____, input) return ____exports.parse(nil, input)[2] end
+return ____exports
+ end,
+["colord.manipulate.changeAlpha"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.changeAlpha = function(____, rgba, a) return {r = rgba.r, g = rgba.g, b = rgba.b, a = a} end
+return ____exports
+ end,
+["colord.manipulate.saturate"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____hsl = require("colord.colorModels.hsl")
+local rgbaToHsla = ____hsl.rgbaToHsla
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+____exports.saturate = function(____, rgba, amount)
+    local hsla = rgbaToHsla(nil, rgba)
+    return {
+        h = hsla.h,
+        s = clamp(nil, hsla.s + amount * 100, 0, 100),
+        l = hsla.l,
+        a = hsla.a
+    }
+end
+return ____exports
+ end,
+["colord.get.getBrightness"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Returns the brightness of a color [0-1].
+-- https://www.w3.org/TR/AERT/#color-contrast
+-- https://en.wikipedia.org/wiki/YIQ
+____exports.getBrightness = function(____, rgba)
+    return (rgba.r * 299 + rgba.g * 587 + rgba.b * 114) / 1000 / 255
+end
+return ____exports
+ end,
+["colord.manipulate.lighten"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____hsl = require("colord.colorModels.hsl")
+local rgbaToHsla = ____hsl.rgbaToHsla
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+____exports.lighten = function(____, rgba, amount)
+    local hsla = rgbaToHsla(nil, rgba)
+    return {
+        h = hsla.h,
+        s = hsla.s,
+        l = clamp(nil, hsla.l + amount * 100, 0, 100),
+        a = hsla.a
+    }
+end
+return ____exports
+ end,
+["colord.manipulate.invert"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.invert = function(____, rgba) return {r = 255 - rgba.r, g = 255 - rgba.g, b = 255 - rgba.b, a = rgba.a} end
+return ____exports
+ end,
+["colord.colord"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____helpers = require("colord.helpers")
+local round = ____helpers.round
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____parse = require("colord.parse")
+local parse = ____parse.parse
+local ____hex = require("colord.colorModels.hex")
+local rgbaToHex = ____hex.rgbaToHex
+local ____rgb = require("colord.colorModels.rgb")
+local roundRgba = ____rgb.roundRgba
+local ____rgbString = require("colord.colorModels.rgbString")
+local rgbaToRgbaString = ____rgbString.rgbaToRgbaString
+local ____hsl = require("colord.colorModels.hsl")
+local rgbaToHsla = ____hsl.rgbaToHsla
+local roundHsla = ____hsl.roundHsla
+local ____hslString = require("colord.colorModels.hslString")
+local rgbaToHslaString = ____hslString.rgbaToHslaString
+local ____hsv = require("colord.colorModels.hsv")
+local rgbaToHsva = ____hsv.rgbaToHsva
+local roundHsva = ____hsv.roundHsva
+local ____changeAlpha = require("colord.manipulate.changeAlpha")
+local changeAlpha = ____changeAlpha.changeAlpha
+local ____saturate = require("colord.manipulate.saturate")
+local saturate = ____saturate.saturate
+local ____getBrightness = require("colord.get.getBrightness")
+local getBrightness = ____getBrightness.getBrightness
+local ____lighten = require("colord.manipulate.lighten")
+local lighten = ____lighten.lighten
+local ____invert = require("colord.manipulate.invert")
+local invert = ____invert.invert
+____exports.Colord = __TS__Class()
+local Colord = ____exports.Colord
+Colord.name = "Colord"
+function Colord.prototype.____constructor(self, input)
+    self.parsed = parse(nil, input)[1]
+    self.rgba = self.parsed or ({r = 0, g = 0, b = 0, a = 1})
+end
+function Colord.prototype.isValid(self)
+    return self.parsed ~= nil
+end
+function Colord.prototype.brightness(self)
+    return round(
+        nil,
+        getBrightness(nil, self.rgba),
+        2
+    )
+end
+function Colord.prototype.isDark(self)
+    return getBrightness(nil, self.rgba) < 0.5
+end
+function Colord.prototype.isLight(self)
+    return getBrightness(nil, self.rgba) >= 0.5
+end
+function Colord.prototype.toHex(self)
+    return rgbaToHex(nil, self.rgba)
+end
+function Colord.prototype.toRgb(self)
+    return roundRgba(nil, self.rgba)
+end
+function Colord.prototype.toRgbString(self)
+    return rgbaToRgbaString(nil, self.rgba)
+end
+function Colord.prototype.toHsl(self)
+    return roundHsla(
+        nil,
+        rgbaToHsla(nil, self.rgba)
+    )
+end
+function Colord.prototype.toHslString(self)
+    return rgbaToHslaString(nil, self.rgba)
+end
+function Colord.prototype.toHsv(self)
+    return roundHsva(
+        nil,
+        rgbaToHsva(nil, self.rgba)
+    )
+end
+function Colord.prototype.invert(self)
+    return ____exports.colord(
+        nil,
+        invert(nil, self.rgba)
+    )
+end
+function Colord.prototype.saturate(self, amount)
+    if amount == nil then
+        amount = 0.1
+    end
+    return ____exports.colord(
+        nil,
+        saturate(nil, self.rgba, amount)
+    )
+end
+function Colord.prototype.desaturate(self, amount)
+    if amount == nil then
+        amount = 0.1
+    end
+    return ____exports.colord(
+        nil,
+        saturate(nil, self.rgba, -amount)
+    )
+end
+function Colord.prototype.grayscale(self)
+    return ____exports.colord(
+        nil,
+        saturate(nil, self.rgba, -1)
+    )
+end
+function Colord.prototype.lighten(self, amount)
+    if amount == nil then
+        amount = 0.1
+    end
+    return ____exports.colord(
+        nil,
+        lighten(nil, self.rgba, amount)
+    )
+end
+function Colord.prototype.darken(self, amount)
+    if amount == nil then
+        amount = 0.1
+    end
+    return ____exports.colord(
+        nil,
+        lighten(nil, self.rgba, -amount)
+    )
+end
+function Colord.prototype.rotate(self, amount)
+    if amount == nil then
+        amount = 15
+    end
+    return self:hue(self:hue() + amount)
+end
+function Colord.prototype.alpha(self, value)
+    if type(value) == "number" then
+        return ____exports.colord(
+            nil,
+            changeAlpha(nil, self.rgba, value)
+        )
+    end
+    return round(nil, self.rgba.a, ALPHA_PRECISION)
+end
+function Colord.prototype.hue(self, value)
+    local hsla = rgbaToHsla(nil, self.rgba)
+    if type(value) == "number" then
+        return ____exports.colord(nil, {h = value, s = hsla.s, l = hsla.l, a = hsla.a})
+    end
+    return round(nil, hsla.h)
+end
+function Colord.prototype.isEqual(self, color)
+    return self:toHex() == ____exports.colord(nil, color):toHex()
+end
+--- Parses the given input color and creates a new `Colord` instance.
+-- See accepted input formats: https://github.com/omgovich/colord#color-parsing
+____exports.colord = function(____, input)
+    if __TS__InstanceOf(input, ____exports.Colord) then
+        return input
+    end
+    return __TS__New(____exports.Colord, input)
+end
+return ____exports
+ end,
+["colord.extend"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local __TS__ArrayForEach = ____lualib.__TS__ArrayForEach
+local ____exports = {}
+local ____colord = require("colord.colord")
+local Colord = ____colord.Colord
+local ____parse = require("colord.parse")
+local parsers = ____parse.parsers
+local activePlugins = {}
+____exports.extend = function(____, plugins)
+    __TS__ArrayForEach(
+        plugins,
+        function(____, plugin)
+            if __TS__ArrayIndexOf(activePlugins, plugin) < 0 then
+                plugin(nil, Colord, parsers)
+                activePlugins[#activePlugins + 1] = plugin
+            end
+        end
+    )
+end
+return ____exports
+ end,
+["colord.random"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____colord = require("colord.colord")
+local Colord = ____colord.Colord
+____exports.random = function()
+    return __TS__New(
+        Colord,
+        {
+            r = math.random() * 255,
+            g = math.random() * 255,
+            b = math.random() * 255
+        }
+    )
+end
+return ____exports
+ end,
+["colord.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____colord = require("colord.colord")
+    local colord = ____colord.colord
+    local Colord = ____colord.Colord
+    ____exports.colord = colord
+    ____exports.Colord = Colord
+end
+do
+    local ____extend = require("colord.extend")
+    local extend = ____extend.extend
+    ____exports.extend = extend
+end
+do
+    local ____parse = require("colord.parse")
+    local getFormat = ____parse.getFormat
+    ____exports.getFormat = getFormat
+end
+do
+    local ____random = require("colord.random")
+    local random = ____random.random
+    ____exports.random = random
+end
+return ____exports
+ end,
+["colord.plugins.names"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+--- Plugin to work with named colors.
+-- Adds a parser to read CSS color names and `toName` method.
+-- See https://www.w3.org/TR/css-color-4/#named-colors
+-- Supports 'transparent' string as defined in
+-- https://drafts.csswg.org/css-color/#transparent-color
+local function namesPlugin(____, ColordClass, parsers)
+    local NAME_HEX_STORE = {
+        white = "#ffffff",
+        bisque = "#ffe4c4",
+        blue = "#0000ff",
+        cadetblue = "#5f9ea0",
+        chartreuse = "#7fff00",
+        chocolate = "#d2691e",
+        coral = "#ff7f50",
+        antiquewhite = "#faebd7",
+        aqua = "#00ffff",
+        azure = "#f0ffff",
+        whitesmoke = "#f5f5f5",
+        papayawhip = "#ffefd5",
+        plum = "#dda0dd",
+        blanchedalmond = "#ffebcd",
+        black = "#000000",
+        gold = "#ffd700",
+        goldenrod = "#daa520",
+        gainsboro = "#dcdcdc",
+        cornsilk = "#fff8dc",
+        cornflowerblue = "#6495ed",
+        burlywood = "#deb887",
+        aquamarine = "#7fffd4",
+        beige = "#f5f5dc",
+        crimson = "#dc143c",
+        cyan = "#00ffff",
+        darkblue = "#00008b",
+        darkcyan = "#008b8b",
+        darkgoldenrod = "#b8860b",
+        darkkhaki = "#bdb76b",
+        darkgray = "#a9a9a9",
+        darkgreen = "#006400",
+        darkgrey = "#a9a9a9",
+        peachpuff = "#ffdab9",
+        darkmagenta = "#8b008b",
+        darkred = "#8b0000",
+        darkorchid = "#9932cc",
+        darkorange = "#ff8c00",
+        darkslateblue = "#483d8b",
+        gray = "#808080",
+        darkslategray = "#2f4f4f",
+        darkslategrey = "#2f4f4f",
+        deeppink = "#ff1493",
+        deepskyblue = "#00bfff",
+        wheat = "#f5deb3",
+        firebrick = "#b22222",
+        floralwhite = "#fffaf0",
+        ghostwhite = "#f8f8ff",
+        darkviolet = "#9400d3",
+        magenta = "#ff00ff",
+        green = "#008000",
+        dodgerblue = "#1e90ff",
+        grey = "#808080",
+        honeydew = "#f0fff0",
+        hotpink = "#ff69b4",
+        blueviolet = "#8a2be2",
+        forestgreen = "#228b22",
+        lawngreen = "#7cfc00",
+        indianred = "#cd5c5c",
+        indigo = "#4b0082",
+        fuchsia = "#ff00ff",
+        brown = "#a52a2a",
+        maroon = "#800000",
+        mediumblue = "#0000cd",
+        lightcoral = "#f08080",
+        darkturquoise = "#00ced1",
+        lightcyan = "#e0ffff",
+        ivory = "#fffff0",
+        lightyellow = "#ffffe0",
+        lightsalmon = "#ffa07a",
+        lightseagreen = "#20b2aa",
+        linen = "#faf0e6",
+        mediumaquamarine = "#66cdaa",
+        lemonchiffon = "#fffacd",
+        lime = "#00ff00",
+        khaki = "#f0e68c",
+        mediumseagreen = "#3cb371",
+        limegreen = "#32cd32",
+        mediumspringgreen = "#00fa9a",
+        lightskyblue = "#87cefa",
+        lightblue = "#add8e6",
+        midnightblue = "#191970",
+        lightpink = "#ffb6c1",
+        mistyrose = "#ffe4e1",
+        moccasin = "#ffe4b5",
+        mintcream = "#f5fffa",
+        lightslategray = "#778899",
+        lightslategrey = "#778899",
+        navajowhite = "#ffdead",
+        navy = "#000080",
+        mediumvioletred = "#c71585",
+        powderblue = "#b0e0e6",
+        palegoldenrod = "#eee8aa",
+        oldlace = "#fdf5e6",
+        paleturquoise = "#afeeee",
+        mediumturquoise = "#48d1cc",
+        mediumorchid = "#ba55d3",
+        rebeccapurple = "#663399",
+        lightsteelblue = "#b0c4de",
+        mediumslateblue = "#7b68ee",
+        thistle = "#d8bfd8",
+        tan = "#d2b48c",
+        orchid = "#da70d6",
+        mediumpurple = "#9370db",
+        purple = "#800080",
+        pink = "#ffc0cb",
+        skyblue = "#87ceeb",
+        springgreen = "#00ff7f",
+        palegreen = "#98fb98",
+        red = "#ff0000",
+        yellow = "#ffff00",
+        slateblue = "#6a5acd",
+        lavenderblush = "#fff0f5",
+        peru = "#cd853f",
+        palevioletred = "#db7093",
+        violet = "#ee82ee",
+        teal = "#008080",
+        slategray = "#708090",
+        slategrey = "#708090",
+        aliceblue = "#f0f8ff",
+        darkseagreen = "#8fbc8f",
+        darkolivegreen = "#556b2f",
+        greenyellow = "#adff2f",
+        seagreen = "#2e8b57",
+        seashell = "#fff5ee",
+        tomato = "#ff6347",
+        silver = "#c0c0c0",
+        sienna = "#a0522d",
+        lavender = "#e6e6fa",
+        lightgreen = "#90ee90",
+        orange = "#ffa500",
+        orangered = "#ff4500",
+        steelblue = "#4682b4",
+        royalblue = "#4169e1",
+        turquoise = "#40e0d0",
+        yellowgreen = "#9acd32",
+        salmon = "#fa8072",
+        saddlebrown = "#8b4513",
+        sandybrown = "#f4a460",
+        rosybrown = "#bc8f8f",
+        darksalmon = "#e9967a",
+        lightgoldenrodyellow = "#fafad2",
+        snow = "#fffafa",
+        lightgrey = "#d3d3d3",
+        lightgray = "#d3d3d3",
+        dimgray = "#696969",
+        dimgrey = "#696969",
+        olivedrab = "#6b8e23",
+        olive = "#808000"
+    }
+    local HEX_NAME_STORE = {}
+    for name in pairs(NAME_HEX_STORE) do
+        HEX_NAME_STORE[NAME_HEX_STORE[name]] = name
+    end
+    local NAME_RGBA_STORE = {}
+    local function getDistanceBetween(____, rgb1, rgb2)
+        return (rgb1.r - rgb2.r) ^ 2 + (rgb1.g - rgb2.g) ^ 2 + (rgb1.b - rgb2.b) ^ 2
+    end
+    ColordClass.prototype.toName = function(self, options)
+        if not self.rgba.a and not self.rgba.r and not self.rgba.g and not self.rgba.b then
+            return "transparent"
+        end
+        local exactMatch = HEX_NAME_STORE[self:toHex()]
+        if exactMatch ~= nil then
+            return exactMatch
+        end
+        if options and options.closest then
+            local rgba = self:toRgb()
+            local minDistance = math.huge
+            local closestMatch = "black"
+            if not NAME_RGBA_STORE.length then
+                for name in pairs(NAME_HEX_STORE) do
+                    NAME_RGBA_STORE[name] = __TS__New(ColordClass, NAME_HEX_STORE[name]):toRgb()
+                end
+            end
+            for name in pairs(NAME_HEX_STORE) do
+                local distance = getDistanceBetween(nil, rgba, NAME_RGBA_STORE[name])
+                if distance < minDistance then
+                    minDistance = distance
+                    closestMatch = name
+                end
+            end
+            return closestMatch
+        end
+        return nil
+    end
+    local function parseColorName(____, input)
+        local name = string.lower(input)
+        local hex = name == "transparent" and "#0000" or NAME_HEX_STORE[name]
+        if hex ~= nil then
+            return __TS__New(ColordClass, hex):toRgb()
+        end
+        return nil
+    end
+    local ____parsers_string_2 = parsers.string
+    ____parsers_string_2[#____parsers_string_2 + 1] = {parseColorName, "name"}
+end
+____exports.default = namesPlugin
+return ____exports
+ end,
+["color.Color"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local __TS__New = ____lualib.__TS__New
+local __TS__NumberToString = ____lualib.__TS__NumberToString
+local __TS__StringSubstring = ____lualib.__TS__StringSubstring
+local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
+local __TS__StringStartsWith = ____lualib.__TS__StringStartsWith
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+local ____colord = require("colord.index")
+local colord = ____colord.colord
+local extend = ____colord.extend
+local ____names = require("colord.plugins.names")
+local namesPlugin = ____names.default
+extend(nil, {namesPlugin})
+--- Color utility class
+-- 
+-- @example import { Color } from 'pixi.js';
+-- new Color('red').toArray(); // [1, 0, 0, 1]
+-- new Color(0xff0000).toArray(); // [1, 0, 0, 1]
+-- new Color('ff0000').toArray(); // [1, 0, 0, 1]
+-- new Color('#f00').toArray(); // [1, 0, 0, 1]
+-- new Color([1, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
+-- new Color([1, 1, 1]).toArray(); // [1, 1, 1, 1]
+-- new Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
+-- new Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
+-- new Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
+-- @memberof PIXI
+____exports.Color = __TS__Class()
+local Color = ____exports.Color
+Color.name = "Color"
+function Color.prototype.____constructor(self, value)
+    if value == nil then
+        value = 16777215
+    end
+    self._components = {1, 1, 1, 1}
+    self._value = value
+    self._int = -1
+    self.value = value
+end
+__TS__SetDescriptor(
+    Color.prototype,
+    "red",
+    {get = function(self)
+        return self._components[1]
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Color.prototype,
+    "green",
+    {get = function(self)
+        return self._components[2]
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Color.prototype,
+    "blue",
+    {get = function(self)
+        return self._components[3]
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Color.prototype,
+    "alpha",
+    {get = function(self)
+        return self._components[4]
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Color.prototype,
+    "value",
+    {
+        get = function(self)
+            return self._value
+        end,
+        set = function(self, value)
+            if __TS__InstanceOf(value, ____exports.Color) then
+                self._value = value._value
+                self._int = value._int
+                self._components = __TS__ArraySlice(value._components, 0)
+            elseif self._value ~= value then
+                self:normalize(value)
+                self._value = value
+            end
+        end
+    },
+    true
+)
+function Color.prototype.setValue(self, value)
+    self.value = value
+    return self
+end
+function Color.prototype.toRgba(self)
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b, a = unpack(self._components)
+    return {r = r, g = g, b = b, a = a}
+end
+function Color.prototype.toRgb(self)
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b = unpack(self._components)
+    return {r = r, g = g, b = b}
+end
+function Color.prototype.toRgbaString(self)
+    local r, g, b = unpack(self:toUint8RgbArray())
+    return ((((((("rgba(" .. tostring(r)) .. ",") .. tostring(g)) .. ",") .. tostring(b)) .. ",") .. tostring(self.alpha)) .. ")"
+end
+function Color.prototype.toUint8RgbArray(self, out)
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b = unpack(self._components)
+    out = out or ({})
+    out[1] = math.floor(r * 255 + 0.5)
+    out[2] = math.floor(g * 255 + 0.5)
+    out[3] = math.floor(b * 255 + 0.5)
+    return out
+end
+function Color.prototype.toRgbArray(self, out)
+    out = out or ({})
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b = unpack(self._components)
+    out[1] = r
+    out[2] = g
+    out[3] = b
+    return out
+end
+function Color.prototype.toNumber(self)
+    return self._int
+end
+function Color.prototype.toLittleEndianNumber(self)
+    local value = self._int
+    return bit.arshift(value, 16) + bit.band(value, 65280) + bit.lshift(
+        bit.band(value, 255),
+        16
+    )
+end
+function Color.prototype.multiply(self, value)
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b, a = unpack(____exports.Color.temp:setValue(value)._components)
+    local ____self__components_0, ____1_1 = self._components, 1
+    ____self__components_0[____1_1] = ____self__components_0[____1_1] * r
+    local ____self__components_2, ____2_3 = self._components, 2
+    ____self__components_2[____2_3] = ____self__components_2[____2_3] * g
+    local ____self__components_4, ____3_5 = self._components, 3
+    ____self__components_4[____3_5] = ____self__components_4[____3_5] * b
+    local ____self__components_6, ____4_7 = self._components, 4
+    ____self__components_6[____4_7] = ____self__components_6[____4_7] * a
+    return self
+end
+function Color.prototype.toHex(self)
+    local hexString = __TS__NumberToString(self._int, 16)
+    return "#" .. __TS__StringSubstring("000000", 0, 6 - #hexString) .. hexString
+end
+function Color.prototype.toHexa(self)
+    local alphaValue = math.floor(self._components[4] * 255 + 0.5)
+    local alphaString = __TS__NumberToString(alphaValue, 16)
+    return (self:toHex() .. __TS__StringSubstring("00", 0, 2 - #alphaString)) .. alphaString
+end
+function Color.prototype.setAlpha(self, alpha)
+    self._components[4] = alpha
+    return self
+end
+function Color.prototype.round(self, step)
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b = unpack(self._components)
+    self._components = {
+        math.min(255, r / step * step),
+        math.min(255, g / step * step),
+        math.min(255, b / step * step)
+    }
+    return self
+end
+function Color.prototype.toArray(self, out)
+    out = out or ({})
+    --- Normalized rgba component, floats from 0-1
+    local r, g, b, a = unpack(self._components)
+    out[1] = r
+    out[2] = g
+    out[3] = b
+    out[4] = a
+    return out
+end
+function Color.prototype.normalize(self, value)
+    local components
+    if (__TS__ArrayIsArray(value) or __TS__InstanceOf(value, Float32Array)) and #value >= 3 and #value <= 4 and value:every(function(____, v) return v <= 1 and v >= 0 end) then
+        local r, g, b, a = unpack(value)
+        if a == nil then
+            a = 1
+        end
+        components = {r, g, b, a}
+    elseif (__TS__InstanceOf(value, Uint8Array) or __TS__InstanceOf(value, Uint8ClampedArray)) and value.length >= 3 and value.length <= 4 then
+        local r, g, b, a = unpack(value)
+        if a == nil then
+            a = 255
+        end
+        components = {r / 255, g / 255, b / 255, a / 255}
+    elseif type(value) == "string" or type(value) == "table" then
+        if type(value) == "string" then
+            if __TS__StringStartsWith(value, "#") then
+                value = string.sub(value, 2)
+            end
+            if __TS__StringStartsWith(value, "0x") then
+                value = string.sub(value, 3)
+            end
+            value = "#" .. value
+        end
+        local color = colord(nil, value)
+        if color:isValid() then
+            local ____color_rgba_8 = color.rgba
+            local r = ____color_rgba_8.r
+            local g = ____color_rgba_8.g
+            local b = ____color_rgba_8.b
+            local a = ____color_rgba_8.a
+            components = {r / 255, g / 255, b / 255, a}
+        end
+    elseif type(value) == "number" and value >= 0 and value <= 16777215 then
+        components = {
+            bit.band(
+                bit.arshift(value, 16),
+                255
+            ) / 255,
+            bit.band(
+                bit.arshift(value, 8),
+                255
+            ) / 255,
+            bit.band(value, 255) / 255,
+            1
+        }
+    end
+    if components then
+        local r, g, b = unpack(components)
+        self._components = __TS__ArraySlice(components, 0)
+        self._int = bit.lshift(r * 255, 16) + bit.lshift(g * 255, 8) + bit.bor(b * 255, 0)
+    else
+        error(
+            __TS__New(
+                Error,
+                "Unable to convert color " .. tostring(value)
+            ),
+            0
+        )
+    end
+end
+Color.shared = __TS__New(____exports.Color)
+Color.temp = __TS__New(____exports.Color)
+return ____exports
+ end,
+["color.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("color.Color")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
 ["math.const"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
@@ -3970,25 +6026,5512 @@ do
 end
 return ____exports
  end,
+["constants.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Different types of environments for WebGL.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name ENV
+-- @enum *
+-- @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
+-- with older / less advanced devices. If you experience unexplained flickering prefer this environment.
+-- @property {number} WEBGL - Version 1 of WebGL
+-- @property {number} WEBGL2 - Version 2 of WebGL
+____exports.ENV = ENV or ({})
+____exports.ENV.WEBGL_LEGACY = 0
+____exports.ENV[____exports.ENV.WEBGL_LEGACY] = "WEBGL_LEGACY"
+____exports.ENV.WEBGL = 1
+____exports.ENV[____exports.ENV.WEBGL] = "WEBGL"
+____exports.ENV.WEBGL2 = 2
+____exports.ENV[____exports.ENV.WEBGL2] = "WEBGL2"
+--- Constant to identify the Renderer Type.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name RENDERER_TYPE
+-- @enum *
+-- @property {number} UNKNOWN - Unknown render type.
+-- @property {number} WEBGL - WebGL render type.
+-- @property {number} CANVAS - Canvas render type.
+____exports.RENDERER_TYPE = RENDERER_TYPE or ({})
+____exports.RENDERER_TYPE.UNKNOWN = 0
+____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.UNKNOWN] = "UNKNOWN"
+____exports.RENDERER_TYPE.WEBGL = 1
+____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.WEBGL] = "WEBGL"
+____exports.RENDERER_TYPE.CANVAS = 2
+____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.CANVAS] = "CANVAS"
+--- Bitwise OR of masks that indicate the buffers to be cleared.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name BUFFER_BITS
+-- @enum *
+-- @property {number} COLOR - Indicates the buffers currently enabled for color writing.
+-- @property {number} DEPTH - Indicates the depth buffer.
+-- @property {number} STENCIL - Indicates the stencil buffer.
+____exports.BUFFER_BITS = BUFFER_BITS or ({})
+____exports.BUFFER_BITS.COLOR = 16384
+____exports.BUFFER_BITS[____exports.BUFFER_BITS.COLOR] = "COLOR"
+____exports.BUFFER_BITS.DEPTH = 256
+____exports.BUFFER_BITS[____exports.BUFFER_BITS.DEPTH] = "DEPTH"
+____exports.BUFFER_BITS.STENCIL = 1024
+____exports.BUFFER_BITS[____exports.BUFFER_BITS.STENCIL] = "STENCIL"
+--- Various blend modes supported by PIXI.
+-- 
+-- IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+-- Anything else will silently act like NORMAL.
+-- 
+-- @memberof PIXI
+-- @name BLEND_MODES
+-- @enum *
+-- @property {number} NORMAL -
+-- @property {number} ADD -
+-- @property {number} MULTIPLY -
+-- @property {number} SCREEN -
+-- @property {number} OVERLAY -
+-- @property {number} DARKEN -
+-- @property {number} LIGHTEN -
+-- @property {number} COLOR_DODGE -
+-- @property {number} COLOR_BURN -
+-- @property {number} HARD_LIGHT -
+-- @property {number} SOFT_LIGHT -
+-- @property {number} DIFFERENCE -
+-- @property {number} EXCLUSION -
+-- @property {number} HUE -
+-- @property {number} SATURATION -
+-- @property {number} COLOR -
+-- @property {number} LUMINOSITY -
+-- @property {number} NORMAL_NPM -
+-- @property {number} ADD_NPM -
+-- @property {number} SCREEN_NPM -
+-- @property {number} NONE -
+-- @property {number} SRC_IN -
+-- @property {number} SRC_OUT -
+-- @property {number} SRC_ATOP -
+-- @property {number} DST_OVER -
+-- @property {number} DST_IN -
+-- @property {number} DST_OUT -
+-- @property {number} DST_ATOP -
+-- @property {number} SUBTRACT -
+-- @property {number} SRC_OVER -
+-- @property {number} ERASE -
+-- @property {number} XOR -
+____exports.BLEND_MODES = BLEND_MODES or ({})
+____exports.BLEND_MODES.NORMAL = 0
+____exports.BLEND_MODES[____exports.BLEND_MODES.NORMAL] = "NORMAL"
+____exports.BLEND_MODES.ADD = 1
+____exports.BLEND_MODES[____exports.BLEND_MODES.ADD] = "ADD"
+____exports.BLEND_MODES.MULTIPLY = 2
+____exports.BLEND_MODES[____exports.BLEND_MODES.MULTIPLY] = "MULTIPLY"
+____exports.BLEND_MODES.SCREEN = 3
+____exports.BLEND_MODES[____exports.BLEND_MODES.SCREEN] = "SCREEN"
+____exports.BLEND_MODES.OVERLAY = 4
+____exports.BLEND_MODES[____exports.BLEND_MODES.OVERLAY] = "OVERLAY"
+____exports.BLEND_MODES.DARKEN = 5
+____exports.BLEND_MODES[____exports.BLEND_MODES.DARKEN] = "DARKEN"
+____exports.BLEND_MODES.LIGHTEN = 6
+____exports.BLEND_MODES[____exports.BLEND_MODES.LIGHTEN] = "LIGHTEN"
+____exports.BLEND_MODES.COLOR_DODGE = 7
+____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR_DODGE] = "COLOR_DODGE"
+____exports.BLEND_MODES.COLOR_BURN = 8
+____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR_BURN] = "COLOR_BURN"
+____exports.BLEND_MODES.HARD_LIGHT = 9
+____exports.BLEND_MODES[____exports.BLEND_MODES.HARD_LIGHT] = "HARD_LIGHT"
+____exports.BLEND_MODES.SOFT_LIGHT = 10
+____exports.BLEND_MODES[____exports.BLEND_MODES.SOFT_LIGHT] = "SOFT_LIGHT"
+____exports.BLEND_MODES.DIFFERENCE = 11
+____exports.BLEND_MODES[____exports.BLEND_MODES.DIFFERENCE] = "DIFFERENCE"
+____exports.BLEND_MODES.EXCLUSION = 12
+____exports.BLEND_MODES[____exports.BLEND_MODES.EXCLUSION] = "EXCLUSION"
+____exports.BLEND_MODES.HUE = 13
+____exports.BLEND_MODES[____exports.BLEND_MODES.HUE] = "HUE"
+____exports.BLEND_MODES.SATURATION = 14
+____exports.BLEND_MODES[____exports.BLEND_MODES.SATURATION] = "SATURATION"
+____exports.BLEND_MODES.COLOR = 15
+____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR] = "COLOR"
+____exports.BLEND_MODES.LUMINOSITY = 16
+____exports.BLEND_MODES[____exports.BLEND_MODES.LUMINOSITY] = "LUMINOSITY"
+____exports.BLEND_MODES.NORMAL_NPM = 17
+____exports.BLEND_MODES[____exports.BLEND_MODES.NORMAL_NPM] = "NORMAL_NPM"
+____exports.BLEND_MODES.ADD_NPM = 18
+____exports.BLEND_MODES[____exports.BLEND_MODES.ADD_NPM] = "ADD_NPM"
+____exports.BLEND_MODES.SCREEN_NPM = 19
+____exports.BLEND_MODES[____exports.BLEND_MODES.SCREEN_NPM] = "SCREEN_NPM"
+____exports.BLEND_MODES.NONE = 20
+____exports.BLEND_MODES[____exports.BLEND_MODES.NONE] = "NONE"
+____exports.BLEND_MODES.SRC_OVER = 0
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_OVER] = "SRC_OVER"
+____exports.BLEND_MODES.SRC_IN = 21
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_IN] = "SRC_IN"
+____exports.BLEND_MODES.SRC_OUT = 22
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_OUT] = "SRC_OUT"
+____exports.BLEND_MODES.SRC_ATOP = 23
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_ATOP] = "SRC_ATOP"
+____exports.BLEND_MODES.DST_OVER = 24
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_OVER] = "DST_OVER"
+____exports.BLEND_MODES.DST_IN = 25
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_IN] = "DST_IN"
+____exports.BLEND_MODES.DST_OUT = 26
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_OUT] = "DST_OUT"
+____exports.BLEND_MODES.DST_ATOP = 27
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_ATOP] = "DST_ATOP"
+____exports.BLEND_MODES.ERASE = 26
+____exports.BLEND_MODES[____exports.BLEND_MODES.ERASE] = "ERASE"
+____exports.BLEND_MODES.SUBTRACT = 28
+____exports.BLEND_MODES[____exports.BLEND_MODES.SUBTRACT] = "SUBTRACT"
+____exports.BLEND_MODES.XOR = 29
+____exports.BLEND_MODES[____exports.BLEND_MODES.XOR] = "XOR"
+--- Various webgl draw modes. These can be used to specify which GL drawMode to use
+-- under certain situations and renderers.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name DRAW_MODES
+-- @enum *
+-- @property {number} POINTS -
+-- @property {number} LINES -
+-- @property {number} LINE_LOOP -
+-- @property {number} LINE_STRIP -
+-- @property {number} TRIANGLES -
+-- @property {number} TRIANGLE_STRIP -
+-- @property {number} TRIANGLE_FAN -
+____exports.DRAW_MODES = DRAW_MODES or ({})
+____exports.DRAW_MODES.POINTS = 0
+____exports.DRAW_MODES[____exports.DRAW_MODES.POINTS] = "POINTS"
+____exports.DRAW_MODES.LINES = 1
+____exports.DRAW_MODES[____exports.DRAW_MODES.LINES] = "LINES"
+____exports.DRAW_MODES.LINE_LOOP = 2
+____exports.DRAW_MODES[____exports.DRAW_MODES.LINE_LOOP] = "LINE_LOOP"
+____exports.DRAW_MODES.LINE_STRIP = 3
+____exports.DRAW_MODES[____exports.DRAW_MODES.LINE_STRIP] = "LINE_STRIP"
+____exports.DRAW_MODES.TRIANGLES = 4
+____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLES] = "TRIANGLES"
+____exports.DRAW_MODES.TRIANGLE_STRIP = 5
+____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLE_STRIP] = "TRIANGLE_STRIP"
+____exports.DRAW_MODES.TRIANGLE_FAN = 6
+____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLE_FAN] = "TRIANGLE_FAN"
+--- Various GL texture/resources formats.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name FORMATS
+-- @enum *
+-- @property {number} [RGBA=6408] -
+-- @property {number} [RGB=6407] -
+-- @property {number} [RG=33319] -
+-- @property {number} [RED=6403] -
+-- @property {number} [RGBA_INTEGER=36249] -
+-- @property {number} [RGB_INTEGER=36248] -
+-- @property {number} [RG_INTEGER=33320] -
+-- @property {number} [RED_INTEGER=36244] -
+-- @property {number} [ALPHA=6406] -
+-- @property {number} [LUMINANCE=6409] -
+-- @property {number} [LUMINANCE_ALPHA=6410] -
+-- @property {number} [DEPTH_COMPONENT=6402] -
+-- @property {number} [DEPTH_STENCIL=34041] -
+____exports.FORMATS = FORMATS or ({})
+____exports.FORMATS.RGBA = 6408
+____exports.FORMATS[____exports.FORMATS.RGBA] = "RGBA"
+____exports.FORMATS.RGB = 6407
+____exports.FORMATS[____exports.FORMATS.RGB] = "RGB"
+____exports.FORMATS.RG = 33319
+____exports.FORMATS[____exports.FORMATS.RG] = "RG"
+____exports.FORMATS.RED = 6403
+____exports.FORMATS[____exports.FORMATS.RED] = "RED"
+____exports.FORMATS.RGBA_INTEGER = 36249
+____exports.FORMATS[____exports.FORMATS.RGBA_INTEGER] = "RGBA_INTEGER"
+____exports.FORMATS.RGB_INTEGER = 36248
+____exports.FORMATS[____exports.FORMATS.RGB_INTEGER] = "RGB_INTEGER"
+____exports.FORMATS.RG_INTEGER = 33320
+____exports.FORMATS[____exports.FORMATS.RG_INTEGER] = "RG_INTEGER"
+____exports.FORMATS.RED_INTEGER = 36244
+____exports.FORMATS[____exports.FORMATS.RED_INTEGER] = "RED_INTEGER"
+____exports.FORMATS.ALPHA = 6406
+____exports.FORMATS[____exports.FORMATS.ALPHA] = "ALPHA"
+____exports.FORMATS.LUMINANCE = 6409
+____exports.FORMATS[____exports.FORMATS.LUMINANCE] = "LUMINANCE"
+____exports.FORMATS.LUMINANCE_ALPHA = 6410
+____exports.FORMATS[____exports.FORMATS.LUMINANCE_ALPHA] = "LUMINANCE_ALPHA"
+____exports.FORMATS.DEPTH_COMPONENT = 6402
+____exports.FORMATS[____exports.FORMATS.DEPTH_COMPONENT] = "DEPTH_COMPONENT"
+____exports.FORMATS.DEPTH_STENCIL = 34041
+____exports.FORMATS[____exports.FORMATS.DEPTH_STENCIL] = "DEPTH_STENCIL"
+--- Various GL target types.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name TARGETS
+-- @enum *
+-- @property {number} [TEXTURE_2D=3553] -
+-- @property {number} [TEXTURE_CUBE_MAP=34067] -
+-- @property {number} [TEXTURE_2D_ARRAY=35866] -
+-- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_X=34069] -
+-- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_X=34070] -
+-- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Y=34071] -
+-- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Y=34072] -
+-- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Z=34073] -
+-- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Z=34074] -
+____exports.TARGETS = TARGETS or ({})
+____exports.TARGETS.TEXTURE_2D = 3553
+____exports.TARGETS[____exports.TARGETS.TEXTURE_2D] = "TEXTURE_2D"
+____exports.TARGETS.TEXTURE_CUBE_MAP = 34067
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP] = "TEXTURE_CUBE_MAP"
+____exports.TARGETS.TEXTURE_2D_ARRAY = 35866
+____exports.TARGETS[____exports.TARGETS.TEXTURE_2D_ARRAY] = "TEXTURE_2D_ARRAY"
+____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X = 34069
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X] = "TEXTURE_CUBE_MAP_POSITIVE_X"
+____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_X = 34070
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_X] = "TEXTURE_CUBE_MAP_NEGATIVE_X"
+____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Y = 34071
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Y] = "TEXTURE_CUBE_MAP_POSITIVE_Y"
+____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Y = 34072
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Y] = "TEXTURE_CUBE_MAP_NEGATIVE_Y"
+____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Z = 34073
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Z] = "TEXTURE_CUBE_MAP_POSITIVE_Z"
+____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Z] = "TEXTURE_CUBE_MAP_NEGATIVE_Z"
+--- Various GL data format types.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name TYPES
+-- @enum *
+-- @property {number} [UNSIGNED_BYTE=5121] -
+-- @property {number} [UNSIGNED_SHORT=5123] -
+-- @property {number} [UNSIGNED_SHORT_5_6_5=33635] -
+-- @property {number} [UNSIGNED_SHORT_4_4_4_4=32819] -
+-- @property {number} [UNSIGNED_SHORT_5_5_5_1=32820] -
+-- @property {number} [UNSIGNED_INT=5125] -
+-- @property {number} [UNSIGNED_INT_10F_11F_11F_REV=35899] -
+-- @property {number} [UNSIGNED_INT_2_10_10_10_REV=33640] -
+-- @property {number} [UNSIGNED_INT_24_8=34042] -
+-- @property {number} [UNSIGNED_INT_5_9_9_9_REV=35902] -
+-- @property {number} [BYTE=5120] -
+-- @property {number} [SHORT=5122] -
+-- @property {number} [INT=5124] -
+-- @property {number} [FLOAT=5126] -
+-- @property {number} [FLOAT_32_UNSIGNED_INT_24_8_REV=36269] -
+-- @property {number} [HALF_FLOAT=36193] -
+____exports.TYPES = TYPES or ({})
+____exports.TYPES.UNSIGNED_BYTE = 5121
+____exports.TYPES[____exports.TYPES.UNSIGNED_BYTE] = "UNSIGNED_BYTE"
+____exports.TYPES.UNSIGNED_SHORT = 5123
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT] = "UNSIGNED_SHORT"
+____exports.TYPES.UNSIGNED_SHORT_5_6_5 = 33635
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_5_6_5] = "UNSIGNED_SHORT_5_6_5"
+____exports.TYPES.UNSIGNED_SHORT_4_4_4_4 = 32819
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_4_4_4_4] = "UNSIGNED_SHORT_4_4_4_4"
+____exports.TYPES.UNSIGNED_SHORT_5_5_5_1 = 32820
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_5_5_5_1] = "UNSIGNED_SHORT_5_5_5_1"
+____exports.TYPES.UNSIGNED_INT = 5125
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT] = "UNSIGNED_INT"
+____exports.TYPES.UNSIGNED_INT_10F_11F_11F_REV = 35899
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_10F_11F_11F_REV] = "UNSIGNED_INT_10F_11F_11F_REV"
+____exports.TYPES.UNSIGNED_INT_2_10_10_10_REV = 33640
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_2_10_10_10_REV] = "UNSIGNED_INT_2_10_10_10_REV"
+____exports.TYPES.UNSIGNED_INT_24_8 = 34042
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_24_8] = "UNSIGNED_INT_24_8"
+____exports.TYPES.UNSIGNED_INT_5_9_9_9_REV = 35902
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_5_9_9_9_REV] = "UNSIGNED_INT_5_9_9_9_REV"
+____exports.TYPES.BYTE = 5120
+____exports.TYPES[____exports.TYPES.BYTE] = "BYTE"
+____exports.TYPES.SHORT = 5122
+____exports.TYPES[____exports.TYPES.SHORT] = "SHORT"
+____exports.TYPES.INT = 5124
+____exports.TYPES[____exports.TYPES.INT] = "INT"
+____exports.TYPES.FLOAT = 5126
+____exports.TYPES[____exports.TYPES.FLOAT] = "FLOAT"
+____exports.TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV = 36269
+____exports.TYPES[____exports.TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV] = "FLOAT_32_UNSIGNED_INT_24_8_REV"
+____exports.TYPES.HALF_FLOAT = 36193
+____exports.TYPES[____exports.TYPES.HALF_FLOAT] = "HALF_FLOAT"
+--- Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
+-- WebGL1 works only with FLOAT.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name SAMPLER_TYPES
+-- @enum *
+-- @property {number} [FLOAT=0] -
+-- @property {number} [INT=1] -
+-- @property {number} [UINT=2] -
+____exports.SAMPLER_TYPES = SAMPLER_TYPES or ({})
+____exports.SAMPLER_TYPES.FLOAT = 0
+____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.FLOAT] = "FLOAT"
+____exports.SAMPLER_TYPES.INT = 1
+____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.INT] = "INT"
+____exports.SAMPLER_TYPES.UINT = 2
+____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.UINT] = "UINT"
+--- The scale modes that are supported by pixi.
+-- 
+-- The {@link PIXI.BaseTexture.defaultOptions.scaleMode } scale mode affects the default scaling mode of future operations.
+-- It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name SCALE_MODES
+-- @enum *
+-- @property {number} LINEAR Smooth scaling
+-- @property {number} NEAREST Pixelating scaling
+____exports.SCALE_MODES = SCALE_MODES or ({})
+____exports.SCALE_MODES.NEAREST = 0
+____exports.SCALE_MODES[____exports.SCALE_MODES.NEAREST] = "NEAREST"
+____exports.SCALE_MODES.LINEAR = 1
+____exports.SCALE_MODES[____exports.SCALE_MODES.LINEAR] = "LINEAR"
+--- The wrap modes that are supported by pixi.
+-- 
+-- The wrap mode affects the default wrapping mode of future operations.
+-- It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
+-- If the texture is non power of two then clamp will be used regardless as WebGL can
+-- only use REPEAT if the texture is po2.
+-- 
+-- This property only affects WebGL.
+-- 
+-- @name WRAP_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} CLAMP - The textures uvs are clamped
+-- @property {number} REPEAT - The texture uvs tile and repeat
+-- @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
+____exports.WRAP_MODES = WRAP_MODES or ({})
+____exports.WRAP_MODES.CLAMP = 33071
+____exports.WRAP_MODES[____exports.WRAP_MODES.CLAMP] = "CLAMP"
+____exports.WRAP_MODES.REPEAT = 10497
+____exports.WRAP_MODES[____exports.WRAP_MODES.REPEAT] = "REPEAT"
+____exports.WRAP_MODES.MIRRORED_REPEAT = 33648
+____exports.WRAP_MODES[____exports.WRAP_MODES.MIRRORED_REPEAT] = "MIRRORED_REPEAT"
+--- Mipmap filtering modes that are supported by pixi.
+-- 
+-- The {@link PIXI.BaseTexture.defaultOptions.mipmap } affects default texture filtering.
+-- Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
+-- or its `POW2` and texture dimensions are powers of 2.
+-- Since WebGL 1 don't support mipmap for non-power-of-two textures,
+-- `ON` option will work like `POW2` for WebGL 1.
+-- 
+-- This property only affects WebGL.
+-- 
+-- @name MIPMAP_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} OFF - No mipmaps.
+-- @property {number} POW2 - Generate mipmaps if texture dimensions are powers of 2.
+-- @property {number} ON - Always generate mipmaps.
+-- @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them;
+-- this is used with a resource that supports buffering each level-of-detail.
+____exports.MIPMAP_MODES = MIPMAP_MODES or ({})
+____exports.MIPMAP_MODES.OFF = 0
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.OFF] = "OFF"
+____exports.MIPMAP_MODES.POW2 = 1
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.POW2] = "POW2"
+____exports.MIPMAP_MODES.ON = 2
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.ON] = "ON"
+____exports.MIPMAP_MODES.ON_MANUAL = 3
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.ON_MANUAL] = "ON_MANUAL"
+--- How to treat textures with premultiplied alpha
+-- 
+-- @name ALPHA_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
+-- Option for compressed and data textures that are created from typed arrays.
+-- @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
+-- Default option, used for all loaded images.
+-- @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
+-- Example: spine atlases with `_pma` suffix.
+-- @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
+-- @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
+-- @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
+____exports.ALPHA_MODES = ALPHA_MODES or ({})
+____exports.ALPHA_MODES.NPM = 0
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.NPM] = "NPM"
+____exports.ALPHA_MODES.UNPACK = 1
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.UNPACK] = "UNPACK"
+____exports.ALPHA_MODES.PMA = 2
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.PMA] = "PMA"
+____exports.ALPHA_MODES.NO_PREMULTIPLIED_ALPHA = 0
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.NO_PREMULTIPLIED_ALPHA] = "NO_PREMULTIPLIED_ALPHA"
+____exports.ALPHA_MODES.PREMULTIPLY_ON_UPLOAD = 1
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLY_ON_UPLOAD] = "PREMULTIPLY_ON_UPLOAD"
+____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA = 2
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA] = "PREMULTIPLIED_ALPHA"
+--- Configure whether filter textures are cleared after binding.
+-- 
+-- Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
+-- this and skip clearing as an optimization.
+-- 
+-- @name CLEAR_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} BLEND - Do not clear the filter texture. The filter's output will blend on top of the output texture.
+-- @property {number} CLEAR - Always clear the filter texture.
+-- @property {number} BLIT - Clear only if {@link FilterSystem.forceClear } is set or if the filter uses pixel blending.
+-- @property {number} NO - Alias for BLEND, same as `false` in earlier versions
+-- @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
+-- @property {number} AUTO - Alias for BLIT
+____exports.CLEAR_MODES = CLEAR_MODES or ({})
+____exports.CLEAR_MODES.NO = 0
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.NO] = "NO"
+____exports.CLEAR_MODES.YES = 1
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.YES] = "YES"
+____exports.CLEAR_MODES.AUTO = 2
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.AUTO] = "AUTO"
+____exports.CLEAR_MODES.BLEND = 0
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLEND] = "BLEND"
+____exports.CLEAR_MODES.CLEAR = 1
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.CLEAR] = "CLEAR"
+____exports.CLEAR_MODES.BLIT = 2
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLIT] = "BLIT"
+--- The gc modes that are supported by pixi.
+-- 
+-- The {@link PIXI.TextureGCSystem.defaultMode } Garbage Collection mode for PixiJS textures is AUTO
+-- If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
+-- used for a specified period of time they will be removed from the GPU. They will of course
+-- be uploaded again when they are required. This is a silent behind the scenes process that
+-- should ensure that the GPU does not  get filled up.
+-- 
+-- Handy for mobile devices!
+-- This property only affects WebGL.
+-- 
+-- @name GC_MODES
+-- @enum *
+-- @static
+-- @memberof PIXI
+-- @property {number} AUTO - Garbage collection will happen periodically automatically
+-- @property {number} MANUAL - Garbage collection will need to be called manually
+____exports.GC_MODES = GC_MODES or ({})
+____exports.GC_MODES.AUTO = 0
+____exports.GC_MODES[____exports.GC_MODES.AUTO] = "AUTO"
+____exports.GC_MODES.MANUAL = 1
+____exports.GC_MODES[____exports.GC_MODES.MANUAL] = "MANUAL"
+--- Constants that specify float precision in shaders.
+-- 
+-- @name PRECISION
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {string} [LOW='lowp'] -
+-- @property {string} [MEDIUM='mediump'] -
+-- @property {string} [HIGH='highp'] -
+____exports.PRECISION = PRECISION or ({})
+____exports.PRECISION.LOW = "lowp"
+____exports.PRECISION.MEDIUM = "mediump"
+____exports.PRECISION.HIGH = "highp"
+--- Constants for mask implementations.
+-- We use `type` suffix because it leads to very different behaviours
+-- 
+-- @name MASK_TYPES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} NONE - Mask is ignored
+-- @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
+-- @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
+-- @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
+-- @property {number} COLOR - Color mask (RGBA)
+____exports.MASK_TYPES = MASK_TYPES or ({})
+____exports.MASK_TYPES.NONE = 0
+____exports.MASK_TYPES[____exports.MASK_TYPES.NONE] = "NONE"
+____exports.MASK_TYPES.SCISSOR = 1
+____exports.MASK_TYPES[____exports.MASK_TYPES.SCISSOR] = "SCISSOR"
+____exports.MASK_TYPES.STENCIL = 2
+____exports.MASK_TYPES[____exports.MASK_TYPES.STENCIL] = "STENCIL"
+____exports.MASK_TYPES.SPRITE = 3
+____exports.MASK_TYPES[____exports.MASK_TYPES.SPRITE] = "SPRITE"
+____exports.MASK_TYPES.COLOR = 4
+____exports.MASK_TYPES[____exports.MASK_TYPES.COLOR] = "COLOR"
+--- Bitwise OR of masks that indicate the color channels that are rendered to.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name COLOR_MASK_BITS
+-- @enum *
+-- @property {number} RED - Red channel.
+-- @property {number} GREEN - Green channel
+-- @property {number} BLUE - Blue channel.
+-- @property {number} ALPHA - Alpha channel.
+____exports.COLOR_MASK_BITS = COLOR_MASK_BITS or ({})
+____exports.COLOR_MASK_BITS.RED = 1
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.RED] = "RED"
+____exports.COLOR_MASK_BITS.GREEN = 2
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.GREEN] = "GREEN"
+____exports.COLOR_MASK_BITS.BLUE = 4
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.BLUE] = "BLUE"
+____exports.COLOR_MASK_BITS.ALPHA = 8
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.ALPHA] = "ALPHA"
+--- Constants for multi-sampling antialiasing.
+-- 
+-- @see PIXI.Framebuffer#multisample *
+-- @name MSAA_QUALITY
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} NONE - No multisampling for this renderTexture
+-- @property {number} LOW - Try 2 samples
+-- @property {number} MEDIUM - Try 4 samples
+-- @property {number} HIGH - Try 8 samples
+____exports.MSAA_QUALITY = MSAA_QUALITY or ({})
+____exports.MSAA_QUALITY.NONE = 0
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.NONE] = "NONE"
+____exports.MSAA_QUALITY.LOW = 2
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.LOW] = "LOW"
+____exports.MSAA_QUALITY.MEDIUM = 4
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.MEDIUM] = "MEDIUM"
+____exports.MSAA_QUALITY.HIGH = 8
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.HIGH] = "HIGH"
+--- Constants for various buffer types in Pixi
+-- 
+-- @see PIXI.BUFFER_TYPE *
+-- @name BUFFER_TYPE
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} ELEMENT_ARRAY_BUFFER - buffer type for using as an index buffer
+-- @property {number} ARRAY_BUFFER - buffer type for using attribute data
+-- @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
+____exports.BUFFER_TYPE = BUFFER_TYPE or ({})
+____exports.BUFFER_TYPE.ELEMENT_ARRAY_BUFFER = 34963
+____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.ELEMENT_ARRAY_BUFFER] = "ELEMENT_ARRAY_BUFFER"
+____exports.BUFFER_TYPE.ARRAY_BUFFER = 34962
+____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.ARRAY_BUFFER] = "ARRAY_BUFFER"
+____exports.BUFFER_TYPE.UNIFORM_BUFFER = 35345
+____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.UNIFORM_BUFFER] = "UNIFORM_BUFFER"
+return ____exports
+ end,
+["runner.Runner"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local ____exports = {}
+--- A Runner is a highly performant and simple alternative to signals. Best used in situations
+-- where events are dispatched to many objects at high frequency (say every frame!)
+-- 
+-- Like a signal:
+-- 
+-- ```js
+-- import { Runner } from '@pixi/runner';
+-- 
+-- const myObject = {
+--     loaded: new Runner('loaded'),
+-- };
+-- 
+-- const listener = {
+--     loaded: function() {
+--         // Do something when loaded
+--     }
+-- };
+-- 
+-- myObject.loaded.add(listener);
+-- 
+-- myObject.loaded.emit();
+-- ```
+-- 
+-- Or for handling calling the same function on many items:
+-- 
+-- ```js
+-- import { Runner } from '@pixi/runner';
+-- 
+-- const myGame = {
+--     update: new Runner('update'),
+-- };
+-- 
+-- const gameObject = {
+--     update: function(time) {
+--         // Update my gamey state
+--     },
+-- };
+-- 
+-- myGame.update.add(gameObject);
+-- 
+-- myGame.update.emit(time);
+-- ```
+-- 
+-- @memberof PIXI
+____exports.Runner = __TS__Class()
+local Runner = ____exports.Runner
+Runner.name = "Runner"
+function Runner.prototype.____constructor(self, name)
+    self.dispatch = ____exports.Runner.prototype.emit
+    self.run = ____exports.Runner.prototype.emit
+    self.items = {}
+    self._name = name
+    self._aliasCount = 0
+end
+__TS__SetDescriptor(
+    Runner.prototype,
+    "empty",
+    {get = function(self)
+        return #self.items == 0
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Runner.prototype,
+    "name",
+    {get = function(self)
+        return self._name
+    end},
+    true
+)
+function Runner.prototype.emit(self, ...)
+    local name = self.name
+    local items = self.items
+    self._aliasCount = self._aliasCount + 1
+    do
+        local i = 0
+        local len = #items
+        while i < len do
+            local ____self_0 = items[i + 1]
+            ____self_0[name](____self_0, ...)
+            i = i + 1
+        end
+    end
+    if items == self.items then
+        self._aliasCount = self._aliasCount - 1
+    end
+    return self
+end
+function Runner.prototype.ensureNonAliasedItems(self)
+    if self._aliasCount > 0 and #self.items > 1 then
+        self._aliasCount = 0
+        self.items = __TS__ArraySlice(self.items, 0)
+    end
+end
+function Runner.prototype.add(self, item)
+    if item[self._name] then
+        self:ensureNonAliasedItems()
+        self:remove(item)
+        local ____self_items_1 = self.items
+        ____self_items_1[#____self_items_1 + 1] = item
+    end
+    return self
+end
+function Runner.prototype.remove(self, item)
+    local index = __TS__ArrayIndexOf(self.items, item)
+    if index ~= -1 then
+        self:ensureNonAliasedItems()
+        __TS__ArraySplice(self.items, index, 1)
+    end
+    return self
+end
+function Runner.prototype.contains(self, item)
+    return __TS__ArrayIncludes(self.items, item)
+end
+function Runner.prototype.removeAll(self)
+    self:ensureNonAliasedItems()
+    __TS__ArraySetLength(self.items, 0)
+    return self
+end
+function Runner.prototype.destroy(self)
+    self:removeAll()
+    self.items = nil
+    self._name = nil
+end
+return ____exports
+ end,
+["runner.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("runner.Runner")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
+["context2d.Context2D"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+local cairo = require("kui.cairo.cairo")
+local ____color = require("color.index")
+local Color = ____color.Color
+____exports.Context2D = __TS__Class()
+local Context2D = ____exports.Context2D
+Context2D.name = "Context2D"
+function Context2D.prototype.____constructor(self, width, height)
+    self.width = width
+    self.height = height
+    self.surface = cairo.image_surface("argb32", width, height)
+    self.context = self.surface:context()
+    self._globalCompositeOperation = "source-over"
+    self._globalAlpha = 1
+    self._fillColor = __TS__New(Color, 0)
+    self._strokeColor = __TS__New(Color, 0)
+end
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "globalCompositeOperation",
+    {
+        get = function(self)
+            return self._globalCompositeOperation
+        end,
+        set = function(self, value)
+            self._globalCompositeOperation = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "globalAlpha",
+    {
+        get = function(self)
+            return self._globalAlpha
+        end,
+        set = function(self, value)
+            self._globalAlpha = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "fillStyle",
+    {
+        get = function(self)
+            return self._fillColor
+        end,
+        set = function(self, color)
+            self._fillColor = __TS__New(Color, color)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "strokeStyle",
+    {
+        get = function(self)
+            return self._strokeColor
+        end,
+        set = function(self, color)
+            self._strokeColor = __TS__New(Color, color)
+        end
+    },
+    true
+)
+function Context2D.prototype._fill(self)
+    self.context:rgba(self._fillColor.red, self._fillColor.green, self._fillColor.blue, self._fillColor.alpha * self._globalAlpha)
+    self.context:fill()
+end
+function Context2D.prototype._stroke(self)
+    self.context:rgba(self._strokeColor.red, self._strokeColor.green, self._strokeColor.blue, self._strokeColor.alpha * self._globalAlpha)
+    self.context:stroke()
+end
+function Context2D.prototype.save(self)
+    self.context:save()
+end
+function Context2D.prototype.restore(self)
+    self.context:restore()
+end
+function Context2D.prototype.fillRect(self, x, y, width, height)
+    self.context:rectangle(x, y, width, height)
+    self:_fill()
+end
+function Context2D.prototype.strokeRect(self, x, y, width, height)
+    self.context:rectangle(x, y, width, height)
+    self:_stroke()
+end
+function Context2D.prototype.scale(self, x, y)
+    self.context:scale(x, y)
+end
+function Context2D.prototype.translate(self, x, y)
+    self.context:translate(x, y)
+end
+function Context2D.prototype.rotate(self, rads)
+    self.context:rotate(rads)
+end
+function Context2D.prototype.transform(self, a, b, c, d, e, f)
+    self.context:transform(cairo.matrix(
+        a,
+        b,
+        c,
+        d,
+        e,
+        f
+    ))
+end
+function Context2D.prototype.setTransform(self, a, b, c, d, e, f)
+    self.context:set_matrix(cairo.matrix(
+        a,
+        b,
+        c,
+        d,
+        e,
+        f
+    ))
+end
+function Context2D.prototype.getTransform(self)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+____exports.Canvas = __TS__Class()
+local Canvas = ____exports.Canvas
+Canvas.name = "Canvas"
+function Canvas.prototype.____constructor(self, width, height)
+    self.context = __TS__New(____exports.Context2D, width, height)
+end
+__TS__SetDescriptor(
+    Canvas.prototype,
+    "width",
+    {
+        get = function(self)
+            return self.context.width
+        end,
+        set = function(self, value)
+            self.context.width = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Canvas.prototype,
+    "height",
+    {
+        get = function(self)
+            return self.context.height
+        end,
+        set = function(self, value)
+            self.context.height = value
+        end
+    },
+    true
+)
+function Canvas.prototype.getContext(self, _name)
+    return self.context
+end
+return ____exports
+ end,
+["context2d.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("context2d.Context2D")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
+["settings"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____context2d = require("context2d.index")
+local Canvas = ____context2d.Canvas
+____exports.settings = {
+    RENDER_OPTIONS = {
+        view = nil,
+        width = 800,
+        height = 600,
+        autoDensity = false,
+        backgroundColor = 0,
+        backgroundAlpha = 1,
+        clearBeforeRender = true,
+        antialias = false,
+        premultipliedAlpha = true,
+        preserveDrawingBuffer = false,
+        hello = false
+    },
+    ADAPTER = {createCanvas = function(____, width, height)
+        return __TS__New(Canvas, width, height)
+    end}
+}
+____exports.default = ____exports.settings
+return ____exports
+ end,
+["eventemitter3.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__Delete = ____lualib.__TS__Delete
+local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
+local ____exports = {}
+--- Representation of a single event listener.
+local EE = __TS__Class()
+EE.name = "EE"
+function EE.prototype.____constructor(self, fn, context, once)
+    self.fn = fn
+    self.context = context
+    self.once = once or false
+end
+--- Add a listener for a given event.
+local function addListener(self, emitter, event, fn, context, once)
+    if type(fn) ~= "function" then
+        error(
+            __TS__New(TypeError, "The listener must be a function"),
+            0
+        )
+    end
+    local listener = __TS__New(EE, fn, context or emitter, once)
+    if not emitter._events[event] then
+        emitter._events[event] = {listener}
+        emitter._eventsCount = emitter._eventsCount + 1
+    else
+        local ____emitter__events_event_0 = emitter._events[event]
+        ____emitter__events_event_0[#____emitter__events_event_0 + 1] = listener
+    end
+    return emitter
+end
+--- Clear event by name.
+local function clearEvent(self, emitter, event)
+    local ____emitter_1, ____eventsCount_2 = emitter, "_eventsCount"
+    local ____emitter__eventsCount_3 = ____emitter_1[____eventsCount_2] - 1
+    ____emitter_1[____eventsCount_2] = ____emitter__eventsCount_3
+    if ____emitter__eventsCount_3 == 0 then
+        emitter._events = {}
+    else
+        __TS__Delete(emitter._events, event)
+    end
+end
+--- Minimal `EventEmitter` interface that is molded against the Node.js
+-- `EventEmitter` interface.
+-- 
+-- @constructor
+-- @public
+____exports.EventEmitter = __TS__Class()
+local EventEmitter = ____exports.EventEmitter
+EventEmitter.name = "EventEmitter"
+function EventEmitter.prototype.____constructor(self)
+    self.off = self.removeListener
+    self.addListener = self.on
+    self._events = {}
+    self._eventsCount = 0
+end
+function EventEmitter.prototype.eventNames(self)
+    if self._eventsCount == 0 then
+        return {}
+    end
+    return __TS__ObjectKeys(self._events)
+end
+function EventEmitter.prototype.listeners(self, event)
+    local handlers = self._events[event]
+    if not handlers then
+        return {}
+    end
+    local i = 0
+    local l = handlers.length
+    local ee = __TS__New(Array, l)
+    do
+        while i < l do
+            ee[i + 1] = handlers[i].fn
+            i = i + 1
+        end
+    end
+    return ee
+end
+function EventEmitter.prototype.listenerCount(self, event)
+    local listeners = self._events[event]
+    if not listeners then
+        return 0
+    end
+    return listeners.length
+end
+function EventEmitter.prototype.emit(self, event, ...)
+    if not self._events[event] then
+        return false
+    end
+    local listeners = self._events[event]
+    do
+        local i = 0
+        while i < listeners.length do
+            if listeners[i].once then
+                self:removeListener(event, listeners[i].fn, nil, true)
+            end
+            listeners[i].fn(listeners[i].context, ...)
+            i = i + 1
+        end
+    end
+    return true
+end
+function EventEmitter.prototype.on(self, event, fn, context)
+    return addListener(
+        nil,
+        self,
+        event,
+        fn,
+        context,
+        false
+    )
+end
+function EventEmitter.prototype.once(self, event, fn, context)
+    return addListener(
+        nil,
+        self,
+        event,
+        fn,
+        context,
+        true
+    )
+end
+function EventEmitter.prototype.removeListener(self, event, fn, context, once)
+    if not self._events[event] then
+        return self
+    end
+    if not fn then
+        clearEvent(nil, self, event)
+        return self
+    end
+    local listeners = self._events[event]
+    local i = 0
+    local events = {}
+    local length = listeners.length
+    do
+        while i < length do
+            if listeners[i].fn ~= fn or once and not listeners[i].once or context and listeners[i].context ~= context then
+                events[#events + 1] = listeners[i]
+            end
+            i = i + 1
+        end
+    end
+    if #events == 0 then
+        clearEvent(nil, self, event)
+    end
+    return self
+end
+function EventEmitter.prototype.removeAllListeners(self, event)
+    if event then
+        if self._events[event] then
+            clearEvent(nil, self, event)
+        end
+    else
+        self._events = {}
+        self._eventsCount = 0
+    end
+    return self
+end
+____exports.EventEmitter.prototype.off = ____exports.EventEmitter.prototype.removeListener
+____exports.EventEmitter.prototype.addListener = ____exports.EventEmitter.prototype.on
+____exports.EventEmitter.EventEmitter = ____exports.EventEmitter
+____exports.default = ____exports.EventEmitter
+return ____exports
+ end,
+["utils.url"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local function _format()
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+local function _parse()
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+local function _resolve()
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+____exports.url = {parse = _parse, format = _format, resolve = _resolve}
+return ____exports
+ end,
+["utils.lastIndexOf"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+function ____exports.default(self, haystack, needle)
+    local i = -1
+    local j = -1
+    local k = 0
+    repeat
+        do
+            i = j
+            j, k = string.find(haystack, needle, k + 1, true)
+        end
+    until not (j ~= nil)
+    return i
+end
+return ____exports
+ end,
+["utils.path"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__StringCharCodeAt = ____lualib.__TS__StringCharCodeAt
+local __TS__StringSlice = ____lualib.__TS__StringSlice
+local __TS__StringReplaceAll = ____lualib.__TS__StringReplaceAll
+local __TS__StringStartsWith = ____lualib.__TS__StringStartsWith
+local __TS__StringEndsWith = ____lualib.__TS__StringEndsWith
+local ____exports = {}
+local ____lastIndexOf = require("utils.lastIndexOf")
+local lastIndexOf = ____lastIndexOf.default
+local function assertPath(self, path)
+    if type(path) ~= "string" then
+        error(
+            __TS__New(
+                TypeError,
+                "Path must be a string. Received " .. JSON:stringify(path)
+            ),
+            0
+        )
+    end
+end
+local function removeUrlParams(self, url)
+    local re = __TS__StringSplit(url, "?")[1]
+    return __TS__StringSplit(re, "#")[1]
+end
+local function normalizeStringPosix(self, path, allowAboveRoot)
+    local res = ""
+    local lastSegmentLength = 0
+    local lastSlash = -1
+    local dots = 0
+    local code = -1
+    do
+        local i = 0
+        while i <= #path do
+            do
+                if i < #path then
+                    code = __TS__StringCharCodeAt(path, i)
+                elseif code == 47 then
+                    break
+                else
+                    code = 47
+                end
+                if code == 47 then
+                    if lastSlash == i - 1 or dots == 1 then
+                    elseif lastSlash ~= i - 1 and dots == 2 then
+                        if #res < 2 or lastSegmentLength ~= 2 or __TS__StringCharCodeAt(res, #res - 1) ~= 46 or __TS__StringCharCodeAt(res, #res - 2) ~= 46 then
+                            if #res > 2 then
+                                local lastSlashIndex = lastIndexOf(nil, res, "/")
+                                if lastSlashIndex ~= #res - 1 then
+                                    if lastSlashIndex == -1 then
+                                        res = ""
+                                        lastSegmentLength = 0
+                                    else
+                                        res = __TS__StringSlice(res, 0, lastSlashIndex)
+                                        lastSegmentLength = #res - 1 - lastIndexOf(nil, res, "/")
+                                    end
+                                    lastSlash = i
+                                    dots = 0
+                                    goto __continue6
+                                end
+                            elseif #res == 2 or #res == 1 then
+                                res = ""
+                                lastSegmentLength = 0
+                                lastSlash = i
+                                dots = 0
+                                goto __continue6
+                            end
+                        end
+                        if allowAboveRoot then
+                            if #res > 0 then
+                                res = res .. "/.."
+                            else
+                                res = ".."
+                            end
+                            lastSegmentLength = 2
+                        end
+                    else
+                        if #res > 0 then
+                            res = res .. "/" .. __TS__StringSlice(path, lastSlash + 1, i)
+                        else
+                            res = __TS__StringSlice(path, lastSlash + 1, i)
+                        end
+                        lastSegmentLength = i - lastSlash - 1
+                    end
+                    lastSlash = i
+                    dots = 0
+                elseif code == 46 and dots ~= -1 then
+                    dots = dots + 1
+                else
+                    dots = -1
+                end
+            end
+            ::__continue6::
+            i = i + 1
+        end
+    end
+    return res
+end
+____exports.path = {
+    toPosix = function(self, path)
+        return __TS__StringReplaceAll(path, "\\", "/")
+    end,
+    isUrl = function(self, path)
+        return __TS__StringStartsWith(path, "http")
+    end,
+    isDataUrl = function(self, path)
+        return __TS__StringStartsWith(path, "data")
+    end,
+    toAbsolute = function(self, url, customBaseUrl, customRootUrl)
+        if self:isDataUrl(url) then
+            return url
+        end
+        local baseUrl = removeUrlParams(
+            nil,
+            self:toPosix(customBaseUrl or os.getenv("PWD") or "/")
+        )
+        local rootUrl = removeUrlParams(
+            nil,
+            self:toPosix(customRootUrl or self:rootname(baseUrl))
+        )
+        assertPath(nil, url)
+        url = self:toPosix(url)
+        if __TS__StringStartsWith(url, "/") then
+            return ____exports.path:join(
+                rootUrl,
+                string.sub(url, 2)
+            )
+        end
+        local absolutePath = self:isAbsolute(url) and url or self:join(baseUrl, url)
+        return absolutePath
+    end,
+    normalize = function(self, path)
+        path = self:toPosix(path)
+        assertPath(nil, path)
+        if #path == 0 then
+            return "."
+        end
+        local protocol = ""
+        local isAbsolute = __TS__StringStartsWith(path, "/")
+        if self:hasProtocol(path) then
+            protocol = self:rootname(path)
+            path = __TS__StringSlice(path, #protocol)
+        end
+        local trailingSeparator = __TS__StringEndsWith(path, "/")
+        path = normalizeStringPosix(nil, path, false)
+        if #path > 0 and trailingSeparator then
+            path = path .. "/"
+        end
+        if isAbsolute then
+            return "/" .. path
+        end
+        return protocol .. path
+    end,
+    isAbsolute = function(self, path)
+        assertPath(nil, path)
+        path = self:toPosix(path)
+        if self:hasProtocol(path) then
+            return true
+        end
+        return __TS__StringStartsWith(path, "/")
+    end,
+    join = function(self, ...)
+        local segments = {...}
+        if #segments == 0 then
+            return "."
+        end
+        local joined
+        do
+            local i = 0
+            while i < #segments do
+                local arg = segments[i + 1]
+                assertPath(nil, arg)
+                if #arg > 0 then
+                    if joined == nil then
+                        joined = arg
+                    else
+                        local prevArg = segments[i] or ""
+                        if self:extname(prevArg) ~= "" then
+                            joined = joined .. "/../" .. arg
+                        else
+                            joined = joined .. "/" .. arg
+                        end
+                    end
+                end
+                i = i + 1
+            end
+        end
+        if joined == nil then
+            return "."
+        end
+        return self:normalize(joined)
+    end,
+    dirname = function(self, path)
+        assertPath(nil, path)
+        if #path == 0 then
+            return "."
+        end
+        path = self:toPosix(path)
+        local code = string.byte(path, 1) or 0 / 0
+        local hasRoot = code == 47
+        local ____end = -1
+        local matchedSlash = true
+        local proto = self:getProtocol(path)
+        local origpath = path
+        path = __TS__StringSlice(path, #proto)
+        do
+            local i = #path - 1
+            while i >= 1 do
+                code = __TS__StringCharCodeAt(path, i)
+                if code == 47 then
+                    if not matchedSlash then
+                        ____end = i
+                        break
+                    end
+                else
+                    matchedSlash = false
+                end
+                i = i - 1
+            end
+        end
+        if ____end == -1 then
+            return hasRoot and "/" or (self:isUrl(origpath) and proto .. path or proto)
+        end
+        if hasRoot and ____end == 1 then
+            return "//"
+        end
+        return proto .. __TS__StringSlice(path, 0, ____end)
+    end,
+    rootname = function(self, path)
+        assertPath(nil, path)
+        path = self:toPosix(path)
+        local root = ""
+        if __TS__StringStartsWith(path, "/") then
+            root = "/"
+        else
+            root = self:getProtocol(path)
+        end
+        if self:isUrl(path) then
+            local index = (string.find(
+                path,
+                "/",
+                math.max(#root + 1, 1),
+                true
+            ) or 0) - 1
+            if index ~= -1 then
+                root = __TS__StringSlice(path, 0, index)
+            else
+                root = path
+            end
+            if not __TS__StringEndsWith(root, "/") then
+                root = root .. "/"
+            end
+        end
+        return root
+    end,
+    basename = function(self, path, ext)
+        assertPath(nil, path)
+        if ext then
+            assertPath(nil, ext)
+        end
+        path = removeUrlParams(
+            nil,
+            self:toPosix(path)
+        )
+        local start = 0
+        local ____end = -1
+        local matchedSlash = true
+        local i
+        if ext ~= nil and #ext > 0 and #ext <= #path then
+            if #ext == #path and ext == path then
+                return ""
+            end
+            local extIdx = #ext - 1
+            local firstNonSlashEnd = -1
+            do
+                i = #path - 1
+                while i >= 0 do
+                    local code = __TS__StringCharCodeAt(path, i)
+                    if code == 47 then
+                        if not matchedSlash then
+                            start = i + 1
+                            break
+                        end
+                    else
+                        if firstNonSlashEnd == -1 then
+                            matchedSlash = false
+                            firstNonSlashEnd = i + 1
+                        end
+                        if extIdx >= 0 then
+                            if code == __TS__StringCharCodeAt(ext, extIdx) then
+                                extIdx = extIdx - 1
+                                if extIdx == -1 then
+                                    ____end = i
+                                end
+                            else
+                                extIdx = -1
+                                ____end = firstNonSlashEnd
+                            end
+                        end
+                    end
+                    i = i - 1
+                end
+            end
+            if start == ____end then
+                ____end = firstNonSlashEnd
+            elseif ____end == -1 then
+                ____end = #path
+            end
+            return __TS__StringSlice(path, start, ____end)
+        end
+        do
+            i = #path - 1
+            while i >= 0 do
+                if __TS__StringCharCodeAt(path, i) == 47 then
+                    if not matchedSlash then
+                        start = i + 1
+                        break
+                    end
+                elseif ____end == -1 then
+                    matchedSlash = false
+                    ____end = i + 1
+                end
+                i = i - 1
+            end
+        end
+        if ____end == -1 then
+            return ""
+        end
+        return __TS__StringSlice(path, start, ____end)
+    end,
+    extname = function(self, path)
+        assertPath(nil, path)
+        path = removeUrlParams(
+            nil,
+            self:toPosix(path)
+        )
+        local startDot = -1
+        local startPart = 0
+        local ____end = -1
+        local matchedSlash = true
+        local preDotState = 0
+        do
+            local i = #path - 1
+            while i >= 0 do
+                do
+                    local code = __TS__StringCharCodeAt(path, i)
+                    if code == 47 then
+                        if not matchedSlash then
+                            startPart = i + 1
+                            break
+                        end
+                        goto __continue85
+                    end
+                    if ____end == -1 then
+                        matchedSlash = false
+                        ____end = i + 1
+                    end
+                    if code == 46 then
+                        if startDot == -1 then
+                            startDot = i
+                        elseif preDotState ~= 1 then
+                            preDotState = 1
+                        end
+                    elseif startDot ~= -1 then
+                        preDotState = -1
+                    end
+                end
+                ::__continue85::
+                i = i - 1
+            end
+        end
+        if startDot == -1 or ____end == -1 or preDotState == 0 or preDotState == 1 and startDot == ____end - 1 and startDot == startPart + 1 then
+            return ""
+        end
+        return __TS__StringSlice(path, startDot, ____end)
+    end,
+    parse = function(self, path)
+        assertPath(nil, path)
+        local ret = {
+            root = "",
+            dir = "",
+            base = "",
+            ext = "",
+            name = ""
+        }
+        if #path == 0 then
+            return ret
+        end
+        path = removeUrlParams(
+            nil,
+            self:toPosix(path)
+        )
+        local code = string.byte(path, 1) or 0 / 0
+        local isAbsolute = self:isAbsolute(path)
+        local start
+        ret.root = self:rootname(path)
+        if isAbsolute or self:hasProtocol(path) then
+            start = 1
+        else
+            start = 0
+        end
+        local startDot = -1
+        local startPart = 0
+        local ____end = -1
+        local matchedSlash = true
+        local i = #path - 1
+        local preDotState = 0
+        do
+            while i >= start do
+                do
+                    code = __TS__StringCharCodeAt(path, i)
+                    if code == 47 then
+                        if not matchedSlash then
+                            startPart = i + 1
+                            break
+                        end
+                        goto __continue98
+                    end
+                    if ____end == -1 then
+                        matchedSlash = false
+                        ____end = i + 1
+                    end
+                    if code == 46 then
+                        if startDot == -1 then
+                            startDot = i
+                        elseif preDotState ~= 1 then
+                            preDotState = 1
+                        end
+                    elseif startDot ~= -1 then
+                        preDotState = -1
+                    end
+                end
+                ::__continue98::
+                i = i - 1
+            end
+        end
+        if startDot == -1 or ____end == -1 or preDotState == 0 or preDotState == 1 and startDot == ____end - 1 and startDot == startPart + 1 then
+            if ____end ~= -1 then
+                if startPart == 0 and isAbsolute then
+                    local ____TS__StringSlice_result_0 = __TS__StringSlice(path, 1, ____end)
+                    ret.name = ____TS__StringSlice_result_0
+                    ret.base = ____TS__StringSlice_result_0
+                else
+                    local ____TS__StringSlice_result_1 = __TS__StringSlice(path, startPart, ____end)
+                    ret.name = ____TS__StringSlice_result_1
+                    ret.base = ____TS__StringSlice_result_1
+                end
+            end
+        else
+            if startPart == 0 and isAbsolute then
+                ret.name = __TS__StringSlice(path, 1, startDot)
+                ret.base = __TS__StringSlice(path, 1, ____end)
+            else
+                ret.name = __TS__StringSlice(path, startPart, startDot)
+                ret.base = __TS__StringSlice(path, startPart, ____end)
+            end
+            ret.ext = __TS__StringSlice(path, startDot, ____end)
+        end
+        ret.dir = self:dirname(path)
+        return ret
+    end,
+    sep = "/",
+    delimiter = ":"
+}
+return ____exports
+ end,
+["utils.color.premultiply"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____color = require("color.index")
+local Color = ____color.Color
+local ____constants = require("constants.index")
+local BLEND_MODES = ____constants.BLEND_MODES
+--- Corrects PixiJS blend, takes premultiplied alpha into account
+-- 
+-- @memberof PIXI.utils
+-- @function mapPremultipliedBlendModes
+-- @private
+-- @returns Mapped modes.
+local function mapPremultipliedBlendModes(self)
+    local pm = {}
+    local npm = {}
+    do
+        local i = 0
+        while i < 32 do
+            pm[i + 1] = i
+            npm[i + 1] = i
+            i = i + 1
+        end
+    end
+    pm[BLEND_MODES.NORMAL_NPM + 1] = BLEND_MODES.NORMAL
+    pm[BLEND_MODES.ADD_NPM + 1] = BLEND_MODES.ADD
+    pm[BLEND_MODES.SCREEN_NPM + 1] = BLEND_MODES.SCREEN
+    npm[BLEND_MODES.NORMAL + 1] = BLEND_MODES.NORMAL_NPM
+    npm[BLEND_MODES.ADD + 1] = BLEND_MODES.ADD_NPM
+    npm[BLEND_MODES.SCREEN + 1] = BLEND_MODES.SCREEN_NPM
+    local array = {}
+    array[#array + 1] = npm
+    array[#array + 1] = pm
+    return array
+end
+--- maps premultiply flag and blendMode to adjusted blendMode
+-- 
+-- @memberof PIXI.utils
+-- @type {Array<number[]>}
+____exports.premultiplyBlendMode = mapPremultipliedBlendModes(nil)
+--- changes blendMode according to texture format
+-- 
+-- @memberof PIXI.utils
+-- @function correctBlendMode
+-- @param blendMode - supposed blend mode
+-- @param premultiplied - whether source is premultiplied
+-- @returns true blend mode for this texture
+function ____exports.correctBlendMode(self, blendMode, premultiplied)
+    return ____exports.premultiplyBlendMode[(premultiplied and 1 or 0) + 1][blendMode + 1]
+end
+--- combines rgb and alpha to out array
+-- 
+-- @memberof PIXI.utils
+-- @function premultiplyRgba
+-- @param rgb - input rgb
+-- @param alpha - alpha param
+-- @param out - output
+-- @param premultiply - do premultiply it
+-- @returns vec4 rgba
+function ____exports.premultiplyRgba(self, rgb, alpha, out, premultiply)
+    out = out or __TS__New(Float32Array, 4)
+    if premultiply or premultiply == nil then
+        out[0] = rgb[1] * alpha
+        out[1] = rgb[2] * alpha
+        out[2] = rgb[3] * alpha
+    else
+        out[0] = rgb[1]
+        out[1] = rgb[2]
+        out[2] = rgb[3]
+    end
+    out[3] = alpha
+    return out
+end
+--- premultiplies tint
+-- 
+-- @memberof PIXI.utils
+-- @function premultiplyTint
+-- @param tint - integer RGB
+-- @param alpha - floating point alpha (0.0-1.0)
+-- @returns tint multiplied by alpha
+function ____exports.premultiplyTint(self, tint, alpha)
+    if alpha == 1 then
+        return bit.lshift(alpha * 255, 24) + tint
+    end
+    if alpha == 0 then
+        return 0
+    end
+    local R = bit.band(
+        bit.arshift(tint, 16),
+        255
+    )
+    local G = bit.band(
+        bit.arshift(tint, 8),
+        255
+    )
+    local B = bit.band(tint, 255)
+    R = bit.bor(R * alpha + 0.5, 0)
+    G = bit.bor(G * alpha + 0.5, 0)
+    B = bit.bor(B * alpha + 0.5, 0)
+    return bit.lshift(alpha * 255, 24) + bit.lshift(R, 16) + bit.lshift(G, 8) + B
+end
+--- converts integer tint and float alpha to vec4 form, premultiplies by default
+-- 
+-- @memberof PIXI.utils
+-- @function premultiplyTintToRgba
+-- @param tint - input tint
+-- @param alpha - alpha param
+-- @param out - output
+-- @param premultiply - do premultiply it
+-- @returns vec4 rgba
+function ____exports.premultiplyTintToRgba(self, tint, alpha, out, premultiply)
+    out = Color.shared:setValue(tint):toRgbArray(out or __TS__New(Float32Array, 4))
+    if premultiply or premultiply == nil then
+        out[0] = out[0] * alpha
+        out[1] = out[1] * alpha
+        out[2] = out[2] * alpha
+    end
+    out[3] = alpha
+    return out
+end
+return ____exports
+ end,
+["utils.data.createIndicesForQuads"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+--- Generic Mask Stack data structure
+-- 
+-- @memberof PIXI.utils
+-- @function createIndicesForQuads
+-- @param size - Number of quads
+-- @param outBuffer - Buffer for output, length has to be `6 * size`
+-- @returns - Resulting index buffer
+function ____exports.createIndicesForQuads(self, size, outBuffer)
+    if outBuffer == nil then
+        outBuffer = nil
+    end
+    local totalIndices = size * 6
+    outBuffer = outBuffer or __TS__New(Uint16Array, totalIndices)
+    if outBuffer.length ~= totalIndices then
+        error(
+            __TS__New(
+                Error,
+                (("Out buffer length is incorrect, got " .. tostring(outBuffer.length)) .. " and expected ") .. tostring(totalIndices)
+            ),
+            0
+        )
+    end
+    do
+        local i = 0
+        local j = 0
+        while i < totalIndices do
+            outBuffer[i + 0] = j + 0
+            outBuffer[i + 1] = j + 1
+            outBuffer[i + 2] = j + 2
+            outBuffer[i + 3] = j + 0
+            outBuffer[i + 4] = j + 2
+            outBuffer[i + 5] = j + 3
+            do
+                i = i + 6
+                j = j + 4
+            end
+        end
+    end
+    return outBuffer
+end
+return ____exports
+ end,
+["utils.data.getBufferType"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local ____exports = {}
+function ____exports.getBufferType(self, array)
+    if array.BYTES_PER_ELEMENT == 4 then
+        if __TS__InstanceOf(array, Float32Array) then
+            return "Float32Array"
+        elseif __TS__InstanceOf(array, Uint32Array) then
+            return "Uint32Array"
+        end
+        return "Int32Array"
+    elseif array.BYTES_PER_ELEMENT == 2 then
+        if __TS__InstanceOf(array, Uint16Array) then
+            return "Uint16Array"
+        end
+    elseif array.BYTES_PER_ELEMENT == 1 then
+        if __TS__InstanceOf(array, Uint8Array) then
+            return "Uint8Array"
+        end
+    end
+    return nil
+end
+return ____exports
+ end,
+["utils.data.interleaveTypedArrays"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____getBufferType = require("utils.data.getBufferType")
+local getBufferType = ____getBufferType.getBufferType
+local map = {Float32Array = Float32Array, Uint32Array = Uint32Array, Int32Array = Int32Array, Uint8Array = Uint8Array}
+function ____exports.interleaveTypedArrays(self, arrays, sizes)
+    local outSize = 0
+    local stride = 0
+    local views = {}
+    do
+        local i = 0
+        while i < #arrays do
+            stride = stride + sizes[i + 1]
+            outSize = outSize + arrays[i + 1].length
+            i = i + 1
+        end
+    end
+    local buffer = __TS__New(ArrayBuffer, outSize * 4)
+    local out = nil
+    local littleOffset = 0
+    do
+        local i = 0
+        while i < #arrays do
+            local size = sizes[i + 1]
+            local array = arrays[i + 1]
+            local ____type = getBufferType(nil, array)
+            if not views[____type] then
+                views[____type] = __TS__New(map[____type], buffer)
+            end
+            out = views[____type]
+            do
+                local j = 0
+                while j < array.length do
+                    local indexStart = bit.bor(j / size, 0) * stride + littleOffset
+                    local index = j % size
+                    out[indexStart + index] = array[j]
+                    j = j + 1
+                end
+            end
+            littleOffset = littleOffset + size
+            i = i + 1
+        end
+    end
+    return __TS__New(Float32Array, buffer)
+end
+return ____exports
+ end,
+["utils.data.pow2"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Rounds to next power of two.
+-- 
+-- @function nextPow2
+-- @memberof PIXI.utils
+-- @param v - input value
+-- @returns - next rounded power of two
+function ____exports.nextPow2(self, v)
+    v = v + (v == 0 and 1 or 0)
+    v = v - 1
+    v = bit.bor(
+        v,
+        bit.rshift(v, 1)
+    )
+    v = bit.bor(
+        v,
+        bit.rshift(v, 2)
+    )
+    v = bit.bor(
+        v,
+        bit.rshift(v, 4)
+    )
+    v = bit.bor(
+        v,
+        bit.rshift(v, 8)
+    )
+    v = bit.bor(
+        v,
+        bit.rshift(v, 16)
+    )
+    return v + 1
+end
+--- Checks if a number is a power of two.
+-- 
+-- @function isPow2
+-- @memberof PIXI.utils
+-- @param v - input value
+-- @returns `true` if value is power of two
+function ____exports.isPow2(self, v)
+    return not bit.band(v, v - 1) and not not v
+end
+--- Computes ceil of log base 2
+-- 
+-- @function log2
+-- @memberof PIXI.utils
+-- @param v - input value
+-- @returns logarithm base 2
+function ____exports.log2(self, v)
+    local r = bit.lshift(v > 65535 and 1 or 0, 4)
+    v = bit.rshift(v, r)
+    local shift = bit.lshift(v > 255 and 1 or 0, 3)
+    v = bit.rshift(v, shift)
+    r = bit.bor(r, shift)
+    shift = bit.lshift(v > 15 and 1 or 0, 2)
+    v = bit.rshift(v, shift)
+    r = bit.bor(r, shift)
+    shift = bit.lshift(v > 3 and 1 or 0, 1)
+    v = bit.rshift(v, shift)
+    r = bit.bor(r, shift)
+    return bit.bor(
+        r,
+        bit.arshift(v, 1)
+    )
+end
+return ____exports
+ end,
+["utils.data.removeItems"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local ____exports = {}
+--- Remove items from a javascript array without generating garbage
+-- 
+-- @function removeItems
+-- @memberof PIXI.utils
+-- @param arr - Array to remove elements from
+-- @param startIdx - starting index
+-- @param removeCount - how many to remove
+function ____exports.removeItems(self, arr, startIdx, removeCount)
+    local length = #arr
+    local i
+    if startIdx >= length or removeCount == 0 then
+        return
+    end
+    removeCount = startIdx + removeCount > length and length - startIdx or removeCount
+    local len = length - removeCount
+    do
+        i = startIdx
+        while i < len do
+            arr[i + 1] = arr[i + removeCount + 1]
+            i = i + 1
+        end
+    end
+    __TS__ArraySetLength(arr, len)
+end
+return ____exports
+ end,
+["utils.data.sign"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Returns sign of number
+-- 
+-- @memberof PIXI.utils
+-- @function sign
+-- @param n - the number to check the sign of
+-- @returns 0 if `n` is 0, -1 if `n` is negative, 1 if `n` is positive
+function ____exports.sign(self, n)
+    if n == 0 then
+        return 0
+    end
+    return n < 0 and -1 or 1
+end
+return ____exports
+ end,
+["utils.data.uid"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local nextUid = 0
+--- Gets the next unique identifier
+-- 
+-- @memberof PIXI.utils
+-- @function uid
+-- @returns The next unique identifier to use.
+function ____exports.uid(self)
+    nextUid = nextUid + 1
+    return nextUid
+end
+return ____exports
+ end,
+["utils.types.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["utils.logging.deprecation"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local ____exports = {}
+local warnings = {}
+--- Helper for warning developers about deprecated features & settings.
+-- A stack track for warnings is given; useful for tracking-down where
+-- deprecated methods/properties/classes are being used within the code.
+-- 
+-- @memberof PIXI.utils
+-- @function deprecation
+-- @param version - The version where the feature became deprecated
+-- @param message - Message should include what is deprecated, where, and the new solution
+-- @param ignoreDepth - The number of steps to ignore at the top of the error stack
+-- this is mostly to ignore internal deprecation calls.
+function ____exports.deprecation(self, version, message, ignoreDepth)
+    if ignoreDepth == nil then
+        ignoreDepth = 3
+    end
+    if warnings[message] then
+        return
+    end
+    local stack = __TS__New(Error).stack
+    if type(stack) == "nil" then
+        print("PixiJS Deprecation Warning: ", (message .. "\nDeprecated since v") .. version)
+    else
+        stack = table.concat(
+            __TS__ArraySplice(
+                __TS__StringSplit(stack, "\n"),
+                ignoreDepth
+            ),
+            "\n"
+        )
+        print("PixiJS Deprecation Warning: ", (message .. "\nDeprecated since v") .. version)
+        print(stack)
+    end
+    warnings[message] = true
+end
+return ____exports
+ end,
+["utils.media.cache"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["utils.media.BoundingBox"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+--- A rectangular bounding box describing the boundary of an area.
+-- 
+-- @memberof PIXI.utils
+-- @since 7.1.0
+____exports.BoundingBox = __TS__Class()
+local BoundingBox = ____exports.BoundingBox
+BoundingBox.name = "BoundingBox"
+function BoundingBox.prototype.____constructor(self, left, top, right, bottom)
+    self.left = left
+    self.top = top
+    self.right = right
+    self.bottom = bottom
+end
+__TS__SetDescriptor(
+    BoundingBox.prototype,
+    "width",
+    {get = function(self)
+        return self.right - self.left
+    end},
+    true
+)
+__TS__SetDescriptor(
+    BoundingBox.prototype,
+    "height",
+    {get = function(self)
+        return self.bottom - self.top
+    end},
+    true
+)
+function BoundingBox.prototype.isEmpty(self)
+    return self.left == self.right or self.top == self.bottom
+end
+BoundingBox.EMPTY = __TS__New(
+    ____exports.BoundingBox,
+    0,
+    0,
+    0,
+    0
+)
+return ____exports
+ end,
+["utils.network.decomposeDataUri"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+--- Split a data URI into components. Returns undefined if
+-- parameter `dataUri` is not a valid data URI.
+-- 
+-- @memberof PIXI.utils
+-- @function decomposeDataUri
+-- @param dataUri - the data URI to check
+-- @returns The decomposed data uri or undefined
+function ____exports.decomposeDataUri(self, dataUri)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+return ____exports
+ end,
+["utils.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____eventemitter3 = require("eventemitter3.index")
+    local EventEmitter = ____eventemitter3.default
+    ____exports.EventEmitter = EventEmitter
+end
+do
+    local ____export = require("utils.url")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.path")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.color.premultiply")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.createIndicesForQuads")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.getBufferType")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.interleaveTypedArrays")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.pow2")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.removeItems")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.sign")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.data.uid")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.logging.deprecation")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.media.BoundingBox")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.network.decomposeDataUri")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
+["core.systems"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.byName = {}
+function ____exports.register(self, name, classRef)
+    ____exports.byName[name] = classRef
+end
+function ____exports.get(self, name)
+    return ____exports.byName[name]
+end
+____exports.default = {byName = ____exports.byName, register = ____exports.register, get = ____exports.get}
+return ____exports
+ end,
+["canvas-renderer.BaseTexture"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.texture = 0
+return ____exports
+ end,
+["canvas-renderer.utils.canUseNewCanvasBlendModes"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Checks whether the Canvas BlendModes are supported by the current browser
+-- 
+-- @private
+-- @returns whether they are supported
+function ____exports.canUseNewCanvasBlendModes(self)
+    return false
+end
+return ____exports
+ end,
+["canvas-renderer.utils.mapCanvasBlendModesToPixi"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____constants = require("constants.index")
+local BLEND_MODES = ____constants.BLEND_MODES
+local ____canUseNewCanvasBlendModes = require("canvas-renderer.utils.canUseNewCanvasBlendModes")
+local canUseNewCanvasBlendModes = ____canUseNewCanvasBlendModes.canUseNewCanvasBlendModes
+--- Maps blend combinations to Canvas.
+-- 
+-- @memberof PIXI
+-- @function mapCanvasBlendModesToPixi
+-- @private
+-- @param array - The array to output into.
+-- @returns Mapped modes.
+function ____exports.mapCanvasBlendModesToPixi(self, array)
+    if array == nil then
+        array = {}
+    end
+    if canUseNewCanvasBlendModes(nil) then
+        array[BLEND_MODES.NORMAL + 1] = "source-over"
+        array[BLEND_MODES.ADD + 1] = "lighter"
+        array[BLEND_MODES.MULTIPLY + 1] = "multiply"
+        array[BLEND_MODES.SCREEN + 1] = "screen"
+        array[BLEND_MODES.OVERLAY + 1] = "overlay"
+        array[BLEND_MODES.DARKEN + 1] = "darken"
+        array[BLEND_MODES.LIGHTEN + 1] = "lighten"
+        array[BLEND_MODES.COLOR_DODGE + 1] = "color-dodge"
+        array[BLEND_MODES.COLOR_BURN + 1] = "color-burn"
+        array[BLEND_MODES.HARD_LIGHT + 1] = "hard-light"
+        array[BLEND_MODES.SOFT_LIGHT + 1] = "soft-light"
+        array[BLEND_MODES.DIFFERENCE + 1] = "difference"
+        array[BLEND_MODES.EXCLUSION + 1] = "exclusion"
+        array[BLEND_MODES.HUE + 1] = "hue"
+        array[BLEND_MODES.SATURATION + 1] = "saturation"
+        array[BLEND_MODES.COLOR + 1] = "color"
+        array[BLEND_MODES.LUMINOSITY + 1] = "luminosity"
+    else
+        array[BLEND_MODES.NORMAL + 1] = "source-over"
+        array[BLEND_MODES.ADD + 1] = "lighter"
+        array[BLEND_MODES.MULTIPLY + 1] = "source-over"
+        array[BLEND_MODES.SCREEN + 1] = "source-over"
+        array[BLEND_MODES.OVERLAY + 1] = "source-over"
+        array[BLEND_MODES.DARKEN + 1] = "source-over"
+        array[BLEND_MODES.LIGHTEN + 1] = "source-over"
+        array[BLEND_MODES.COLOR_DODGE + 1] = "source-over"
+        array[BLEND_MODES.COLOR_BURN + 1] = "source-over"
+        array[BLEND_MODES.HARD_LIGHT + 1] = "source-over"
+        array[BLEND_MODES.SOFT_LIGHT + 1] = "source-over"
+        array[BLEND_MODES.DIFFERENCE + 1] = "source-over"
+        array[BLEND_MODES.EXCLUSION + 1] = "source-over"
+        array[BLEND_MODES.HUE + 1] = "source-over"
+        array[BLEND_MODES.SATURATION + 1] = "source-over"
+        array[BLEND_MODES.COLOR + 1] = "source-over"
+        array[BLEND_MODES.LUMINOSITY + 1] = "source-over"
+    end
+    array[BLEND_MODES.NORMAL_NPM + 1] = array[BLEND_MODES.NORMAL + 1]
+    array[BLEND_MODES.ADD_NPM + 1] = array[BLEND_MODES.ADD + 1]
+    array[BLEND_MODES.SCREEN_NPM + 1] = array[BLEND_MODES.SCREEN + 1]
+    array[BLEND_MODES.SRC_IN + 1] = "source-in"
+    array[BLEND_MODES.SRC_OUT + 1] = "source-out"
+    array[BLEND_MODES.SRC_ATOP + 1] = "source-atop"
+    array[BLEND_MODES.DST_OVER + 1] = "destination-over"
+    array[BLEND_MODES.DST_IN + 1] = "destination-in"
+    array[BLEND_MODES.DST_OUT + 1] = "destination-out"
+    array[BLEND_MODES.DST_ATOP + 1] = "destination-atop"
+    array[BLEND_MODES.XOR + 1] = "xor"
+    array[BLEND_MODES.SUBTRACT + 1] = "source-over"
+    return array
+end
+return ____exports
+ end,
+["display.Bounds"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____math = require("math.index")
+local Rectangle = ____math.Rectangle
+--- 'Builder' pattern for bounds rectangles.
+-- 
+-- This could be called an Axis-Aligned Bounding Box.
+-- It is not an actual shape. It is a mutable thing; no 'EMPTY' or those kind of problems.
+-- 
+-- @memberof PIXI
+____exports.Bounds = __TS__Class()
+local Bounds = ____exports.Bounds
+Bounds.name = "Bounds"
+function Bounds.prototype.____constructor(self)
+    self.minX = math.huge
+    self.minY = math.huge
+    self.maxX = -math.huge
+    self.maxY = -math.huge
+    self.rect = nil
+    self.updateID = -1
+end
+function Bounds.prototype.isEmpty(self)
+    return self.minX > self.maxX or self.minY > self.maxY
+end
+function Bounds.prototype.clear(self)
+    self.minX = math.huge
+    self.minY = math.huge
+    self.maxX = -math.huge
+    self.maxY = -math.huge
+end
+function Bounds.prototype.getRectangle(self, rect)
+    if self.minX > self.maxX or self.minY > self.maxY then
+        return Rectangle.EMPTY
+    end
+    rect = rect or __TS__New(
+        Rectangle,
+        0,
+        0,
+        1,
+        1
+    )
+    rect.x = self.minX
+    rect.y = self.minY
+    rect.width = self.maxX - self.minX
+    rect.height = self.maxY - self.minY
+    return rect
+end
+function Bounds.prototype.addPoint(self, point)
+    self.minX = math.min(self.minX, point.x)
+    self.maxX = math.max(self.maxX, point.x)
+    self.minY = math.min(self.minY, point.y)
+    self.maxY = math.max(self.maxY, point.y)
+end
+function Bounds.prototype.addPointMatrix(self, matrix, point)
+    local ____matrix_0 = matrix
+    local a = ____matrix_0.a
+    local b = ____matrix_0.b
+    local c = ____matrix_0.c
+    local d = ____matrix_0.d
+    local tx = ____matrix_0.tx
+    local ty = ____matrix_0.ty
+    local x = a * point.x + c * point.y + tx
+    local y = b * point.x + d * point.y + ty
+    self.minX = math.min(self.minX, x)
+    self.maxX = math.max(self.maxX, x)
+    self.minY = math.min(self.minY, y)
+    self.maxY = math.max(self.maxY, y)
+end
+function Bounds.prototype.addQuad(self, vertices)
+    local minX = self.minX
+    local minY = self.minY
+    local maxX = self.maxX
+    local maxY = self.maxY
+    local x = vertices[0]
+    local y = vertices[1]
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    x = vertices[2]
+    y = vertices[3]
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    x = vertices[4]
+    y = vertices[5]
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    x = vertices[6]
+    y = vertices[7]
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    self.minX = minX
+    self.minY = minY
+    self.maxX = maxX
+    self.maxY = maxY
+end
+function Bounds.prototype.addFrame(self, transform, x0, y0, x1, y1)
+    self:addFrameMatrix(
+        transform.worldTransform,
+        x0,
+        y0,
+        x1,
+        y1
+    )
+end
+function Bounds.prototype.addFrameMatrix(self, matrix, x0, y0, x1, y1)
+    local a = matrix.a
+    local b = matrix.b
+    local c = matrix.c
+    local d = matrix.d
+    local tx = matrix.tx
+    local ty = matrix.ty
+    local minX = self.minX
+    local minY = self.minY
+    local maxX = self.maxX
+    local maxY = self.maxY
+    local x = a * x0 + c * y0 + tx
+    local y = b * x0 + d * y0 + ty
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    x = a * x1 + c * y0 + tx
+    y = b * x1 + d * y0 + ty
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    x = a * x0 + c * y1 + tx
+    y = b * x0 + d * y1 + ty
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    x = a * x1 + c * y1 + tx
+    y = b * x1 + d * y1 + ty
+    minX = x < minX and x or minX
+    minY = y < minY and y or minY
+    maxX = x > maxX and x or maxX
+    maxY = y > maxY and y or maxY
+    self.minX = minX
+    self.minY = minY
+    self.maxX = maxX
+    self.maxY = maxY
+end
+function Bounds.prototype.addVertexData(self, vertexData, beginOffset, endOffset)
+    local minX = self.minX
+    local minY = self.minY
+    local maxX = self.maxX
+    local maxY = self.maxY
+    do
+        local i = beginOffset
+        while i < endOffset do
+            local x = vertexData[i]
+            local y = vertexData[i + 1]
+            minX = x < minX and x or minX
+            minY = y < minY and y or minY
+            maxX = x > maxX and x or maxX
+            maxY = y > maxY and y or maxY
+            i = i + 2
+        end
+    end
+    self.minX = minX
+    self.minY = minY
+    self.maxX = maxX
+    self.maxY = maxY
+end
+function Bounds.prototype.addVertices(self, transform, vertices, beginOffset, endOffset)
+    self:addVerticesMatrix(transform.worldTransform, vertices, beginOffset, endOffset)
+end
+function Bounds.prototype.addVerticesMatrix(self, matrix, vertices, beginOffset, endOffset, padX, padY)
+    if padX == nil then
+        padX = 0
+    end
+    if padY == nil then
+        padY = padX
+    end
+    local a = matrix.a
+    local b = matrix.b
+    local c = matrix.c
+    local d = matrix.d
+    local tx = matrix.tx
+    local ty = matrix.ty
+    local minX = self.minX
+    local minY = self.minY
+    local maxX = self.maxX
+    local maxY = self.maxY
+    do
+        local i = beginOffset
+        while i < endOffset do
+            local rawX = vertices[i]
+            local rawY = vertices[i + 1]
+            local x = a * rawX + c * rawY + tx
+            local y = d * rawY + b * rawX + ty
+            minX = math.min(minX, x - padX)
+            maxX = math.max(maxX, x + padX)
+            minY = math.min(minY, y - padY)
+            maxY = math.max(maxY, y + padY)
+            i = i + 2
+        end
+    end
+    self.minX = minX
+    self.minY = minY
+    self.maxX = maxX
+    self.maxY = maxY
+end
+function Bounds.prototype.addBounds(self, bounds)
+    local minX = self.minX
+    local minY = self.minY
+    local maxX = self.maxX
+    local maxY = self.maxY
+    self.minX = bounds.minX < minX and bounds.minX or minX
+    self.minY = bounds.minY < minY and bounds.minY or minY
+    self.maxX = bounds.maxX > maxX and bounds.maxX or maxX
+    self.maxY = bounds.maxY > maxY and bounds.maxY or maxY
+end
+function Bounds.prototype.addBoundsMask(self, bounds, mask)
+    local _minX = bounds.minX > mask.minX and bounds.minX or mask.minX
+    local _minY = bounds.minY > mask.minY and bounds.minY or mask.minY
+    local _maxX = bounds.maxX < mask.maxX and bounds.maxX or mask.maxX
+    local _maxY = bounds.maxY < mask.maxY and bounds.maxY or mask.maxY
+    if _minX <= _maxX and _minY <= _maxY then
+        local minX = self.minX
+        local minY = self.minY
+        local maxX = self.maxX
+        local maxY = self.maxY
+        self.minX = _minX < minX and _minX or minX
+        self.minY = _minY < minY and _minY or minY
+        self.maxX = _maxX > maxX and _maxX or maxX
+        self.maxY = _maxY > maxY and _maxY or maxY
+    end
+end
+function Bounds.prototype.addBoundsMatrix(self, bounds, matrix)
+    self:addFrameMatrix(
+        matrix,
+        bounds.minX,
+        bounds.minY,
+        bounds.maxX,
+        bounds.maxY
+    )
+end
+function Bounds.prototype.addBoundsArea(self, bounds, area)
+    local _minX = bounds.minX > area.x and bounds.minX or area.x
+    local _minY = bounds.minY > area.y and bounds.minY or area.y
+    local _maxX = bounds.maxX < area.x + area.width and bounds.maxX or area.x + area.width
+    local _maxY = bounds.maxY < area.y + area.height and bounds.maxY or area.y + area.height
+    if _minX <= _maxX and _minY <= _maxY then
+        local minX = self.minX
+        local minY = self.minY
+        local maxX = self.maxX
+        local maxY = self.maxY
+        self.minX = _minX < minX and _minX or minX
+        self.minY = _minY < minY and _minY or minY
+        self.maxX = _maxX > maxX and _maxX or maxX
+        self.maxY = _maxY > maxY and _maxY or maxY
+    end
+end
+function Bounds.prototype.pad(self, paddingX, paddingY)
+    if paddingX == nil then
+        paddingX = 0
+    end
+    if paddingY == nil then
+        paddingY = paddingX
+    end
+    if not self:isEmpty() then
+        self.minX = self.minX - paddingX
+        self.maxX = self.maxX + paddingX
+        self.minY = self.minY - paddingY
+        self.maxY = self.maxY + paddingY
+    end
+end
+function Bounds.prototype.addFramePad(self, x0, y0, x1, y1, padX, padY)
+    x0 = x0 - padX
+    y0 = y0 - padY
+    x1 = x1 + padX
+    y1 = y1 + padY
+    self.minX = self.minX < x0 and self.minX or x0
+    self.maxX = self.maxX > x1 and self.maxX or x1
+    self.minY = self.minY < y0 and self.minY or y0
+    self.maxY = self.maxY > y1 and self.maxY or y1
+end
+return ____exports
+ end,
+["display.DisplayObject"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
+local __TS__ObjectGetOwnPropertyDescriptor = ____lualib.__TS__ObjectGetOwnPropertyDescriptor
+local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+local ____eventemitter3 = require("eventemitter3.index")
+local EventEmitter = ____eventemitter3.default
+local ____math = require("math.index")
+local DEG_TO_RAD = ____math.DEG_TO_RAD
+local RAD_TO_DEG = ____math.RAD_TO_DEG
+local Rectangle = ____math.Rectangle
+local Transform = ____math.Transform
+local ____Bounds = require("display.Bounds")
+local Bounds = ____Bounds.Bounds
+local function noop()
+end
+--- The base class for all objects that are rendered on the screen.
+-- 
+-- This is an abstract class and can not be used on its own; rather it should be extended.
+-- 
+-- ## Display objects implemented in PixiJS
+-- 
+-- | Display Object                  | Description                                                           |
+-- | ------------------------------- | --------------------------------------------------------------------- |
+-- | {link PIXI.Container}          | Adds support for `children` to DisplayObject                          |
+-- | {link PIXI.Graphics}           | Shape-drawing display object similar to the Canvas API                |
+-- | {link PIXI.Sprite}             | Draws textures (i.e. images)                                          |
+-- | {link PIXI.Text}               | Draws text using the Canvas API internally                            |
+-- | {link PIXI.BitmapText}         | More scaleable solution for text rendering, reusing glyph textures    |
+-- | {link PIXI.TilingSprite}       | Draws textures/images in a tiled fashion                              |
+-- | {link PIXI.AnimatedSprite}     | Draws an animation of multiple images                                 |
+-- | {link PIXI.Mesh}               | Provides a lower-level API for drawing meshes with custom data        |
+-- | {link PIXI.NineSlicePlane}     | Mesh-related                                                          |
+-- | {link PIXI.SimpleMesh}         | v4-compatible mesh                                                    |
+-- | {link PIXI.SimplePlane}        | Mesh-related                                                          |
+-- | {link PIXI.SimpleRope}         | Mesh-related                                                          |
+-- 
+-- ## Transforms
+-- 
+-- The [transform]{link DisplayObject#transform} of a display object describes the projection from its
+-- local coordinate space to its parent's local coordinate space. The following properties are derived
+-- from the transform:
+-- 
+-- <table>
+--   <thead>
+--     <tr>
+--       <th>Property</th>
+--       <th>Description</th>
+--     </tr>
+--   </thead>
+--   <tbody>
+--     <tr>
+--       <td>[pivot]{link PIXI.DisplayObject#pivot}</td>
+--       <td>
+--         Invariant under rotation, scaling, and skewing. The projection of into the parent's space of the pivot
+--         is equal to position, regardless of the other three transformations. In other words, It is the center of
+--         rotation, scaling, and skewing.
+--       </td>
+--     </tr>
+--     <tr>
+--       <td>[position]{link PIXI.DisplayObject#position}</td>
+--       <td>
+--         Translation. This is the position of the [pivot]{link PIXI.DisplayObject#pivot} in the parent's local
+--         space. The default value of the pivot is the origin (0,0). If the top-left corner of your display object
+--         is (0,0) in its local space, then the position will be its top-left corner in the parent's local space.
+--       </td>
+--     </tr>
+--     <tr>
+--       <td>[scale]{link PIXI.DisplayObject#scale}</td>
+--       <td>
+--         Scaling. This will stretch (or compress) the display object's projection. The scale factors are along the
+--         local coordinate axes. In other words, the display object is scaled before rotated or skewed. The center
+--         of scaling is the [pivot]{link PIXI.DisplayObject#pivot}.
+--       </td>
+--     </tr>
+--     <tr>
+--       <td>[rotation]{link PIXI.DisplayObject#rotation}</td>
+--       <td>
+--          Rotation. This will rotate the display object's projection by this angle (in radians).
+--       </td>
+--     </tr>
+--     <tr>
+--       <td>[skew]{link PIXI.DisplayObject#skew}</td>
+--       <td>
+--         <p>Skewing. This can be used to deform a rectangular display object into a parallelogram.</p>
+--         <p>
+--         In PixiJS, skew has a slightly different behaviour than the conventional meaning. It can be
+--         thought of the net rotation applied to the coordinate axes (separately). For example, if "skew.x" is
+--         ⍺ and "skew.y" is β, then the line x = 0 will be rotated by ⍺ (y = -x*cot⍺) and the line y = 0 will be
+--         rotated by β (y = x*tanβ). A line y = x*tanϴ (i.e. a line at angle ϴ to the x-axis in local-space) will
+--         be rotated by an angle between ⍺ and β.
+--         </p>
+--         <p>
+--         It can be observed that if skew is applied equally to both axes, then it will be equivalent to applying
+--         a rotation. Indeed, if "skew.x" = -ϴ and "skew.y" = ϴ, it will produce an equivalent of "rotation" = ϴ.
+--         </p>
+--         <p>
+--         Another quite interesting observation is that "skew.x", "skew.y", rotation are communtative operations. Indeed,
+--         because rotation is essentially a careful combination of the two.
+--         </p>
+--       </td>
+--     </tr>
+--     <tr>
+--       <td>angle</td>
+--       <td>Rotation. This is an alias for [rotation]{link PIXI.DisplayObject#rotation}, but in degrees.</td>
+--     </tr>
+--     <tr>
+--       <td>x</td>
+--       <td>Translation. This is an alias for position.x!</td>
+--     </tr>
+--     <tr>
+--       <td>y</td>
+--       <td>Translation. This is an alias for position.y!</td>
+--     </tr>
+--     <tr>
+--       <td>width</td>
+--       <td>
+--         Implemented in [Container]{link PIXI.Container}. Scaling. The width property calculates scale.x by dividing
+--         the "requested" width by the local bounding box width. It is indirectly an abstraction over scale.x, and there
+--         is no concept of user-defined width.
+--       </td>
+--     </tr>
+--     <tr>
+--       <td>height</td>
+--       <td>
+--         Implemented in [Container]{link PIXI.Container}. Scaling. The height property calculates scale.y by dividing
+--         the "requested" height by the local bounding box height. It is indirectly an abstraction over scale.y, and there
+--         is no concept of user-defined height.
+--       </td>
+--     </tr>
+--   </tbody>
+-- </table>
+-- 
+-- ## Bounds
+-- 
+-- The bounds of a display object is defined by the minimum axis-aligned rectangle in world space that can fit
+-- around it. The abstract `calculateBounds` method is responsible for providing it (and it should use the
+-- `worldTransform` to calculate in world space).
+-- 
+-- There are a few additional types of bounding boxes:
+-- 
+-- | Bounds                | Description                                                                              |
+-- | --------------------- | ---------------------------------------------------------------------------------------- |
+-- | World Bounds          | This is synonymous is the regular bounds described above. See `getBounds()`.             |
+-- | Local Bounds          | This the axis-aligned bounding box in the parent's local space. See `getLocalBounds()`.  |
+-- | Render Bounds         | The bounds, but including extra rendering effects like filter padding.                   |
+-- | Projected Bounds      | The bounds of the projected display object onto the screen. Usually equals world bounds. |
+-- | Relative Bounds       | The bounds of a display object when projected onto a ancestor's (or parent's) space.     |
+-- | Natural Bounds        | The bounds of an object in its own local space (not parent's space, like in local bounds)|
+-- | Content Bounds        | The natural bounds when excluding all children of a `Container`.                         |
+-- 
+-- ### calculateBounds
+-- 
+-- [Container]{link Container} already implements `calculateBounds` in a manner that includes children.
+-- 
+-- But for a non-Container display object, the `calculateBounds` method must be overridden in order for `getBounds` and
+-- `getLocalBounds` to work. This method must write the bounds into `this._bounds`.
+-- 
+-- Generally, the following technique works for most simple cases: take the list of points
+-- forming the "hull" of the object (i.e. outline of the object's shape), and then add them
+-- using {link PIXI.Bounds#addPointMatrix}.
+-- 
+-- ```js
+-- calculateBounds()
+-- {
+--     const points = [...];
+-- 
+--     for (let i = 0, j = points.length; i < j; i++)
+--     {
+--         this._bounds.addPointMatrix(this.worldTransform, points[i]);
+--     }
+-- }
+-- ```
+-- 
+-- You can optimize this for a large number of points by using {link PIXI.Bounds#addVerticesMatrix} to pass them
+-- in one array together.
+-- 
+-- ## Alpha
+-- 
+-- This alpha sets a display object's **relative opacity** w.r.t its parent. For example, if the alpha of a display
+-- object is 0.5 and its parent's alpha is 0.5, then it will be rendered with 25% opacity (assuming alpha is not
+-- applied on any ancestor further up the chain).
+-- 
+-- The alpha with which the display object will be rendered is called the [worldAlpha]{link PIXI.DisplayObject#worldAlpha}.
+-- 
+-- ## Renderable vs Visible
+-- 
+-- The `renderable` and `visible` properties can be used to prevent a display object from being rendered to the
+-- screen. However, there is a subtle difference between the two. When using `renderable`, the transforms  of the display
+-- object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
+-- be calculated.
+-- 
+-- It is recommended that applications use the `renderable` property for culling. See
+-- [@pixi-essentials/cull]{link https://www.npmjs.com/package/@pixi-essentials/cull} or
+-- [pixi-cull]{link https://www.npmjs.com/package/pixi-cull} for more details.
+-- 
+-- Otherwise, to prevent an object from rendering in the general-purpose sense - `visible` is the property to use. This
+-- one is also better in terms of performance.
+-- 
+-- @memberof PIXI
+____exports.DisplayObject = __TS__Class()
+local DisplayObject = ____exports.DisplayObject
+DisplayObject.name = "DisplayObject"
+__TS__ClassExtends(DisplayObject, EventEmitter)
+function DisplayObject.prototype.____constructor(self)
+    EventEmitter.prototype.____constructor(self)
+    self.tempDisplayObjectParent = nil
+    self.transform = __TS__New(Transform)
+    self.alpha = 1
+    self.visible = true
+    self.renderable = true
+    self.cullable = false
+    self.cullArea = nil
+    self.parent = nil
+    self.worldAlpha = 1
+    self._lastSortedIndex = 0
+    self._zIndex = 0
+    self._bounds = __TS__New(Bounds)
+    self._localBounds = nil
+    self._boundsID = 0
+    self._boundsRect = nil
+    self._localBoundsRect = nil
+    self._destroyed = false
+    self.isSprite = false
+    self.displayObjectUpdateTransform = ____exports.DisplayObject.prototype.updateTransform
+end
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "destroyed",
+    {get = function(self)
+        return self._destroyed
+    end},
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "_tempDisplayObjectParent",
+    {get = function(self)
+        if self.tempDisplayObjectParent == nil then
+            self.tempDisplayObjectParent = __TS__New(____exports.TemporaryDisplayObject)
+        end
+        return self.tempDisplayObjectParent
+    end},
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "x",
+    {
+        get = function(self)
+            return self.position.x
+        end,
+        set = function(self, value)
+            self.transform.position.x = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "y",
+    {
+        get = function(self)
+            return self.position.y
+        end,
+        set = function(self, value)
+            self.transform.position.y = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "worldTransform",
+    {get = function(self)
+        return self.transform.worldTransform
+    end},
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "localTransform",
+    {get = function(self)
+        return self.transform.localTransform
+    end},
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "position",
+    {
+        get = function(self)
+            return self.transform.position
+        end,
+        set = function(self, value)
+            self.transform.position:copyFrom(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "scale",
+    {
+        get = function(self)
+            return self.transform.scale
+        end,
+        set = function(self, value)
+            self.transform.scale:copyFrom(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "pivot",
+    {
+        get = function(self)
+            return self.transform.pivot
+        end,
+        set = function(self, value)
+            self.transform.pivot:copyFrom(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "skew",
+    {
+        get = function(self)
+            return self.transform.skew
+        end,
+        set = function(self, value)
+            self.transform.skew:copyFrom(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "rotation",
+    {
+        get = function(self)
+            return self.transform.rotation
+        end,
+        set = function(self, value)
+            self.transform.rotation = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "angle",
+    {
+        get = function(self)
+            return self.transform.rotation * RAD_TO_DEG
+        end,
+        set = function(self, value)
+            self.transform.rotation = value * DEG_TO_RAD
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "zIndex",
+    {
+        get = function(self)
+            return self._zIndex
+        end,
+        set = function(self, value)
+            self._zIndex = value
+            if self.parent then
+                self.parent.sortDirty = true
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    DisplayObject.prototype,
+    "worldVisible",
+    {get = function(self)
+        local item = self
+        while item do
+            if not item.visible then
+                return false
+            end
+            item = item.parent
+        end
+        return true
+    end},
+    true
+)
+function DisplayObject.mixin(self, source)
+    local keys = __TS__ObjectKeys(source)
+    do
+        local i = 0
+        while i < #keys do
+            do
+                local propertyName = keys[i + 1]
+                local descriptor = __TS__ObjectGetOwnPropertyDescriptor(source, propertyName)
+                if not descriptor then
+                    goto __continue32
+                end
+                __TS__ObjectDefineProperty(____exports.DisplayObject.prototype, propertyName, descriptor)
+            end
+            ::__continue32::
+            i = i + 1
+        end
+    end
+end
+function DisplayObject.prototype._recursivePostUpdateTransform(self)
+    if self.parent then
+        self.parent:_recursivePostUpdateTransform()
+        self.transform:updateTransform(self.parent.transform)
+    else
+        self.transform:updateTransform(self._tempDisplayObjectParent.transform)
+    end
+end
+function DisplayObject.prototype.updateTransform(self)
+    self._boundsID = self._boundsID + 1
+    self.transform:updateTransform(self.parent.transform)
+    self.worldAlpha = self.alpha * self.parent.worldAlpha
+end
+function DisplayObject.prototype.getBounds(self, skipUpdate, rect)
+    if not skipUpdate then
+        if not self.parent then
+            self.parent = self._tempDisplayObjectParent
+            self:updateTransform()
+            self.parent = nil
+        else
+            self:_recursivePostUpdateTransform()
+            self:updateTransform()
+        end
+    end
+    if self._bounds.updateID ~= self._boundsID then
+        self:calculateBounds()
+        self._bounds.updateID = self._boundsID
+    end
+    if not rect then
+        if not self._boundsRect then
+            self._boundsRect = __TS__New(Rectangle)
+        end
+        rect = self._boundsRect
+    end
+    return self._bounds:getRectangle(rect)
+end
+function DisplayObject.prototype.getLocalBounds(self, rect)
+    if not rect then
+        if not self._localBoundsRect then
+            self._localBoundsRect = __TS__New(Rectangle)
+        end
+        rect = self._localBoundsRect
+    end
+    if not self._localBounds then
+        self._localBounds = __TS__New(Bounds)
+    end
+    local transformRef = self.transform
+    local parentRef = self.parent
+    self.parent = nil
+    self.transform = self._tempDisplayObjectParent.transform
+    local worldBounds = self._bounds
+    local worldBoundsID = self._boundsID
+    self._bounds = self._localBounds
+    local bounds = self:getBounds(false, rect)
+    self.parent = parentRef
+    self.transform = transformRef
+    self._bounds = worldBounds
+    local ____self__bounds_0, ____updateID_1 = self._bounds, "updateID"
+    ____self__bounds_0[____updateID_1] = ____self__bounds_0[____updateID_1] + (self._boundsID - worldBoundsID)
+    return bounds
+end
+function DisplayObject.prototype.toGlobal(self, position, point, skipUpdate)
+    if skipUpdate == nil then
+        skipUpdate = false
+    end
+    if not skipUpdate then
+        self:_recursivePostUpdateTransform()
+        if not self.parent then
+            self.parent = self._tempDisplayObjectParent
+            self:displayObjectUpdateTransform()
+            self.parent = nil
+        else
+            self:displayObjectUpdateTransform()
+        end
+    end
+    return self.worldTransform:apply(position, point)
+end
+function DisplayObject.prototype.toLocal(self, position, from, point, skipUpdate)
+    if from then
+        position = from:toGlobal(position, point, skipUpdate)
+    end
+    if not skipUpdate then
+        self:_recursivePostUpdateTransform()
+        if not self.parent then
+            self.parent = self._tempDisplayObjectParent
+            self:displayObjectUpdateTransform()
+            self.parent = nil
+        else
+            self:displayObjectUpdateTransform()
+        end
+    end
+    return self.worldTransform:applyInverse(position, point)
+end
+function DisplayObject.prototype.setParent(self, container)
+    if not container or not container.addChild then
+        error(
+            __TS__New(Error, "setParent: Argument must be a Container"),
+            0
+        )
+    end
+    container:addChild(self)
+    return container
+end
+function DisplayObject.prototype.removeFromParent(self)
+    local ____opt_2 = self.parent
+    if ____opt_2 ~= nil then
+        ____opt_2:removeChild(self)
+    end
+end
+function DisplayObject.prototype.setTransform(self, x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
+    if x == nil then
+        x = 0
+    end
+    if y == nil then
+        y = 0
+    end
+    if scaleX == nil then
+        scaleX = 1
+    end
+    if scaleY == nil then
+        scaleY = 1
+    end
+    if rotation == nil then
+        rotation = 0
+    end
+    if skewX == nil then
+        skewX = 0
+    end
+    if skewY == nil then
+        skewY = 0
+    end
+    if pivotX == nil then
+        pivotX = 0
+    end
+    if pivotY == nil then
+        pivotY = 0
+    end
+    self.position.x = x
+    self.position.y = y
+    self.scale.x = not scaleX and 1 or scaleX
+    self.scale.y = not scaleY and 1 or scaleY
+    self.rotation = rotation
+    self.skew.x = skewX
+    self.skew.y = skewY
+    self.pivot.x = pivotX
+    self.pivot.y = pivotY
+    return self
+end
+function DisplayObject.prototype.destroy(self, _options)
+    self:removeFromParent()
+    self._destroyed = true
+    self.parent = nil
+    self.cullArea = nil
+    local ____self = self
+    if ____self.interactive ~= nil then
+        ____self.interactive = false
+        ____self.interactiveChildren = false
+    end
+    self:emit("destroyed")
+    self:removeAllListeners()
+end
+function DisplayObject.prototype.enableTempParent(self)
+    local myParent = self.parent
+    self.parent = self._tempDisplayObjectParent
+    return myParent
+end
+function DisplayObject.prototype.disableTempParent(self, cacheParent)
+    self.parent = cacheParent
+end
+---
+-- @private
+____exports.TemporaryDisplayObject = __TS__Class()
+local TemporaryDisplayObject = ____exports.TemporaryDisplayObject
+TemporaryDisplayObject.name = "TemporaryDisplayObject"
+__TS__ClassExtends(TemporaryDisplayObject, ____exports.DisplayObject)
+function TemporaryDisplayObject.prototype.____constructor(self)
+    TemporaryDisplayObject.____super.prototype.____constructor(self)
+    self.sortDirty = false
+    self.calculateBounds = noop
+    self.removeChild = noop
+    self.render = noop
+    self.renderCanvas = noop
+end
+____exports.DisplayObject.prototype.displayObjectUpdateTransform = ____exports.DisplayObject.prototype.updateTransform
+return ____exports
+ end,
+["display.Container"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local __TS__ArraySort = ____lualib.__TS__ArraySort
+local ____exports = {}
+local utils = require("utils.index")
+local ____DisplayObject = require("display.DisplayObject")
+local DisplayObject = ____DisplayObject.DisplayObject
+local function sortChildren(self, a, b)
+    if a.zIndex == b.zIndex then
+        return a._lastSortedIndex - b._lastSortedIndex
+    end
+    return a.zIndex - b.zIndex
+end
+--- Container is a general-purpose display object that holds children. It also adds built-in support for advanced
+-- rendering features like masking and filtering.
+-- 
+-- It is the base class of all display objects that act as a container for other objects, including Graphics
+-- and Sprite.
+-- 
+-- @example import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js';
+-- 
+-- const container = new Container();
+-- const sprite = Sprite.from('https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png');
+-- 
+-- sprite.width = 512;
+-- sprite.height = 512;
+-- 
+-- // Adds a sprite as a child to this container. As a result, the sprite will be rendered whenever the container
+-- // is rendered.
+-- container.addChild(sprite);
+-- 
+-- // Blurs whatever is rendered by the container
+-- container.filters = [new BlurFilter()];
+-- 
+-- // Only the contents within a circle at the center should be rendered onto the screen.
+-- container.mask = new Graphics()
+--     .beginFill(0xffffff)
+--     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
+--     .endFill();
+-- @memberof PIXI
+____exports.Container = __TS__Class()
+local Container = ____exports.Container
+Container.name = "Container"
+__TS__ClassExtends(Container, DisplayObject)
+function Container.prototype.____constructor(self)
+    DisplayObject.prototype.____constructor(self)
+    self.children = {}
+    self.sortableChildren = ____exports.Container.defaultSortableChildren
+    self.sortDirty = false
+    self._width = 0
+    self._height = 0
+end
+__TS__SetDescriptor(
+    Container.prototype,
+    "width",
+    {
+        get = function(self)
+            return self.scale.x * self:getLocalBounds().width
+        end,
+        set = function(self, value)
+            local width = self:getLocalBounds().width
+            if width ~= 0 then
+                self.scale.x = value / width
+            else
+                self.scale.x = 1
+            end
+            self._width = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Container.prototype,
+    "height",
+    {
+        get = function(self)
+            return self.scale.y * self:getLocalBounds().height
+        end,
+        set = function(self, value)
+            local height = self:getLocalBounds().height
+            if height ~= 0 then
+                self.scale.y = value / height
+            else
+                self.scale.y = 1
+            end
+            self._height = value
+        end
+    },
+    true
+)
+function Container.prototype.onChildrenChange(self, _length)
+end
+function Container.prototype.addChild(self, ...)
+    local children = {...}
+    if #children > 1 then
+        do
+            local i = 0
+            while i < #children do
+                self:addChild(children[i + 1])
+                i = i + 1
+            end
+        end
+    else
+        local child = children[1]
+        if child.parent then
+            child.parent:removeChild(child)
+        end
+        child.parent = self
+        self.sortDirty = true
+        child.transform._parentID = -1
+        local ____self_children_0 = self.children
+        ____self_children_0[#____self_children_0 + 1] = child
+        self._boundsID = self._boundsID + 1
+        self:onChildrenChange(#self.children - 1)
+        self:emit("childAdded", child, self, #self.children - 1)
+        child:emit("added", self)
+    end
+    return children[1]
+end
+function Container.prototype.addChildAt(self, child, index)
+    if index < 0 or index > #self.children then
+        error(
+            __TS__New(
+                Error,
+                (((tostring(child) .. "addChildAt: The index ") .. tostring(index)) .. " supplied is out of bounds ") .. tostring(#self.children)
+            ),
+            0
+        )
+    end
+    if child.parent then
+        child.parent:removeChild(child)
+    end
+    child.parent = self
+    self.sortDirty = true
+    child.transform._parentID = -1
+    __TS__ArraySplice(self.children, index, 0, child)
+    self._boundsID = self._boundsID + 1
+    self:onChildrenChange(index)
+    child:emit("added", self)
+    self:emit("childAdded", child, self, index)
+    return child
+end
+function Container.prototype.swapChildren(self, child, child2)
+    if child == child2 then
+        return
+    end
+    local index1 = self:getChildIndex(child)
+    local index2 = self:getChildIndex(child2)
+    self.children[index1 + 1] = child2
+    self.children[index2 + 1] = child
+    self:onChildrenChange(index1 < index2 and index1 or index2)
+end
+function Container.prototype.getChildIndex(self, child)
+    local index = __TS__ArrayIndexOf(self.children, child)
+    if index == -1 then
+        error(
+            __TS__New(Error, "The supplied DisplayObject must be a child of the caller"),
+            0
+        )
+    end
+    return index
+end
+function Container.prototype.setChildIndex(self, child, index)
+    if index < 0 or index >= #self.children then
+        error(
+            __TS__New(
+                Error,
+                (("The index " .. tostring(index)) .. " supplied is out of bounds ") .. tostring(#self.children)
+            ),
+            0
+        )
+    end
+    local currentIndex = self:getChildIndex(child)
+    utils:removeItems(self.children, currentIndex, 1)
+    __TS__ArraySplice(self.children, index, 0, child)
+    self:onChildrenChange(index)
+end
+function Container.prototype.getChildAt(self, index)
+    if index < 0 or index >= #self.children then
+        error(
+            __TS__New(
+                Error,
+                ("getChildAt: Index (" .. tostring(index)) .. ") does not exist."
+            ),
+            0
+        )
+    end
+    return self.children[index + 1]
+end
+function Container.prototype.removeChild(self, ...)
+    local children = {...}
+    if #children > 1 then
+        do
+            local i = 0
+            while i < #children do
+                self:removeChild(children[i + 1])
+                i = i + 1
+            end
+        end
+    else
+        local child = children[1]
+        local index = __TS__ArrayIndexOf(self.children, child)
+        if index == -1 then
+            return nil
+        end
+        child.parent = nil
+        child.transform._parentID = -1
+        utils:removeItems(self.children, index, 1)
+        self._boundsID = self._boundsID + 1
+        self:onChildrenChange(index)
+        child:emit("removed", self)
+        self:emit("childRemoved", child, self, index)
+    end
+    return children[1]
+end
+function Container.prototype.removeChildAt(self, index)
+    local child = self:getChildAt(index)
+    child.parent = nil
+    child.transform._parentID = -1
+    utils:removeItems(self.children, index, 1)
+    self._boundsID = self._boundsID + 1
+    self:onChildrenChange(index)
+    child:emit("removed", self)
+    self:emit("childRemoved", child, self, index)
+    return child
+end
+function Container.prototype.removeChildren(self, beginIndex, endIndex)
+    if beginIndex == nil then
+        beginIndex = 0
+    end
+    if endIndex == nil then
+        endIndex = #self.children
+    end
+    local begin = beginIndex
+    local ____end = endIndex
+    local range = ____end - begin
+    local removed
+    if range > 0 and range <= ____end then
+        removed = __TS__ArraySplice(self.children, begin, range)
+        do
+            local i = 0
+            while i < #removed do
+                removed[i + 1].parent = nil
+                if removed[i + 1].transform ~= nil then
+                    removed[i + 1].transform._parentID = -1
+                end
+                i = i + 1
+            end
+        end
+        self._boundsID = self._boundsID + 1
+        self:onChildrenChange(beginIndex)
+        do
+            local i = 0
+            while i < #removed do
+                removed[i + 1]:emit("removed", self)
+                self:emit("childRemoved", removed[i + 1], self, i)
+                i = i + 1
+            end
+        end
+        return removed
+    elseif range == 0 and #self.children == 0 then
+        return {}
+    end
+    error(
+        __TS__New(RangeError, "removeChildren: numeric values are outside the acceptable range."),
+        0
+    )
+end
+function Container.prototype.sortChildren(self)
+    local sortRequired = false
+    do
+        local i = 0
+        local j = #self.children
+        while i < j do
+            local child = self.children[i + 1]
+            child._lastSortedIndex = i
+            if not sortRequired and child.zIndex ~= 0 then
+                sortRequired = true
+            end
+            i = i + 1
+        end
+    end
+    if sortRequired and #self.children > 1 then
+        __TS__ArraySort(self.children, sortChildren)
+    end
+    self.sortDirty = false
+end
+function Container.prototype.updateTransform(self)
+    if self.sortableChildren and self.sortDirty then
+        self:sortChildren()
+    end
+    self._boundsID = self._boundsID + 1
+    self.transform:updateTransform(self.parent.transform)
+    self.worldAlpha = self.alpha * self.parent.worldAlpha
+    do
+        local i = 0
+        local j = #self.children
+        while i < j do
+            local child = self.children[i + 1]
+            if child.visible then
+                child:updateTransform()
+            end
+            i = i + 1
+        end
+    end
+end
+function Container.prototype.containerUpdateTransform(self)
+    self:updateTransform()
+end
+function Container.prototype.calculateBounds(self)
+    self._bounds:clear()
+    self:_calculateBounds()
+    do
+        local i = 0
+        while i < #self.children do
+            do
+                local child = self.children[i + 1]
+                if not child.visible or not child.renderable then
+                    goto __continue52
+                end
+                child:calculateBounds()
+                self._bounds:addBounds(child._bounds)
+            end
+            ::__continue52::
+            i = i + 1
+        end
+    end
+    self._bounds.updateID = self._boundsID
+end
+function Container.prototype.getLocalBounds(self, rect, skipChildrenUpdate)
+    if skipChildrenUpdate == nil then
+        skipChildrenUpdate = false
+    end
+    local result = DisplayObject.prototype.getLocalBounds(self, rect)
+    if not skipChildrenUpdate then
+        do
+            local i = 0
+            local j = #self.children
+            while i < j do
+                local child = self.children[i + 1]
+                if child.visible then
+                    child:updateTransform()
+                end
+                i = i + 1
+            end
+        end
+    end
+    return result
+end
+function Container.prototype._calculateBounds(self)
+end
+function Container.prototype.render(self, renderer)
+    if not self.visible or self.worldAlpha <= 0 or not self.renderable then
+        return
+    end
+    self:_render(renderer)
+    do
+        local i = 0
+        local j = #self.children
+        while i < j do
+            self.children[i + 1]:render(renderer)
+            i = i + 1
+        end
+    end
+end
+function Container.prototype._renderCanvas(self, _renderer)
+end
+function Container.prototype.renderCanvas(self, renderer)
+    if not self.visible or self.worldAlpha <= 0 or not self.renderable then
+        return
+    end
+    self:_renderCanvas(renderer)
+    do
+        local i = 0
+        local j = #self.children
+        while i < j do
+            self.children[i + 1]:renderCanvas(renderer)
+            i = i + 1
+        end
+    end
+end
+function Container.prototype._render(self, _renderer)
+end
+function Container.prototype.destroy(self, options)
+    DisplayObject.prototype.destroy(self)
+    self.sortDirty = false
+    local ____temp_3
+    if type(options) == "boolean" then
+        ____temp_3 = options
+    else
+        ____temp_3 = options and options.children
+    end
+    local destroyChildren = ____temp_3
+    local oldChildren = self:removeChildren(0, #self.children)
+    if destroyChildren then
+        do
+            local i = 0
+            while i < #oldChildren do
+                oldChildren[i + 1]:destroy(options)
+                i = i + 1
+            end
+        end
+    end
+end
+Container.defaultSortableChildren = false
+return ____exports
+ end,
+["display.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("display.Bounds")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("display.Container")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("display.DisplayObject")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
+["core.ICanvas"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["core.IRenderer"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["core.system.SystemManager"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__ArrayForEach = ____lualib.__TS__ArrayForEach
+local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
+local __TS__ArrayFind = ____lualib.__TS__ArrayFind
+local __TS__ObjectValues = ____lualib.__TS__ObjectValues
+local ____exports = {}
+local ____systems = require("core.systems")
+local systems = ____systems.default
+local ____runner = require("runner.index")
+local Runner = ____runner.Runner
+local ____eventemitter3 = require("eventemitter3.index")
+local EventEmitter = ____eventemitter3.EventEmitter
+--- The SystemManager is a class that provides functions for managing a set of systems
+-- This is a base class, that is generic (no render code or knowledge at all)
+-- 
+-- @memberof PIXI
+____exports.SystemManager = __TS__Class()
+local SystemManager = ____exports.SystemManager
+SystemManager.name = "SystemManager"
+__TS__ClassExtends(SystemManager, EventEmitter)
+function SystemManager.prototype.____constructor(self, ...)
+    EventEmitter.prototype.____constructor(self, ...)
+    self.runners = {}
+    self._systemsHash = {}
+end
+function SystemManager.prototype.setup(self, config)
+    self:addRunners(unpack(config.runners))
+    for ____, name in ipairs(config.priority) do
+        local system = systems:get(name)
+        if system == nil then
+            error(
+                __TS__New(Error, "Missing system: " .. name),
+                0
+            )
+        end
+        self:addSystem(system, name)
+    end
+end
+function SystemManager.prototype.addRunners(self, ...)
+    local runnerIds = {...}
+    __TS__ArrayForEach(
+        runnerIds,
+        function(____, runnerId)
+            self.runners[runnerId] = __TS__New(Runner, runnerId)
+        end
+    )
+end
+function SystemManager.prototype.addSystem(self, ClassRef, name)
+    local system = __TS__New(ClassRef, self)
+    if self[name] then
+        error(
+            __TS__New(Error, ("Whoops! The name \"" .. name) .. "\" is already in use"),
+            0
+        )
+    end
+    self[name] = system
+    self._systemsHash[name] = system
+    for i in pairs(self.runners) do
+        self.runners[i]:add(system)
+    end
+    return self
+end
+function SystemManager.prototype.emitWithCustomOptions(self, runner, options)
+    local systemHashKeys = __TS__ObjectKeys(self._systemsHash)
+    __TS__ArrayForEach(
+        runner.items,
+        function(____, system)
+            local systemName = __TS__ArrayFind(
+                systemHashKeys,
+                function(____, systemId) return self._systemsHash[systemId] == system end
+            ) or "unset"
+            system[runner.name](system, options[systemName])
+        end
+    )
+end
+function SystemManager.prototype.destroy(self)
+    __TS__ArrayForEach(
+        __TS__ObjectValues(self.runners),
+        function(____, runner)
+            runner:destroy()
+        end
+    )
+    self._systemsHash = {}
+end
+return ____exports
+ end,
+["canvas-renderer.CanvasObjectRendererSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+local systems = require("core.systems")
+local ____constants = require("constants.index")
+local BLEND_MODES = ____constants.BLEND_MODES
+--- system that provides a render function that focussing on rendering Pixi Scene Graph objects
+-- to either the main view or to a renderTexture. Used for Canvas `2d` contexts
+-- 
+-- @memberof PIXI
+____exports.CanvasObjectRendererSystem = __TS__Class()
+local CanvasObjectRendererSystem = ____exports.CanvasObjectRendererSystem
+CanvasObjectRendererSystem.name = "CanvasObjectRendererSystem"
+function CanvasObjectRendererSystem.prototype.____constructor(self, renderer)
+    self.renderer = renderer
+    self.renderingToScreen = true
+    self.lastObjectRendered = nil
+end
+function CanvasObjectRendererSystem.prototype.render(self, displayObject, options)
+    local renderer = self.renderer
+    if not renderer.view then
+        return
+    end
+    local _context = renderer.canvasContext
+    local renderTexture = nil
+    local clear = false
+    local transform = nil
+    local skipUpdateTransform = false
+    if options then
+        renderTexture = nil
+        local ____options_clear_0 = options.clear
+        if ____options_clear_0 == nil then
+            ____options_clear_0 = clear
+        end
+        clear = ____options_clear_0
+        transform = options.transform or transform
+        local ____options_skipUpdateTransform_1 = options.skipUpdateTransform
+        if ____options_skipUpdateTransform_1 == nil then
+            ____options_skipUpdateTransform_1 = skipUpdateTransform
+        end
+        skipUpdateTransform = ____options_skipUpdateTransform_1
+    end
+    self.renderingToScreen = not renderTexture
+    renderer:emit("prerender")
+    local rootResolution = 1
+    _context.activeContext = _context.rootContext
+    _context.activeResolution = rootResolution
+    local context2D = _context.activeContext
+    _context._projTransform = transform or nil
+    if not renderTexture then
+        self.lastObjectRendered = displayObject
+    end
+    if not skipUpdateTransform then
+        local cacheParent = displayObject:enableTempParent()
+        displayObject:updateTransform()
+        displayObject:disableTempParent(cacheParent)
+    end
+    context2D:save()
+    context2D:setTransform(
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+    )
+    context2D.globalAlpha = 1
+    _context._activeBlendMode = BLEND_MODES.NORMAL
+    _context._outerBlend = false
+    context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL + 1]
+    context2D.fillStyle = 16711680
+    context2D:fillRect(0, 0, context2D.width, context2D.height)
+    local tempContext = _context.activeContext
+    _context.activeContext = context2D
+    displayObject:renderCanvas(renderer)
+    _context.activeContext = tempContext
+    context2D:restore()
+    _context.activeResolution = rootResolution
+    _context._projTransform = nil
+    renderer:emit("postrender")
+end
+function CanvasObjectRendererSystem.prototype.destroy(self)
+    self.lastObjectRendered = nil
+    self.render = nil
+end
+systems:register("objectRenderer", ____exports.CanvasObjectRendererSystem)
+return ____exports
+ end,
+["canvas-renderer.CanvasRenderer"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__ArrayReverse = ____lualib.__TS__ArrayReverse
+local ____exports = {}
+local ____settings = require("settings")
+local settings = ____settings.default
+local ____SystemManager = require("core.system.SystemManager")
+local SystemManager = ____SystemManager.SystemManager
+local ____constants = require("constants.index")
+local RENDERER_TYPE = ____constants.RENDERER_TYPE
+--- The CanvasRenderer draws the scene and all its content onto a 2d canvas.
+-- 
+-- This renderer should be used for browsers that support WebGL.
+-- 
+-- This renderer should be used for browsers that do not support WebGL.
+-- Don't forget to add the view to your DOM or you will not see anything!
+-- 
+-- Renderer is composed of systems that manage specific tasks. The following systems are added by default
+-- whenever you create a renderer:
+-- 
+-- | System                               | Description                                                                   |
+-- | ------------------------------------ | ----------------------------------------------------------------------------- |
+-- 
+-- | Generic Systems                      | Systems that manage functionality that all renderer types share               |
+-- | ------------------------------------ | ----------------------------------------------------------------------------- |
+-- | {link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
+-- | {link PIXI.PluginSystem}            | This manages plugins for the renderer                                         |
+-- | {link PIXI.BackgroundSystem}        | This manages the main views background color and alpha                        |
+-- | {link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
+-- | {link PIXI.EventSystem}             | This manages UI events.                                                       |
+-- | {link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
+-- 
+-- | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
+-- | ------------------------------------ | ----------------------------------------------------------------------------- |
+-- | {link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
+-- | {link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
+-- | {link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
+-- | {link PIXI.CanvasExtract}           | This extracts image data from a PIXI.DisplayObject                            |
+-- | {link PIXI.CanvasPrepare}           | This prepares a PIXI.DisplayObject async for rendering                        |
+-- 
+-- The breadth of the API surface provided by the renderer is contained within these systems.
+-- 
+-- @class
+-- @memberof PIXI
+____exports.CanvasRenderer = __TS__Class()
+local CanvasRenderer = ____exports.CanvasRenderer
+CanvasRenderer.name = "CanvasRenderer"
+__TS__ClassExtends(CanvasRenderer, SystemManager)
+function CanvasRenderer.prototype.____constructor(self, options)
+    SystemManager.prototype.____constructor(self)
+    self.rendererLogId = "Canvas"
+    self.canvasContext = nil
+    self.objectRenderer = nil
+    options = __TS__ObjectAssign({}, settings.RENDER_OPTIONS, options)
+    local systemConfig = {runners = {
+        "init",
+        "destroy",
+        "contextChange",
+        "resolutionChange",
+        "reset",
+        "update",
+        "postrender",
+        "prerender",
+        "resize"
+    }, systems = ____exports.CanvasRenderer.__systems, priority = {
+        "background",
+        "_view",
+        "startup",
+        "canvasContext",
+        "objectRenderer"
+    }}
+    self.background = nil
+    self.startup = nil
+    self._view = nil
+    self:setup(systemConfig)
+    local ____temp_1 = options.backgroundAlpha or 1
+    local ____temp_2 = options.background or options.backgroundColor or 16777215
+    local ____options_clearBeforeRender_0 = options.clearBeforeRender
+    if ____options_clearBeforeRender_0 == nil then
+        ____options_clearBeforeRender_0 = false
+    end
+    local startupOptions = {background = {alpha = ____temp_1, color = ____temp_2, clearBeforeRender = ____options_clearBeforeRender_0}, _view = {height = options.height or 100, width = options.width or 100, view = options.view}}
+    self.type = RENDERER_TYPE.CANVAS
+    self.options = options
+    self.startup:run(startupOptions)
+end
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "width",
+    {get = function(self)
+        return self._view.element.width
+    end},
+    true
+)
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "height",
+    {get = function(self)
+        return self._view.element.height
+    end},
+    true
+)
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "view",
+    {get = function(self)
+        return self._view.element
+    end},
+    true
+)
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "screen",
+    {get = function(self)
+        return self._view.screen
+    end},
+    true
+)
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "lastObjectRendered",
+    {get = function(self)
+        return self.objectRenderer.lastObjectRendered
+    end},
+    true
+)
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "renderingToScreen",
+    {get = function(self)
+        return self.objectRenderer.renderingToScreen
+    end},
+    true
+)
+__TS__SetDescriptor(
+    CanvasRenderer.prototype,
+    "clearBeforeRender",
+    {get = function(self)
+        return self.background.clearBeforeRender
+    end},
+    true
+)
+function CanvasRenderer.test(self)
+    return true
+end
+function CanvasRenderer.prototype.reset(self)
+end
+function CanvasRenderer.prototype.render(self, displayObject, options)
+    self.objectRenderer:render(displayObject, options)
+end
+function CanvasRenderer.prototype.clear(self)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+function CanvasRenderer.prototype.destroy(self, removeView)
+    __TS__ArrayReverse(self.runners.destroy.items)
+    self:emitWithCustomOptions(self.runners.destroy, {_view = removeView})
+    SystemManager.prototype.destroy(self)
+end
+function CanvasRenderer.prototype.resize(self, desiredScreenWidth, desiredScreenHeight)
+    self._view:resizeView(desiredScreenWidth, desiredScreenHeight)
+end
+CanvasRenderer.__systems = {}
+return ____exports
+ end,
+["canvas-renderer.CanvasContextSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local systems = require("core.systems")
+local ____constants = require("constants.index")
+local BLEND_MODES = ____constants.BLEND_MODES
+local ____mapCanvasBlendModesToPixi = require("canvas-renderer.utils.mapCanvasBlendModesToPixi")
+local mapCanvasBlendModesToPixi = ____mapCanvasBlendModesToPixi.mapCanvasBlendModesToPixi
+local ____context2d = require("context2d.index")
+local Context2D = ____context2d.Context2D
+--- System that manages the canvas `2d` contexts
+-- 
+-- @memberof PIXI
+____exports.CanvasContextSystem = __TS__Class()
+local CanvasContextSystem = ____exports.CanvasContextSystem
+CanvasContextSystem.name = "CanvasContextSystem"
+function CanvasContextSystem.prototype.____constructor(self, renderer)
+    self.activeResolution = 1
+    self.blendModes = mapCanvasBlendModesToPixi(nil)
+    self._projTransform = nil
+    self._outerBlend = false
+    self._activeBlendMode = BLEND_MODES.NORMAL
+    self.renderer = renderer
+    self.rootContext = nil
+    self.activeContext = nil
+end
+function CanvasContextSystem.prototype.init(self)
+    self.rootContext = __TS__New(Context2D, self.renderer.view.width, self.renderer.view.height)
+    if self.renderer.background.alpha < 1 then
+        self.rootContext.globalAlpha = self.renderer.background.alpha
+    end
+    self.activeContext = self.rootContext
+end
+function CanvasContextSystem.prototype.destroy(self)
+    local ____self = self
+    ____self.renderer = nil
+    ____self.rootContext = nil
+    ____self.activeContext = nil
+end
+systems:register("canvasContext", ____exports.CanvasContextSystem)
+return ____exports
+ end,
+["canvas-renderer.CanvasMaskSystem"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.placeholder = 0
+return ____exports
+ end,
+["canvas-renderer.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+require("canvas-renderer.BaseTexture")
+do
+    local ____export = require("canvas-renderer.CanvasContextSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.CanvasMaskSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.CanvasObjectRendererSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.CanvasRenderer")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.utils.canUseNewCanvasBlendModes")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
+["core.Renderer"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____canvas_2Drenderer = require("canvas-renderer.index")
+    local Renderer = ____canvas_2Drenderer.CanvasRenderer
+    ____exports.Renderer = Renderer
+end
+return ____exports
+ end,
+["core.system.ISystem"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["core.background.BackgroundSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local ____exports = {}
+local systems = require("core.systems")
+local ____color = require("color.index")
+local Color = ____color.Color
+--- The background system manages the background color and alpha of the main view.
+-- 
+-- @memberof PIXI
+____exports.BackgroundSystem = __TS__Class()
+local BackgroundSystem = ____exports.BackgroundSystem
+BackgroundSystem.name = "BackgroundSystem"
+function BackgroundSystem.prototype.____constructor(self)
+    self.clearBeforeRender = true
+    self._backgroundColor = __TS__New(Color, 0)
+    self.alpha = 1
+end
+__TS__SetDescriptor(
+    BackgroundSystem.prototype,
+    "color",
+    {
+        get = function(self)
+            return self._backgroundColor.value
+        end,
+        set = function(self, value)
+            self._backgroundColor:setValue(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    BackgroundSystem.prototype,
+    "alpha",
+    {
+        get = function(self)
+            return self._backgroundColor.alpha
+        end,
+        set = function(self, value)
+            self._backgroundColor:setAlpha(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    BackgroundSystem.prototype,
+    "backgroundColor",
+    {get = function(self)
+        return self._backgroundColor
+    end},
+    true
+)
+function BackgroundSystem.prototype.init(self, options)
+    self.clearBeforeRender = options.clearBeforeRender
+    if options.color ~= nil then
+        self.color = options.color
+    end
+    self.alpha = options.alpha
+end
+function BackgroundSystem.prototype.destroy(self)
+end
+systems:register("background", ____exports.BackgroundSystem)
+return ____exports
+ end,
+["core.view.ViewSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+local systems = require("core.systems")
+local ____math = require("math.index")
+local Rectangle = ____math.Rectangle
+local ____settings = require("settings")
+local settings = ____settings.settings
+--- The view system manages the main canvas that is attached to the DOM.
+-- This main role is to deal with how the holding the view reference and dealing with how it is resized.
+-- 
+-- @memberof PIXI
+____exports.ViewSystem = __TS__Class()
+local ViewSystem = ____exports.ViewSystem
+ViewSystem.name = "ViewSystem"
+function ViewSystem.prototype.____constructor(self, renderer)
+    self.renderer = renderer
+    self.screen = nil
+    self.element = nil
+end
+function ViewSystem.prototype.init(self, options)
+    self.screen = __TS__New(
+        Rectangle,
+        0,
+        0,
+        options.width,
+        options.height
+    )
+    self.element = options.view or settings.ADAPTER:createCanvas(options.width, options.height)
+end
+function ViewSystem.prototype.resizeView(self, desiredScreenWidth, desiredScreenHeight)
+    self.element.width = math.floor(desiredScreenWidth + 0.5)
+    self.element.height = math.floor(desiredScreenHeight + 0.5)
+    local screenWidth = self.element.width
+    local screenHeight = self.element.height
+    self.screen.width = screenWidth
+    self.screen.height = screenHeight
+    self.renderer:emit("resize", screenWidth, screenHeight)
+    self.renderer.runners.resize:emit(self.screen.width, self.screen.height)
+end
+function ViewSystem.prototype.destroy(self, removeView)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+systems:register("_view", ____exports.ViewSystem)
+return ____exports
+ end,
+["core.startup.StartupSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+local systems = require("core.systems")
+--- A simple system responsible for initiating the renderer.
+-- 
+-- @memberof PIXI
+____exports.StartupSystem = __TS__Class()
+local StartupSystem = ____exports.StartupSystem
+StartupSystem.name = "StartupSystem"
+function StartupSystem.prototype.____constructor(self, renderer)
+    self.renderer = renderer
+end
+function StartupSystem.prototype.run(self, options)
+    local renderer = self.renderer
+    renderer:emitWithCustomOptions(renderer.runners.init, options)
+    renderer:resize(self.renderer.screen.width, self.renderer.screen.height)
+end
+function StartupSystem.prototype.destroy(self)
+end
+systems:register("startup", ____exports.StartupSystem)
+return ____exports
+ end,
+["core.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- String of the current PIXI version.
+-- 
+-- @memberof PIXI
+____exports.VERSION = "$_VERSION"
+do
+    local ____export = require("color.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("constants.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("math.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("runner.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("settings")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+____exports.utils = require("utils.index")
+do
+    local ____export = require("core.background.BackgroundSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.Renderer")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.startup.StartupSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.system.SystemManager")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+____exports.systems = require("core.systems")
+do
+    local ____export = require("core.view.ViewSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
 ["index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
-local cairo = require("kui.cairo.cairo")
-local ____math = require("math.index")
-local Rectangle = ____math.Rectangle
+require("setup")
+require("typedarray.index")
+local h = require("kui.legacy")
+local ____core = require("core.index")
+local Renderer = ____core.Renderer
+local ____display = require("display.index")
+local Container = ____display.Container
 function ____exports.setup(self)
-    print(__TS__New(
-        Rectangle,
-        1,
-        0,
-        10,
-        10
-    ))
-    local image = cairo.image_surface("argb32", 100, 100)
-    local context = image:context()
-    print(vim.inspect(context))
+    local renderer = __TS__New(Renderer, {width = 100, height = 100})
+    local stage = __TS__New(Container)
+    renderer:render(stage)
+    renderer.canvasContext.rootContext.surface:flush()
+    h.setup()
+    h.add_image(renderer.canvasContext.rootContext.surface, {buffer = 0, row = 0, col = 0})
 end
+return ____exports
+ end,
+["setup"] = function(...) 
+--
+-- setup.lua
+--
+
+local bit = 'bit'
+_G.bit = require(bit)
+ end,
+["colord.colorModels.cmyk"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local __TS__NumberIsNaN = ____lualib.__TS__NumberIsNaN
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local isPresent = ____helpers.isPresent
+local round = ____helpers.round
+--- Clamps the CMYK color object values.
+____exports.clampCmyka = function(____, cmyka) return {
+    c = clamp(nil, cmyka.c, 0, 100),
+    m = clamp(nil, cmyka.m, 0, 100),
+    y = clamp(nil, cmyka.y, 0, 100),
+    k = clamp(nil, cmyka.k, 0, 100),
+    a = clamp(nil, cmyka.a)
+} end
+--- Rounds the CMYK color object values.
+____exports.roundCmyka = function(____, cmyka) return {
+    c = round(nil, cmyka.c, 2),
+    m = round(nil, cmyka.m, 2),
+    y = round(nil, cmyka.y, 2),
+    k = round(nil, cmyka.k, 2),
+    a = round(nil, cmyka.a, ALPHA_PRECISION)
+} end
+--- Transforms the CMYK color object to RGB.
+-- https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
+function ____exports.cmykaToRgba(self, cmyka)
+    return {
+        r = round(nil, 255 * (1 - cmyka.c / 100) * (1 - cmyka.k / 100)),
+        g = round(nil, 255 * (1 - cmyka.m / 100) * (1 - cmyka.k / 100)),
+        b = round(nil, 255 * (1 - cmyka.y / 100) * (1 - cmyka.k / 100)),
+        a = cmyka.a
+    }
+end
+--- Convert RGB Color Model object to CMYK.
+-- https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
+function ____exports.rgbaToCmyka(self, rgba)
+    local k = 1 - math.max(rgba.r / 255, rgba.g / 255, rgba.b / 255)
+    local c = (1 - rgba.r / 255 - k) / (1 - k)
+    local m = (1 - rgba.g / 255 - k) / (1 - k)
+    local y = (1 - rgba.b / 255 - k) / (1 - k)
+    return {
+        c = __TS__NumberIsNaN(__TS__Number(c)) and 0 or round(nil, c * 100),
+        m = __TS__NumberIsNaN(__TS__Number(m)) and 0 or round(nil, m * 100),
+        y = __TS__NumberIsNaN(__TS__Number(y)) and 0 or round(nil, y * 100),
+        k = round(nil, k * 100),
+        a = rgba.a
+    }
+end
+--- Parses the CMYK color object into RGB.
+function ____exports.parseCmyka(self, ____bindingPattern0)
+    local a
+    local k
+    local y
+    local m
+    local c
+    c = ____bindingPattern0.c
+    m = ____bindingPattern0.m
+    y = ____bindingPattern0.y
+    k = ____bindingPattern0.k
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, c) or not isPresent(nil, m) or not isPresent(nil, y) or not isPresent(nil, k) then
+        return nil
+    end
+    local cmyk = ____exports.clampCmyka(
+        nil,
+        {
+            c = __TS__Number(c),
+            m = __TS__Number(m),
+            y = __TS__Number(y),
+            k = __TS__Number(k),
+            a = __TS__Number(a)
+        }
+    )
+    return ____exports.cmykaToRgba(nil, cmyk)
+end
+return ____exports
+ end,
+["colord.colorModels.cmykString"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____cmyk = require("colord.colorModels.cmyk")
+local rgbaToCmyka = ____cmyk.rgbaToCmyka
+local roundCmyka = ____cmyk.roundCmyka
+--- Parses a valid CMYK CSS color function/string
+-- https://www.w3.org/TR/css-color-4/#device-cmyk
+____exports.parseCmykaString = function(____, input)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+function ____exports.rgbaToCmykaString(self, rgb)
+    local ____roundCmyka_result_0 = roundCmyka(
+        nil,
+        rgbaToCmyka(nil, rgb)
+    )
+    local c = ____roundCmyka_result_0.c
+    local m = ____roundCmyka_result_0.m
+    local y = ____roundCmyka_result_0.y
+    local k = ____roundCmyka_result_0.k
+    local a = ____roundCmyka_result_0.a
+    return a < 1 and ((((((((("device-cmyk(" .. tostring(c)) .. "% ") .. tostring(m)) .. "% ") .. tostring(y)) .. "% ") .. tostring(k)) .. "% / ") .. tostring(a)) .. ")" or ((((((("device-cmyk(" .. tostring(c)) .. "% ") .. tostring(m)) .. "% ") .. tostring(y)) .. "% ") .. tostring(k)) .. "%)"
+end
+return ____exports
+ end,
+["colord.colorModels.hwb"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local clampHue = ____helpers.clampHue
+local round = ____helpers.round
+local isPresent = ____helpers.isPresent
+local ____hsv = require("colord.colorModels.hsv")
+local hsvaToRgba = ____hsv.hsvaToRgba
+local rgbaToHsva = ____hsv.rgbaToHsva
+____exports.clampHwba = function(____, hwba) return {
+    h = clampHue(nil, hwba.h),
+    w = clamp(nil, hwba.w, 0, 100),
+    b = clamp(nil, hwba.b, 0, 100),
+    a = clamp(nil, hwba.a)
+} end
+____exports.roundHwba = function(____, hwba) return {
+    h = round(nil, hwba.h),
+    w = round(nil, hwba.w),
+    b = round(nil, hwba.b),
+    a = round(nil, hwba.a, ALPHA_PRECISION)
+} end
+____exports.rgbaToHwba = function(____, rgba)
+    local ____rgbaToHsva_result_0 = rgbaToHsva(nil, rgba)
+    local h = ____rgbaToHsva_result_0.h
+    local w = math.min(rgba.r, rgba.g, rgba.b) / 255 * 100
+    local b = 100 - math.max(rgba.r, rgba.g, rgba.b) / 255 * 100
+    return {h = h, w = w, b = b, a = rgba.a}
+end
+____exports.hwbaToRgba = function(____, hwba)
+    return hsvaToRgba(nil, {h = hwba.h, s = hwba.b == 100 and 0 or 100 - hwba.w / (100 - hwba.b) * 100, v = 100 - hwba.b, a = hwba.a})
+end
+____exports.parseHwba = function(____, ____bindingPattern0)
+    local a
+    local b
+    local w
+    local h
+    h = ____bindingPattern0.h
+    w = ____bindingPattern0.w
+    b = ____bindingPattern0.b
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, h) or not isPresent(nil, w) or not isPresent(nil, b) then
+        return nil
+    end
+    local hwba = ____exports.clampHwba(
+        nil,
+        {
+            h = __TS__Number(h),
+            w = __TS__Number(w),
+            b = __TS__Number(b),
+            a = __TS__Number(a)
+        }
+    )
+    return ____exports.hwbaToRgba(nil, hwba)
+end
+return ____exports
+ end,
+["colord.colorModels.hwbString"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____hwb = require("colord.colorModels.hwb")
+local rgbaToHwba = ____hwb.rgbaToHwba
+local roundHwba = ____hwb.roundHwba
+--- Parses a valid HWB[A] CSS color function/string
+-- https://www.w3.org/TR/css-color-4/#the-hwb-notation
+____exports.parseHwbaString = function(____, input)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+____exports.rgbaToHwbaString = function(____, rgba)
+    local ____roundHwba_result_0 = roundHwba(
+        nil,
+        rgbaToHwba(nil, rgba)
+    )
+    local h = ____roundHwba_result_0.h
+    local w = ____roundHwba_result_0.w
+    local b = ____roundHwba_result_0.b
+    local a = ____roundHwba_result_0.a
+    return a < 1 and ((((((("hwb(" .. tostring(h)) .. " ") .. tostring(w)) .. "% ") .. tostring(b)) .. "% / ") .. tostring(a)) .. ")" or ((((("hwb(" .. tostring(h)) .. " ") .. tostring(w)) .. "% ") .. tostring(b)) .. "%)"
+end
+return ____exports
+ end,
+["colord.colorModels.xyz"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local isPresent = ____helpers.isPresent
+local round = ____helpers.round
+local ____rgb = require("colord.colorModels.rgb")
+local clampRgba = ____rgb.clampRgba
+local linearizeRgbChannel = ____rgb.linearizeRgbChannel
+local unlinearizeRgbChannel = ____rgb.unlinearizeRgbChannel
+____exports.D50 = {x = 96.422, y = 100, z = 82.521}
+--- Limits XYZ axis values assuming XYZ is relative to D50.
+____exports.clampXyza = function(____, xyza) return {
+    x = clamp(nil, xyza.x, 0, ____exports.D50.x),
+    y = clamp(nil, xyza.y, 0, ____exports.D50.y),
+    z = clamp(nil, xyza.z, 0, ____exports.D50.z),
+    a = clamp(nil, xyza.a)
+} end
+____exports.roundXyza = function(____, xyza) return {
+    x = round(nil, xyza.x, 2),
+    y = round(nil, xyza.y, 2),
+    z = round(nil, xyza.z, 2),
+    a = round(nil, xyza.a, ALPHA_PRECISION)
+} end
+____exports.parseXyza = function(____, ____bindingPattern0)
+    local a
+    local z
+    local y
+    local x
+    x = ____bindingPattern0.x
+    y = ____bindingPattern0.y
+    z = ____bindingPattern0.z
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, x) or not isPresent(nil, y) or not isPresent(nil, z) then
+        return nil
+    end
+    local xyza = ____exports.clampXyza(
+        nil,
+        {
+            x = __TS__Number(x),
+            y = __TS__Number(y),
+            z = __TS__Number(z),
+            a = __TS__Number(a)
+        }
+    )
+    return ____exports.xyzaToRgba(nil, xyza)
+end
+--- Performs Bradford chromatic adaptation from D65 to D50
+____exports.adaptXyzaToD50 = function(____, xyza) return {x = xyza.x * 1.0478112 + xyza.y * 0.0228866 + xyza.z * -0.050127, y = xyza.x * 0.0295424 + xyza.y * 0.9904844 + xyza.z * -0.0170491, z = xyza.x * -0.0092345 + xyza.y * 0.0150436 + xyza.z * 0.7521316, a = xyza.a} end
+--- Performs Bradford chromatic adaptation from D50 to D65
+____exports.adaptXyzToD65 = function(____, xyza) return {x = xyza.x * 0.9555766 + xyza.y * -0.0230393 + xyza.z * 0.0631636, y = xyza.x * -0.0282895 + xyza.y * 1.0099416 + xyza.z * 0.0210077, z = xyza.x * 0.0122982 + xyza.y * -0.020483 + xyza.z * 1.3299098} end
+--- Converts an CIE XYZ color (D50) to RGBA color space (D65)
+-- https://www.w3.org/TR/css-color-4/#color-conversion-code
+____exports.xyzaToRgba = function(____, sourceXyza)
+    local xyz = ____exports.adaptXyzToD65(nil, sourceXyza)
+    return clampRgba(
+        nil,
+        {
+            r = unlinearizeRgbChannel(nil, 0.032404542 * xyz.x - 0.015371385 * xyz.y - 0.004985314 * xyz.z),
+            g = unlinearizeRgbChannel(nil, -0.00969266 * xyz.x + 0.018760108 * xyz.y + 0.00041556 * xyz.z),
+            b = unlinearizeRgbChannel(nil, 0.000556434 * xyz.x - 0.002040259 * xyz.y + 0.010572252 * xyz.z),
+            a = sourceXyza.a
+        }
+    )
+end
+--- Converts an RGB color (D65) to CIE XYZ (D50)
+-- https://image-engineering.de/library/technotes/958-how-to-convert-between-srgb-and-ciexyz
+____exports.rgbaToXyza = function(____, rgba)
+    local sRed = linearizeRgbChannel(nil, rgba.r)
+    local sGreen = linearizeRgbChannel(nil, rgba.g)
+    local sBlue = linearizeRgbChannel(nil, rgba.b)
+    local xyza = {x = (sRed * 0.4124564 + sGreen * 0.3575761 + sBlue * 0.1804375) * 100, y = (sRed * 0.2126729 + sGreen * 0.7151522 + sBlue * 0.072175) * 100, z = (sRed * 0.0193339 + sGreen * 0.119192 + sBlue * 0.9503041) * 100, a = rgba.a}
+    return ____exports.clampXyza(
+        nil,
+        ____exports.adaptXyzaToD50(nil, xyza)
+    )
+end
+return ____exports
+ end,
+["colord.colorModels.lab"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local isPresent = ____helpers.isPresent
+local round = ____helpers.round
+local ____xyz = require("colord.colorModels.xyz")
+local D50 = ____xyz.D50
+local rgbaToXyza = ____xyz.rgbaToXyza
+local xyzaToRgba = ____xyz.xyzaToRgba
+local e = 216 / 24389
+local k = 24389 / 27
+local function cbrt(self, x)
+    return x ^ (1 / 3)
+end
+--- Clamps LAB axis values as defined in CSS Color Level 4 specs.
+-- https://www.w3.org/TR/css-color-4/#specifying-lab-lch
+____exports.clampLaba = function(____, laba) return {
+    l = clamp(nil, laba.l, 0, 400),
+    a = laba.a,
+    b = laba.b,
+    alpha = clamp(nil, laba.alpha)
+} end
+____exports.roundLaba = function(____, laba) return {
+    l = round(nil, laba.l, 2),
+    a = round(nil, laba.a, 2),
+    b = round(nil, laba.b, 2),
+    alpha = round(nil, laba.alpha, ALPHA_PRECISION)
+} end
+____exports.parseLaba = function(____, ____bindingPattern0)
+    local alpha
+    local b
+    local a
+    local l
+    l = ____bindingPattern0.l
+    a = ____bindingPattern0.a
+    b = ____bindingPattern0.b
+    alpha = ____bindingPattern0.alpha
+    if alpha == nil then
+        alpha = 1
+    end
+    if not isPresent(nil, l) or not isPresent(nil, a) or not isPresent(nil, b) then
+        return nil
+    end
+    local laba = ____exports.clampLaba(
+        nil,
+        {
+            l = __TS__Number(l),
+            a = __TS__Number(a),
+            b = __TS__Number(b),
+            alpha = __TS__Number(alpha)
+        }
+    )
+    return ____exports.labaToRgba(nil, laba)
+end
+--- Performs RGB → CIEXYZ → LAB color conversion
+-- https://www.w3.org/TR/css-color-4/#color-conversion-code
+____exports.rgbaToLaba = function(____, rgba)
+    local xyza = rgbaToXyza(nil, rgba)
+    local x = xyza.x / D50.x
+    local y = xyza.y / D50.y
+    local z = xyza.z / D50.z
+    x = x > e and cbrt(nil, x) or (k * x + 16) / 116
+    y = y > e and cbrt(nil, y) or (k * y + 16) / 116
+    z = z > e and cbrt(nil, z) or (k * z + 16) / 116
+    return {l = 116 * y - 16, a = 500 * (x - y), b = 200 * (y - z), alpha = xyza.a}
+end
+--- Performs LAB → CIEXYZ → RGB color conversion
+-- https://www.w3.org/TR/css-color-4/#color-conversion-code
+____exports.labaToRgba = function(____, laba)
+    local y = (laba.l + 16) / 116
+    local x = laba.a / 500 + y
+    local z = y - laba.b / 200
+    return xyzaToRgba(nil, {x = (x ^ 3 > e and x ^ 3 or (116 * x - 16) / k) * D50.x, y = (laba.l > k * e and ((laba.l + 16) / 116) ^ 3 or laba.l / k) * D50.y, z = (z ^ 3 > e and z ^ 3 or (116 * z - 16) / k) * D50.z, a = laba.alpha})
+end
+return ____exports
+ end,
+["colord.colorModels.lch"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local ____exports = {}
+local ____constants = require("colord.constants")
+local ALPHA_PRECISION = ____constants.ALPHA_PRECISION
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local clampHue = ____helpers.clampHue
+local isPresent = ____helpers.isPresent
+local round = ____helpers.round
+local ____lab = require("colord.colorModels.lab")
+local labaToRgba = ____lab.labaToRgba
+local rgbaToLaba = ____lab.rgbaToLaba
+--- Limits LCH axis values.
+-- https://www.w3.org/TR/css-color-4/#specifying-lab-lch
+-- https://lea.verou.me/2020/04/lch-colors-in-css-what-why-and-how/#how-does-lch-work
+____exports.clampLcha = function(____, laba) return {
+    l = clamp(nil, laba.l, 0, 100),
+    c = laba.c,
+    h = clampHue(nil, laba.h),
+    a = laba.a
+} end
+____exports.roundLcha = function(____, laba) return {
+    l = round(nil, laba.l, 2),
+    c = round(nil, laba.c, 2),
+    h = round(nil, laba.h, 2),
+    a = round(nil, laba.a, ALPHA_PRECISION)
+} end
+____exports.parseLcha = function(____, ____bindingPattern0)
+    local a
+    local h
+    local c
+    local l
+    l = ____bindingPattern0.l
+    c = ____bindingPattern0.c
+    h = ____bindingPattern0.h
+    a = ____bindingPattern0.a
+    if a == nil then
+        a = 1
+    end
+    if not isPresent(nil, l) or not isPresent(nil, c) or not isPresent(nil, h) then
+        return nil
+    end
+    local lcha = ____exports.clampLcha(
+        nil,
+        {
+            l = __TS__Number(l),
+            c = __TS__Number(c),
+            h = __TS__Number(h),
+            a = __TS__Number(a)
+        }
+    )
+    return ____exports.lchaToRgba(nil, lcha)
+end
+--- Performs RGB → CIEXYZ → CIELAB → CIELCH color conversion
+-- https://www.w3.org/TR/css-color-4/#color-conversion-code
+____exports.rgbaToLcha = function(____, rgba)
+    local laba = rgbaToLaba(nil, rgba)
+    local a = round(nil, laba.a, 3)
+    local b = round(nil, laba.b, 3)
+    local hue = 180 * (math.atan2(b, a) / math.pi)
+    return {
+        l = laba.l,
+        c = math.sqrt(a * a + b * b),
+        h = hue < 0 and hue + 360 or hue,
+        a = laba.alpha
+    }
+end
+--- Performs CIELCH → CIELAB → CIEXYZ → RGB color conversion
+-- https://www.w3.org/TR/css-color-4/#color-conversion-code
+____exports.lchaToRgba = function(____, lcha)
+    return labaToRgba(
+        nil,
+        {
+            l = lcha.l,
+            a = lcha.c * math.cos(lcha.h * math.pi / 180),
+            b = lcha.c * math.sin(lcha.h * math.pi / 180),
+            alpha = lcha.a
+        }
+    )
+end
+return ____exports
+ end,
+["colord.colorModels.lchString"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____lch = require("colord.colorModels.lch")
+local rgbaToLcha = ____lch.rgbaToLcha
+local roundLcha = ____lch.roundLcha
+--- Parses a valid LCH CSS color function/string
+-- https://www.w3.org/TR/css-color-4/#specifying-lab-lch
+____exports.parseLchaString = function(____, input)
+    error(
+        __TS__New(Error, "unimplemented"),
+        0
+    )
+end
+____exports.rgbaToLchaString = function(____, rgba)
+    local ____roundLcha_result_0 = roundLcha(
+        nil,
+        rgbaToLcha(nil, rgba)
+    )
+    local l = ____roundLcha_result_0.l
+    local c = ____roundLcha_result_0.c
+    local h = ____roundLcha_result_0.h
+    local a = ____roundLcha_result_0.a
+    return a < 1 and ((((((("lch(" .. tostring(l)) .. "% ") .. tostring(c)) .. " ") .. tostring(h)) .. " / ") .. tostring(a)) .. ")" or ((((("lch(" .. tostring(l)) .. "% ") .. tostring(c)) .. " ") .. tostring(h)) .. ")"
+end
+return ____exports
+ end,
+["colord.get.getLuminance"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____rgb = require("colord.colorModels.rgb")
+local linearizeRgbChannel = ____rgb.linearizeRgbChannel
+--- Returns the perceived luminance of a color [0-1] according to WCAG 2.0.
+-- https://www.w3.org/TR/WCAG20/#relativeluminancedef
+____exports.getLuminance = function(____, rgba)
+    local sRed = linearizeRgbChannel(nil, rgba.r)
+    local sGreen = linearizeRgbChannel(nil, rgba.g)
+    local sBlue = linearizeRgbChannel(nil, rgba.b)
+    return 0.2126 * sRed + 0.7152 * sGreen + 0.0722 * sBlue
+end
+return ____exports
+ end,
+["colord.get.getContrast"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____getLuminance = require("colord.get.getLuminance")
+local getLuminance = ____getLuminance.getLuminance
+--- Returns a contrast ratio for a color pair [1-21].
+-- http://www.w3.org/TR/WCAG20/#contrast-ratiodef
+____exports.getContrast = function(____, rgb1, rgb2)
+    local l1 = getLuminance(nil, rgb1)
+    local l2 = getLuminance(nil, rgb2)
+    return l1 > l2 and (l1 + 0.05) / (l2 + 0.05) or (l2 + 0.05) / (l1 + 0.05)
+end
+return ____exports
+ end,
+["colord.get.getPerceivedDifference"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Calculates the perceived color difference according to [Delta E2000](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000).
+-- 
+-- ΔE - (Delta E, dE) The measure of change in visual perception of two given colors.
+-- 
+-- Delta E is a metric for understanding how the human eye perceives color difference.
+-- The term delta comes from mathematics, meaning change in a variable or function.
+-- The suffix E references the German word Empfindung, which broadly means sensation.
+-- 
+-- On a typical scale, the Delta E value will range from 0 to 100.
+-- 
+-- | Delta E | Perception                             |
+-- |---------|----------------------------------------|
+-- | <= 1.0  | Not perceptible by human eyes          |
+-- | 1 - 2   | Perceptible through close observation  |
+-- | 2 - 10  | Perceptible at a glance                |
+-- | 11 - 49 | Colors are more similar than opposite  |
+-- | 100     | Colors are exact opposite              |
+-- 
+-- [Source](http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE2000.html)
+-- [Read about Delta E](https://zschuessler.github.io/DeltaE/learn/#toc-delta-e-2000)
+function ____exports.getDeltaE00(self, color1, color2)
+    local ____color1_0 = color1
+    local l1 = ____color1_0.l
+    local a1 = ____color1_0.a
+    local b1 = ____color1_0.b
+    local ____color2_1 = color2
+    local l2 = ____color2_1.l
+    local a2 = ____color2_1.a
+    local b2 = ____color2_1.b
+    local rad2deg = 180 / math.pi
+    local deg2rad = math.pi / 180
+    local c1 = (a1 ^ 2 + b1 ^ 2) ^ 0.5
+    local c2 = (a2 ^ 2 + b2 ^ 2) ^ 0.5
+    local mc = (c1 + c2) / 2
+    local ml = (l1 + l2) / 2
+    local c7 = mc ^ 7
+    local g = 0.5 * (1 - (c7 / (c7 + 25 ^ 7)) ^ 0.5)
+    local a11 = a1 * (1 + g)
+    local a22 = a2 * (1 + g)
+    local c11 = (a11 ^ 2 + b1 ^ 2) ^ 0.5
+    local c22 = (a22 ^ 2 + b2 ^ 2) ^ 0.5
+    local mc1 = (c11 + c22) / 2
+    local h1 = a11 == 0 and b1 == 0 and 0 or math.atan2(b1, a11) * rad2deg
+    local h2 = a22 == 0 and b2 == 0 and 0 or math.atan2(b2, a22) * rad2deg
+    if h1 < 0 then
+        h1 = h1 + 360
+    end
+    if h2 < 0 then
+        h2 = h2 + 360
+    end
+    local dh = h2 - h1
+    local dhAbs = math.abs(h2 - h1)
+    if dhAbs > 180 and h2 <= h1 then
+        dh = dh + 360
+    elseif dhAbs > 180 and h2 > h1 then
+        dh = dh - 360
+    end
+    local H = h1 + h2
+    if dhAbs <= 180 then
+        H = H / 2
+    else
+        H = (h1 + h2 < 360 and H + 360 or H - 360) / 2
+    end
+    local T = 1 - 0.17 * math.cos(deg2rad * (H - 30)) + 0.24 * math.cos(deg2rad * 2 * H) + 0.32 * math.cos(deg2rad * (3 * H + 6)) - 0.2 * math.cos(deg2rad * (4 * H - 63))
+    local dL = l2 - l1
+    local dC = c22 - c11
+    local dH = 2 * math.sin(deg2rad * dh / 2) * (c11 * c22) ^ 0.5
+    local sL = 1 + 0.015 * (ml - 50) ^ 2 / (20 + (ml - 50) ^ 2) ^ 0.5
+    local sC = 1 + 0.045 * mc1
+    local sH = 1 + 0.015 * mc1 * T
+    local dTheta = 30 * math.exp(-1 * ((H - 275) / 25) ^ 2)
+    local Rc = 2 * (c7 / (c7 + 25 ^ 7)) ^ 0.5
+    local Rt = -Rc * math.sin(deg2rad * 2 * dTheta)
+    local kl = 1
+    local kc = 1
+    local kh = 1
+    return ((dL / kl / sL) ^ 2 + (dC / kc / sC) ^ 2 + (dH / kh / sH) ^ 2 + Rt * dC * dH / (kc * sC * kh * sH)) ^ 0.5
+end
+return ____exports
+ end,
+["colord.manipulate.mix"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____lab = require("colord.colorModels.lab")
+local clampLaba = ____lab.clampLaba
+local labaToRgba = ____lab.labaToRgba
+local rgbaToLaba = ____lab.rgbaToLaba
+____exports.mix = function(____, rgba1, rgba2, ratio)
+    local laba1 = rgbaToLaba(nil, rgba1)
+    local laba2 = rgbaToLaba(nil, rgba2)
+    local mixture = clampLaba(nil, {l = laba1.l * (1 - ratio) + laba2.l * ratio, a = laba1.a * (1 - ratio) + laba2.a * ratio, b = laba1.b * (1 - ratio) + laba2.b * ratio, alpha = laba1.alpha * (1 - ratio) + laba2.alpha * ratio})
+    return labaToRgba(nil, mixture)
+end
+return ____exports
+ end,
+["colord.plugins.a11y"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____getContrast = require("colord.get.getContrast")
+local getContrast = ____getContrast.getContrast
+local ____getLuminance = require("colord.get.getLuminance")
+local getLuminance = ____getLuminance.getLuminance
+local ____helpers = require("colord.helpers")
+local round = ____helpers.round
+local floor = ____helpers.floor
+--- A plugin adding accessibility and color contrast utilities.
+-- Follows Web Content Accessibility Guidelines 2.0.
+-- https://www.w3.org/TR/WCAG20/
+local function a11yPlugin(____, ColordClass)
+    --- Returns WCAG text color contrast requirement.
+    -- Read explanation here https://webaim.org/resources/contrastchecker/
+    local function getMinimalContrast(____, ____bindingPattern0)
+        local size
+        local level
+        level = ____bindingPattern0.level
+        if level == nil then
+            level = "AA"
+        end
+        size = ____bindingPattern0.size
+        if size == nil then
+            size = "normal"
+        end
+        if level == "AAA" and size == "normal" then
+            return 7
+        end
+        if level == "AA" and size == "large" then
+            return 3
+        end
+        return 4.5
+    end
+    ColordClass.prototype.luminance = function(self)
+        return round(
+            nil,
+            getLuminance(nil, self.rgba),
+            2
+        )
+    end
+    ColordClass.prototype.contrast = function(self, color2)
+        if color2 == nil then
+            color2 = "#FFF"
+        end
+        local instance2 = __TS__InstanceOf(color2, ColordClass) and color2 or __TS__New(ColordClass, color2)
+        return floor(
+            nil,
+            getContrast(
+                nil,
+                self.rgba,
+                instance2:toRgb()
+            ),
+            2
+        )
+    end
+    ColordClass.prototype.isReadable = function(self, color2, options)
+        if color2 == nil then
+            color2 = "#FFF"
+        end
+        if options == nil then
+            options = {}
+        end
+        return self:contrast(color2) >= getMinimalContrast(nil, options)
+    end
+end
+____exports.default = a11yPlugin
+return ____exports
+ end,
+["colord.plugins.cmyk"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____cmyk = require("colord.colorModels.cmyk")
+local parseCmyka = ____cmyk.parseCmyka
+local roundCmyka = ____cmyk.roundCmyka
+local rgbaToCmyka = ____cmyk.rgbaToCmyka
+local ____cmykString = require("colord.colorModels.cmykString")
+local parseCmykaString = ____cmykString.parseCmykaString
+local rgbaToCmykaString = ____cmykString.rgbaToCmykaString
+--- A plugin adding support for CMYK color space.
+-- https://lea.verou.me/2009/03/cmyk-colors-in-css-useful-or-useless/
+-- https://en.wikipedia.org/wiki/CMYK_color_model
+local function cmykPlugin(____, ColordClass, parsers)
+    ColordClass.prototype.toCmyk = function(self)
+        return roundCmyka(
+            nil,
+            rgbaToCmyka(nil, self.rgba)
+        )
+    end
+    ColordClass.prototype.toCmykString = function(self)
+        return rgbaToCmykaString(nil, self.rgba)
+    end
+    local ____parsers_object_0 = parsers.object
+    ____parsers_object_0[#____parsers_object_0 + 1] = {parseCmyka, "cmyk"}
+    local ____parsers_string_1 = parsers.string
+    ____parsers_string_1[#____parsers_string_1 + 1] = {parseCmykaString, "cmyk"}
+end
+____exports.default = cmykPlugin
+return ____exports
+ end,
+["colord.plugins.harmonies"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local ____exports = {}
+--- A plugin adding functionality to generate harmony colors.
+-- https://en.wikipedia.org/wiki/Harmony_(color)
+local function harmoniesPlugin(____, ColordClass)
+    --- Harmony colors are colors with particular hue shift of the original color.
+    local hueShifts = {
+        analogous = {-30, 0, 30},
+        complementary = {0, 180},
+        ["double-split-complementary"] = {
+            -30,
+            0,
+            30,
+            150,
+            210
+        },
+        rectangle = {0, 60, 180, 240},
+        tetradic = {0, 90, 180, 270},
+        triadic = {0, 120, 240},
+        ["split-complementary"] = {0, 150, 210}
+    }
+    ColordClass.prototype.harmonies = function(self, ____type)
+        if ____type == nil then
+            ____type = "complementary"
+        end
+        return __TS__ArrayMap(
+            hueShifts[____type],
+            function(____, shift) return self:rotate(shift) end
+        )
+    end
+end
+____exports.default = harmoniesPlugin
+return ____exports
+ end,
+["colord.plugins.hwb"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____hwb = require("colord.colorModels.hwb")
+local parseHwba = ____hwb.parseHwba
+local rgbaToHwba = ____hwb.rgbaToHwba
+local roundHwba = ____hwb.roundHwba
+local ____hwbString = require("colord.colorModels.hwbString")
+local parseHwbaString = ____hwbString.parseHwbaString
+local rgbaToHwbaString = ____hwbString.rgbaToHwbaString
+--- A plugin adding support for HWB (Hue-Whiteness-Blackness) color model.
+-- https://en.wikipedia.org/wiki/HWB_color_model
+-- https://www.w3.org/TR/css-color-4/#the-hwb-notation
+local function hwbPlugin(____, ColordClass, parsers)
+    ColordClass.prototype.toHwb = function(self)
+        return roundHwba(
+            nil,
+            rgbaToHwba(nil, self.rgba)
+        )
+    end
+    ColordClass.prototype.toHwbString = function(self)
+        return rgbaToHwbaString(nil, self.rgba)
+    end
+    local ____parsers_string_0 = parsers.string
+    ____parsers_string_0[#____parsers_string_0 + 1] = {parseHwbaString, "hwb"}
+    local ____parsers_object_1 = parsers.object
+    ____parsers_object_1[#____parsers_object_1 + 1] = {parseHwba, "hwb"}
+end
+____exports.default = hwbPlugin
+return ____exports
+ end,
+["colord.plugins.lab"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____lab = require("colord.colorModels.lab")
+local parseLaba = ____lab.parseLaba
+local roundLaba = ____lab.roundLaba
+local rgbaToLaba = ____lab.rgbaToLaba
+local ____getPerceivedDifference = require("colord.get.getPerceivedDifference")
+local getDeltaE00 = ____getPerceivedDifference.getDeltaE00
+local ____helpers = require("colord.helpers")
+local clamp = ____helpers.clamp
+local round = ____helpers.round
+--- A plugin adding support for CIELAB color space.
+-- https://en.wikipedia.org/wiki/CIELAB_color_space
+local function labPlugin(____, ColordClass, parsers)
+    ColordClass.prototype.toLab = function(self)
+        return roundLaba(
+            nil,
+            rgbaToLaba(nil, self.rgba)
+        )
+    end
+    ColordClass.prototype.delta = function(self, color)
+        if color == nil then
+            color = "#FFF"
+        end
+        local compared = __TS__InstanceOf(color, ColordClass) and color or __TS__New(ColordClass, color)
+        local delta = getDeltaE00(
+            nil,
+            self:toLab(),
+            compared:toLab()
+        ) / 100
+        return clamp(
+            nil,
+            round(nil, delta, 3)
+        )
+    end
+    local ____parsers_object_0 = parsers.object
+    ____parsers_object_0[#____parsers_object_0 + 1] = {parseLaba, "lab"}
+end
+____exports.default = labPlugin
+return ____exports
+ end,
+["colord.plugins.lch"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____lch = require("colord.colorModels.lch")
+local parseLcha = ____lch.parseLcha
+local roundLcha = ____lch.roundLcha
+local rgbaToLcha = ____lch.rgbaToLcha
+local ____lchString = require("colord.colorModels.lchString")
+local parseLchaString = ____lchString.parseLchaString
+local rgbaToLchaString = ____lchString.rgbaToLchaString
+--- A plugin adding support for CIELCH color space.
+-- https://lea.verou.me/2020/04/lch-colors-in-css-what-why-and-how/
+-- https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_model
+local function lchPlugin(____, ColordClass, parsers)
+    ColordClass.prototype.toLch = function(self)
+        return roundLcha(
+            nil,
+            rgbaToLcha(nil, self.rgba)
+        )
+    end
+    ColordClass.prototype.toLchString = function(self)
+        return rgbaToLchaString(nil, self.rgba)
+    end
+    local ____parsers_string_0 = parsers.string
+    ____parsers_string_0[#____parsers_string_0 + 1] = {parseLchaString, "lch"}
+    local ____parsers_object_1 = parsers.object
+    ____parsers_object_1[#____parsers_object_1 + 1] = {parseLcha, "lch"}
+end
+____exports.default = lchPlugin
+return ____exports
+ end,
+["colord.plugins.minify"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__ParseInt = ____lualib.__TS__ParseInt
+local __TS__StringReplace = ____lualib.__TS__StringReplace
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local ____exports = {}
+local ____helpers = require("colord.helpers")
+local round = ____helpers.round
+--- A plugin adding a color minification utilities.
+local function minifyPlugin(____, ColordClass)
+    local function minifyHex(____, instance)
+        local hex = instance:toHex()
+        local alpha = instance:alpha()
+        local ____, r1, r2, g1, g2, b1, b2, a1, a2 = unpack(__TS__StringSplit(hex, ""))
+        if alpha > 0 and alpha < 1 and round(
+            nil,
+            __TS__ParseInt(a1 .. a2, 16) / 255,
+            2
+        ) ~= alpha then
+            return nil
+        end
+        if r1 == r2 and g1 == g2 and b1 == b2 then
+            if alpha == 1 then
+                return (("#" .. r1) .. g1) .. b1
+            elseif a1 == a2 then
+                return ((("#" .. r1) .. g1) .. b1) .. a1
+            end
+        end
+        return hex
+    end
+    local function findShortestString(____, variants)
+        local shortest = variants[1]
+        do
+            local index = 1
+            while index < #variants do
+                if #variants[index + 1] < #shortest then
+                    shortest = variants[index + 1]
+                end
+                index = index + 1
+            end
+        end
+        return shortest
+    end
+    local function shortenNumber(____, number)
+        if number > 0 and number < 1 then
+            return __TS__StringReplace(
+                tostring(number),
+                "0.",
+                "."
+            )
+        end
+        return number
+    end
+    ColordClass.prototype.minify = function(self, options)
+        if options == nil then
+            options = {}
+        end
+        local rgb = self:toRgb()
+        local r = shortenNumber(nil, rgb.r)
+        local g = shortenNumber(nil, rgb.g)
+        local b = shortenNumber(nil, rgb.b)
+        local hsl = self:toHsl()
+        local h = shortenNumber(nil, hsl.h)
+        local s = shortenNumber(nil, hsl.s)
+        local l = shortenNumber(nil, hsl.l)
+        local a = shortenNumber(
+            nil,
+            self:alpha()
+        )
+        local defaults = {hex = true, rgb = true, hsl = true}
+        local settings = __TS__ObjectAssign(defaults, options)
+        local variants = {}
+        if settings.hex and (a == 1 or settings.alphaHex) then
+            local hex = minifyHex(nil, self)
+            if hex then
+                variants[#variants + 1] = hex
+            end
+        end
+        if settings.rgb then
+            variants[#variants + 1] = a == 1 and ((((("rgb(" .. tostring(r)) .. ",") .. tostring(g)) .. ",") .. tostring(b)) .. ")" or ((((((("rgba(" .. tostring(r)) .. ",") .. tostring(g)) .. ",") .. tostring(b)) .. ",") .. tostring(a)) .. ")"
+        end
+        if settings.hsl then
+            variants[#variants + 1] = a == 1 and ((((("hsl(" .. tostring(h)) .. ",") .. tostring(s)) .. "%,") .. tostring(l)) .. "%)" or ((((((("hsla(" .. tostring(h)) .. ",") .. tostring(s)) .. "%,") .. tostring(l)) .. "%,") .. tostring(a)) .. ")"
+        end
+        if settings.transparent and r == 0 and g == 0 and b == 0 and a == 0 then
+            variants[#variants + 1] = "transparent"
+        elseif a == 1 and settings.name and type(self.toName) == "function" then
+            local name = self:toName()
+            if name then
+                variants[#variants + 1] = name
+            end
+        end
+        return findShortestString(nil, variants)
+    end
+end
+____exports.default = minifyPlugin
+return ____exports
+ end,
+["colord.plugins.mix"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____mix = require("colord.manipulate.mix")
+local mix = ____mix.mix
+--- A plugin adding a color mixing utilities.
+local function mixPlugin(____, ColordClass)
+    ColordClass.prototype.mix = function(self, color2, ratio)
+        if ratio == nil then
+            ratio = 0.5
+        end
+        local instance2 = __TS__InstanceOf(color2, ColordClass) and color2 or __TS__New(ColordClass, color2)
+        local mixture = mix(
+            nil,
+            self:toRgb(),
+            instance2:toRgb(),
+            ratio
+        )
+        return __TS__New(ColordClass, mixture)
+    end
+    --- Generate a palette from mixing a source color with another.
+    local function mixPalette(self, source, hex, count)
+        if count == nil then
+            count = 5
+        end
+        local palette = {}
+        local step = 1 / (count - 1)
+        do
+            local i = 0
+            while i <= count - 1 do
+                palette[#palette + 1] = source:mix(hex, step * i)
+                i = i + 1
+            end
+        end
+        return palette
+    end
+    ColordClass.prototype.tints = function(self, count)
+        return mixPalette(nil, self, "#fff", count)
+    end
+    ColordClass.prototype.shades = function(self, count)
+        return mixPalette(nil, self, "#000", count)
+    end
+    ColordClass.prototype.tones = function(self, count)
+        return mixPalette(nil, self, "#808080", count)
+    end
+end
+____exports.default = mixPlugin
+return ____exports
+ end,
+["colord.plugins.xyz"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____xyz = require("colord.colorModels.xyz")
+local parseXyza = ____xyz.parseXyza
+local rgbaToXyza = ____xyz.rgbaToXyza
+local roundXyza = ____xyz.roundXyza
+--- A plugin adding support for CIE XYZ colorspace.
+-- Wikipedia: https://en.wikipedia.org/wiki/CIE_1931_color_space
+-- Helpful article: https://www.sttmedia.com/colormodel-xyz
+local function xyzPlugin(____, ColordClass, parsers)
+    ColordClass.prototype.toXyz = function(self)
+        return roundXyza(
+            nil,
+            rgbaToXyza(nil, self.rgba)
+        )
+    end
+    local ____parsers_object_0 = parsers.object
+    ____parsers_object_0[#____parsers_object_0 + 1] = {parseXyza, "xyz"}
+end
+____exports.default = xyzPlugin
 return ____exports
  end,
 }

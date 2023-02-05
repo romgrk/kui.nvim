@@ -1,9 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  colord: ^2.9.3
   lua-types: ^2.13.1
   typescript: ^4.9.5
   typescript-to-lua: ^1.12.1
+
+dependencies:
+  colord: 2.9.3
 
 devDependencies:
   lua-types: 2.13.1
@@ -15,6 +19,10 @@ packages:
   /@typescript-to-lua/language-extensions/1.0.0:
     resolution: {integrity: sha512-GtmhFqyg+txpGgGLM3mlS3R6AEG9MQhKALxxcbr6SBzg9u7YAXcPKqUBaBYd6nH+Pi/eQLcWz4BNOLhz8v4TjQ==}
     dev: true
+
+  /colord/2.9.3:
+    resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
+    dev: false
 
   /enhanced-resolve/5.12.0:
     resolution: {integrity: sha512-QHTXI/sZQmko1cbDoNAa3mJ5qhWUUNAq3vR0/YiD379fWQrcfuoX1+HW2S0MTt7XmoPLapdaDKUtelUSPic7hQ==}

@@ -8,6 +8,8 @@ MIT
 
 ### Includes code from:
 
+ - [pixi.js](https://github.com/pixijs/pixijs): MIT
+ - [colord](https://github.com/omgovich/colord): MIT
  - [hologram.nvim](https://github.com/edluffy/hologram.nvim): MIT
- - [@pixi/math](https://github.com/pixijs/pixijs/tree/dev/packages/math): MIT
  - [tstoluaplugin.nvim](https://github.com/equals03/tstoluaplugin.nvim): MIT
+

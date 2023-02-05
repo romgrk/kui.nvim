@@ -36,12 +36,12 @@ end
 M.enums = enums
 
 --'foo' -> C.CAIRO_<PREFIX>_FOO and C.CAIRO_<PREFIX>_FOO -> 'foo' conversions
-local function X(prefix, val)
-	local val = enums[prefix][val]
-	if not val then
+local function convert_prefix(prefix, val)
+	local value = enums[prefix][val]
+	if not value then
 		error('invalid enum value for '..prefix, 2)
 	end
-	return val
+	return value
 end
 
 --create a gc-tying constructor
@@ -72,14 +72,14 @@ end
 --create a flag setter
 local function setflag_func(set, prefix)
 	return set and function(self, flag)
-		set(self, X(prefix, flag))
+		set(self, convert_prefix(prefix, flag))
 	end
 end
 
 --create a flag getter
 local function getflag_func(get, prefix)
 	return get and function(self)
-		return X(prefix, get(self))
+		return convert_prefix(prefix, get(self))
 	end
 end
 
@@ -524,7 +524,8 @@ cr.scale = function(cr, sx, sy) C.cairo_scale(cr, sx, sy or sx); return cr end
 cr.rotate = ret_self(C.cairo_rotate)
 cr.transform = ret_self(C.cairo_transform)
 
-cr.matrix = getset_func(mtout_getfunc(C.cairo_get_matrix), C.cairo_set_matrix)
+cr.get_matrix = mtout_getfunc(C.cairo_get_matrix)
+cr.set_matrix = C.cairo_set_matrix
 cr.identity_matrix = ret_self(C.cairo_identity_matrix)
 
 cr.user_to_device          = d2inout_func(C.cairo_user_to_device)
@@ -652,8 +653,8 @@ cr.font_options = getset_func(foptout_getfunc(C.cairo_get_font_options), C.cairo
 cr.font_face = getset_func(C.cairo_get_font_face, function(cr, family, slant, weight)
 	if type(family) == 'string' then
 		C.cairo_select_font_face(cr, family,
-			X('CAIRO_FONT_SLANT_', slant or 'normal'),
-			X('CAIRO_FONT_WEIGHT_', weight or 'normal'))
+			convert_prefix('CAIRO_FONT_SLANT_', slant or 'normal'),
+			convert_prefix('CAIRO_FONT_WEIGHT_', weight or 'normal'))
 	else
 		C.cairo_set_font_face(cr, family) --in fact: cairo_font_face_t
 	end
@@ -663,7 +664,7 @@ cr.show_text = C.cairo_show_text
 cr.show_glyphs = C.cairo_show_glyphs
 cr.show_text_glyphs = function(cr, s, slen, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
 	C.cairo_show_text_glyphs(cr, s, slen or #s, glyphs, num_glyphs, clusters, num_clusters,
-		cluster_flags and X('CAIRO_TEXT_CLUSTER_FLAG_', cluster_flags) or 0)
+		cluster_flags and convert_prefix('CAIRO_TEXT_CLUSTER_FLAG_', cluster_flags) or 0)
 end
 cr.text_path = C.cairo_text_path
 cr.glyph_path = C.cairo_glyph_path
@@ -734,7 +735,7 @@ function sfont.text_to_glyphs(sfont, x, y, s, slen, glyphs, num_glyphs, clusters
 		return
 			glyphs, num_glyphs_buf[0],
 			clusters, num_clusters_buf[0],
-			cluster_flags_buf[0] ~= 0 and X('CAIRO_TEXT_CLUSTER_FLAG_', tonumber(cluster_flags_buf[0])) or nil
+			cluster_flags_buf[0] ~= 0 and convert_prefix('CAIRO_TEXT_CLUSTER_FLAG_', tonumber(cluster_flags_buf[0])) or nil
 	else
 		return nil, M.status_message(status), status
 	end
@@ -749,8 +750,8 @@ sfont.font_options = foptout_func(C.cairo_scaled_font_get_font_options)
 function M.toy_font_face(family, slant, weight)
 	return ffi.gc(
 		C.cairo_toy_font_face_create(family,
-			X('CAIRO_FONT_SLANT_', slant),
-			X('CAIRO_FONT_WEIGHT_', weight)
+			convert_prefix('CAIRO_FONT_SLANT_', slant),
+			convert_prefix('CAIRO_FONT_WEIGHT_', weight)
 	), C.cairo_font_face_destroy)
 end
 
@@ -864,12 +865,12 @@ local sr = {}
 sr.context = ref_func(C.cairo_create, C.cairo_destroy)
 
 sr.similar_surface = ref_func(function(sr, content, w, h)
-	return C.cairo_surface_create_similar(sr, X('CAIRO_CONTENT_', content), w, h)
+	return C.cairo_surface_create_similar(sr, convert_prefix('CAIRO_CONTENT_', content), w, h)
 end, C.cairo_surface_destroy)
 
 sr.similar_image_surface = ref_func(function(sr, fmt, w, h)
 	local fmt = M.cairo_format(fmt)
-	return C.cairo_surface_create_similar_image(sr, X('CAIRO_FORMAT_', fmt), w, h)
+	return C.cairo_surface_create_similar_image(sr, convert_prefix('CAIRO_FORMAT_', fmt), w, h)
 end, C.cairo_surface_destroy)
 
 sr.map_to_image = function(sr, x, y, w, h)
@@ -892,7 +893,7 @@ map('CAIRO_SURFACE_OBSERVER_', {
 })
 
 sr.observer_surface = function(sr, mode)
-	local osr = C.cairo_surface_create_observer(sr, X('CAIRO_SURFACE_OBSERVER_', mode))
+	local osr = C.cairo_surface_create_observer(sr, convert_prefix('CAIRO_SURFACE_OBSERVER_', mode))
 	return ffi.gc(osr, C.cairo_surface_destroy)
 end
 
@@ -1004,7 +1005,7 @@ M.image_surface = function(fmt, w, h)
 		local bmp = fmt
 		local fmt = M.cairo_format(bmp.format)
 		local sr = C.cairo_image_surface_create_for_data(
-			bmp.data, X('CAIRO_FORMAT_', fmt), bmp.w, bmp.h, bmp.stride)
+			bmp.data, convert_prefix('CAIRO_FORMAT_', fmt), bmp.w, bmp.h, bmp.stride)
 		return ffi.gc(sr, function(sr)
 			local _ = bmp.data --pin it
 			C.cairo_surface_destroy(sr)
@@ -1012,14 +1013,14 @@ M.image_surface = function(fmt, w, h)
 	else
 		local fmt = M.cairo_format(fmt)
 		return ffi.gc(
-			C.cairo_image_surface_create(X('CAIRO_FORMAT_', fmt), w, h),
+			C.cairo_image_surface_create(convert_prefix('CAIRO_FORMAT_', fmt), w, h),
 			C.cairo_surface_destroy)
 	end
 end
 
 M.stride = function(fmt, width)
 	local fmt = M.cairo_format(fmt)
-	return C.cairo_format_stride_for_width(X('CAIRO_FORMAT_', fmt), width)
+	return C.cairo_format_stride_for_width(convert_prefix('CAIRO_FORMAT_', fmt), width)
 end
 
 sr.data = _C.cairo_image_surface_get_data
@@ -1046,7 +1047,7 @@ function M.recording_surface(content, x, y, w, h)
 	end
 	return ffi.gc(
 		C.cairo_recording_surface_create(
-			X('CAIRO_CONTENT_', content),
+			convert_prefix('CAIRO_CONTENT_', content),
 			x and r or nil
 		), C.cairo_surface_destroy)
 end
@@ -1059,7 +1060,7 @@ sr.recording_extents = function(sr)
 end
 
 M.raster_source_pattern = function(udata, content, w, h)
-	local patt = C.cairo_pattern_create_raster_source(udata, X('CAIRO_CONTENT_', content), w, h)
+	local patt = C.cairo_pattern_create_raster_source(udata, convert_prefix('CAIRO_CONTENT_', content), w, h)
 	return ffi.gc(patt, C.cairo_pattern_destroy)
 end
 
@@ -1608,7 +1609,7 @@ local function listout_func(func, ct, prefix)
 		func(vbuf, ibuf)
 		local t = {}
 		for i=0,ibuf[0]-1 do
-			t[#t+1] = X(prefix, tonumber(vbuf[0][i]))
+			t[#t+1] = convert_prefix(prefix, tonumber(vbuf[0][i]))
 		end
 		return t
 	end

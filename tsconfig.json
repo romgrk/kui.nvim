@@ -7,7 +7,8 @@
     "types": [
       "lua-types/jit",
       "./types/vim",
-      "./types/cairo"
+      "./types/cairo",
+      "./types/lualib"
     ],
     "baseUrl": "./",
     "rootDir": "./src"
@@ -15,6 +16,11 @@
   "tstl": {
     "luaTarget": "JIT",
     "luaBundle": "./lua/kui.lua",
-    "luaBundleEntry": "./src/index.ts"
+    "luaBundleEntry": "./src/index.ts",
+    "noResolvePaths": [
+      "bit",
+      "kui.cairo.cairo",
+      "kui.legacy"
+    ]
   }
 }
