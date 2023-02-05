@@ -113,7 +113,7 @@ local d6 = ffi.new'double[1]'
 local function d2out_func(func)
 	return func and function(self)
 		func(self, d1, d2)
-		return d1[0], d2[0]
+		return { d1[0], d2[0] }
 	end
 end
 
@@ -122,7 +122,7 @@ local function d2inout_func(func)
 	return func and function(self, x, y)
 		d1[0], d2[0] = x, y
 		func(self, d1, d2)
-		return d1[0], d2[0]
+		return { d1[0], d2[0] }
 	end
 end
 
@@ -130,7 +130,7 @@ end
 local function d4out_func(func)
 	return func and function(self)
 		func(self, d1, d2, d3, d4)
-		return d1[0], d2[0], d3[0], d4[0]
+		return { d1[0], d2[0], d3[0], d4[0] }
 	end
 end
 
@@ -468,7 +468,8 @@ map('CAIRO_FILL_RULE_', {
 
 cr.fill_rule = getset_func(C.cairo_get_fill_rule, C.cairo_set_fill_rule, 'CAIRO_FILL_RULE_')
 
-cr.line_width = getset_func(C.cairo_get_line_width, C.cairo_set_line_width)
+cr.get_line_width = C.cairo_get_line_width
+cr.set_line_width = C.cairo_set_line_width
 
 map('CAIRO_LINE_CAP_', {
 	'BUTT',
@@ -548,7 +549,8 @@ cr.close_path = C.cairo_close_path
 cr.path_extents = d4out_func(C.cairo_path_extents)
 cr.paint = C.cairo_paint
 cr.paint_with_alpha = C.cairo_paint_with_alpha
-cr.mask = patt_or_surface_func(C.cairo_mask, C.cairo_mask_surface)
+cr.mask = C.cairo_mask
+cr.mask_surface = C.cairo_mask_surface
 cr.stroke = C.cairo_stroke
 cr.stroke_preserve = C.cairo_stroke_preserve
 cr.fill = C.cairo_fill
