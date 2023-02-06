@@ -293,7 +293,7 @@ export enum SAMPLER_TYPES
 /**
  * The scale modes that are supported by pixi.
  *
- * The {@link PIXI.BaseTexture.defaultOptions.scaleMode} scale mode affects the default scaling mode of future operations.
+ * The {_link PIXI.BaseTexture.defaultOptions.scaleMode} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  * @memberof PIXI
  * @static
@@ -337,7 +337,7 @@ export enum WRAP_MODES
 /**
  * Mipmap filtering modes that are supported by pixi.
  *
- * The {@link PIXI.BaseTexture.defaultOptions.mipmap} affects default texture filtering.
+ * The {_link PIXI.BaseTexture.defaultOptions.mipmap} affects default texture filtering.
  * Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
  * or its `POW2` and texture dimensions are powers of 2.
  * Since WebGL 1 don't support mipmap for non-power-of-two textures,
@@ -393,7 +393,7 @@ export enum ALPHA_MODES
 /**
  * Configure whether filter textures are cleared after binding.
  *
- * Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
+ * Filter textures need not be cleared if the filter does not use pixel blending. {_link CLEAR_MODES.BLIT} will detect
  * this and skip clearing as an optimization.
  * @name CLEAR_MODES
  * @memberof PIXI
@@ -401,7 +401,7 @@ export enum ALPHA_MODES
  * @enum {number}
  * @property {number} BLEND - Do not clear the filter texture. The filter's output will blend on top of the output texture.
  * @property {number} CLEAR - Always clear the filter texture.
- * @property {number} BLIT - Clear only if {@link FilterSystem.forceClear} is set or if the filter uses pixel blending.
+ * @property {number} BLIT - Clear only if {_link FilterSystem.forceClear} is set or if the filter uses pixel blending.
  * @property {number} NO - Alias for BLEND, same as `false` in earlier versions
  * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
  * @property {number} AUTO - Alias for BLIT
@@ -420,7 +420,7 @@ export enum CLEAR_MODES
 /**
  * The gc modes that are supported by pixi.
  *
- * The {@link PIXI.TextureGCSystem.defaultMode} Garbage Collection mode for PixiJS textures is AUTO
+ * The {_link PIXI.TextureGCSystem.defaultMode} Garbage Collection mode for PixiJS textures is AUTO
  * If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
  * used for a specified period of time they will be removed from the GPU. They will of course
  * be uploaded again when they are required. This is a silent behind the scenes process that

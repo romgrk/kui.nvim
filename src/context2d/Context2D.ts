@@ -51,6 +51,7 @@ export class Context2D {
   private _globalAlpha: number
   private _fillColor: Color
   private _strokeColor: Color
+  private _font: string
 
   constructor(width: number, height: number) {
     this.width = width
@@ -63,6 +64,7 @@ export class Context2D {
     this._globalAlpha = 1.0
     this._fillColor = new Color(0x000000)
     this._strokeColor = new Color(0x000000)
+    this._font = '10x sans-serif'
   }
 
   // canvas
@@ -96,6 +98,14 @@ export class Context2D {
       this._strokeColor.alpha * this._globalAlpha,
     )
     this.context.stroke()
+  }
+
+  get font() { return this._font }
+  set font(value: string) {
+    this._font = value
+    const [size, name, style, weight] = parseFont(value)
+    this.context.font_face(name, style, weight)
+    this.context.font_size(size)
   }
 
   get lineCap() { return this.context.line_cap() }
@@ -154,7 +164,11 @@ export class Context2D {
       this.context.elliptic_arc_negative(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
   }
   fill() { this.context.fill() }
-  // fillText()
+  fillText(text: string, x: number, y: number) {
+    this.context.move_to(x, y)
+    this.context.text_path(text)
+    this._fill()
+  }
   // getContextAttributes()
   // getImageData()
   // getLineDash()
@@ -174,7 +188,11 @@ export class Context2D {
   // scrollPathIntoView()
   // setLineDash()
   stroke() { this.context.stroke() }
-  // strokeText()
+  strokeText(text: string, x: number, y: number) {
+    this.context.move_to(x, y)
+    this.context.text_path(text)
+    this._stroke()
+  }
 
   save() { this.context.save() }
   restore() { this.context.restore() }
@@ -231,4 +249,62 @@ export class Canvas {
   getContext(_name: '2d') {
     return this.context
   }
+}
+
+
+let defaultFontName = 'sans-serif'
+
+export function setDefaultFontName(n: string) {
+  defaultFontName = n
+}
+
+// FIXME: need to fill these accurately
+const FONT_NAMES = {
+  'serif':      'Cantarell',
+  'sans-serif': 'Cantarell',
+  'monospace':  'DejaVu Sans Mono',
+}
+
+const FONT_WEIGHT_NAMES = {
+  100: 'normal',
+  200: 'normal',
+  300: 'normal',
+  400: 'normal',
+  500: 'normal',
+  bold: 'bold',
+  600: 'bold',
+  700: 'bold',
+  800: 'bold',
+  900: 'bold',
+}
+
+const FONT_STYLE_NAMES = {
+  italic:  'italic',
+  oblique: 'oblique',
+}
+
+function parseFont(fontStyle: string) {
+  let size = 10
+  let name = defaultFontName
+  let style = 'normal'
+  let weight = 'normal'
+  const parts = fontStyle.split(' ').map(s => s.trim())
+  for (const part of parts) {
+    if (part.endsWith('px'))
+      size = parseInt(part.slice(0, -2), 10)
+    else if (part in FONT_STYLE_NAMES)
+      style = FONT_STYLE_NAMES[part as keyof typeof FONT_STYLE_NAMES]
+    else if (part in FONT_WEIGHT_NAMES)
+      style = FONT_WEIGHT_NAMES[part as keyof typeof FONT_WEIGHT_NAMES]
+    else if (part === 'normal')
+      {}
+    else
+      name = part
+  }
+  return [
+    size,
+    FONT_NAMES[name as keyof typeof FONT_NAMES] ?? name,
+    style,
+    weight
+  ] as [number, string, string, string]
 }

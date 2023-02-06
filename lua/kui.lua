@@ -4936,7 +4936,7 @@ ____exports.SAMPLER_TYPES.UINT = 2
 ____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.UINT] = "UINT"
 --- The scale modes that are supported by pixi.
 -- 
--- The {@link PIXI.BaseTexture.defaultOptions.scaleMode } scale mode affects the default scaling mode of future operations.
+-- The {_link PIXI.BaseTexture.defaultOptions.scaleMode} scale mode affects the default scaling mode of future operations.
 -- It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
 -- 
 -- @memberof PIXI
@@ -4975,7 +4975,7 @@ ____exports.WRAP_MODES.MIRRORED_REPEAT = 33648
 ____exports.WRAP_MODES[____exports.WRAP_MODES.MIRRORED_REPEAT] = "MIRRORED_REPEAT"
 --- Mipmap filtering modes that are supported by pixi.
 -- 
--- The {@link PIXI.BaseTexture.defaultOptions.mipmap } affects default texture filtering.
+-- The {_link PIXI.BaseTexture.defaultOptions.mipmap} affects default texture filtering.
 -- Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
 -- or its `POW2` and texture dimensions are powers of 2.
 -- Since WebGL 1 don't support mipmap for non-power-of-two textures,
@@ -5031,7 +5031,7 @@ ____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA = 2
 ____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA] = "PREMULTIPLIED_ALPHA"
 --- Configure whether filter textures are cleared after binding.
 -- 
--- Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
+-- Filter textures need not be cleared if the filter does not use pixel blending. {_link CLEAR_MODES.BLIT} will detect
 -- this and skip clearing as an optimization.
 -- 
 -- @name CLEAR_MODES
@@ -5040,7 +5040,7 @@ ____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA] = "PREMULTI
 -- @enum *
 -- @property {number} BLEND - Do not clear the filter texture. The filter's output will blend on top of the output texture.
 -- @property {number} CLEAR - Always clear the filter texture.
--- @property {number} BLIT - Clear only if {@link FilterSystem.forceClear } is set or if the filter uses pixel blending.
+-- @property {number} BLIT - Clear only if {_link FilterSystem.forceClear} is set or if the filter uses pixel blending.
 -- @property {number} NO - Alias for BLEND, same as `false` in earlier versions
 -- @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
 -- @property {number} AUTO - Alias for BLIT
@@ -5059,7 +5059,7 @@ ____exports.CLEAR_MODES.BLIT = 2
 ____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLIT] = "BLIT"
 --- The gc modes that are supported by pixi.
 -- 
--- The {@link PIXI.TextureGCSystem.defaultMode } Garbage Collection mode for PixiJS textures is AUTO
+-- The {_link PIXI.TextureGCSystem.defaultMode} Garbage Collection mode for PixiJS textures is AUTO
 -- If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
 -- used for a specified period of time they will be removed from the GPU. They will of course
 -- be uploaded again when they are required. This is a silent behind the scenes process that
@@ -6778,10 +6778,42 @@ local ReferenceError = ____lualib.ReferenceError
 local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
+local __TS__StringTrim = ____lualib.__TS__StringTrim
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local __TS__StringEndsWith = ____lualib.__TS__StringEndsWith
+local __TS__ParseInt = ____lualib.__TS__ParseInt
 local ____exports = {}
+local parseFont, defaultFontName, FONT_NAMES, FONT_WEIGHT_NAMES, FONT_STYLE_NAMES
 local cairo = require("kui.cairo.cairo")
 local ____color = require("color.index")
 local Color = ____color.Color
+function parseFont(self, fontStyle)
+    local size = 10
+    local name = defaultFontName
+    local style = "normal"
+    local weight = "normal"
+    local parts = __TS__ArrayMap(
+        __TS__StringSplit(fontStyle, " "),
+        function(____, s) return __TS__StringTrim(s) end
+    )
+    for ____, part in ipairs(parts) do
+        if __TS__StringEndsWith(part, "px") then
+            size = __TS__ParseInt(
+                string.sub(part, 1, -3),
+                10
+            )
+        elseif FONT_STYLE_NAMES[part] ~= nil then
+            style = FONT_STYLE_NAMES[part]
+        elseif FONT_WEIGHT_NAMES[part] ~= nil then
+            style = FONT_WEIGHT_NAMES[part]
+        elseif part == "normal" then
+        else
+            name = part
+        end
+    end
+    return {size, FONT_NAMES[name] or name, style, weight}
+end
 ____exports.Context2D = __TS__Class()
 local Context2D = ____exports.Context2D
 Context2D.name = "Context2D"
@@ -6794,6 +6826,7 @@ function Context2D.prototype.____constructor(self, width, height)
     self._globalAlpha = 1
     self._fillColor = __TS__New(Color, 0)
     self._strokeColor = __TS__New(Color, 0)
+    self._font = "10x sans-serif"
 end
 __TS__SetDescriptor(
     Context2D.prototype,
@@ -6843,6 +6876,22 @@ __TS__SetDescriptor(
         end,
         set = function(self, color)
             self._strokeColor = __TS__New(Color, color)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "font",
+    {
+        get = function(self)
+            return self._font
+        end,
+        set = function(self, value)
+            self._font = value
+            local size, name, style, weight = unpack(parseFont(nil, value))
+            self.context:font_face(name, style, weight)
+            self.context:font_size(size)
         end
     },
     true
@@ -6971,6 +7020,11 @@ end
 function Context2D.prototype.fill(self)
     self.context:fill()
 end
+function Context2D.prototype.fillText(self, text, x, y)
+    self.context:move_to(x, y)
+    self.context:text_path(text)
+    self:_fill()
+end
 function Context2D.prototype.lineTo(self, x, y)
     self.context:line_to(x, y)
 end
@@ -6991,6 +7045,11 @@ function Context2D.prototype.roundRect(self, x, y, width, height, radius)
 end
 function Context2D.prototype.stroke(self)
     self.context:stroke()
+end
+function Context2D.prototype.strokeText(self, text, x, y)
+    self.context:move_to(x, y)
+    self.context:text_path(text)
+    self:_stroke()
 end
 function Context2D.prototype.save(self)
     self.context:save()
@@ -7086,6 +7145,24 @@ __TS__SetDescriptor(
 function Canvas.prototype.getContext(self, _name)
     return self.context
 end
+defaultFontName = "sans-serif"
+function ____exports.setDefaultFontName(self, n)
+    defaultFontName = n
+end
+FONT_NAMES = {serif = "Cantarell", ["sans-serif"] = "Cantarell", monospace = "DejaVu Sans Mono"}
+FONT_WEIGHT_NAMES = {
+    [100] = "normal",
+    [200] = "normal",
+    [300] = "normal",
+    [400] = "normal",
+    [500] = "normal",
+    bold = "bold",
+    [600] = "bold",
+    [700] = "bold",
+    [800] = "bold",
+    [900] = "bold"
+}
+FONT_STYLE_NAMES = {italic = "italic", oblique = "oblique"}
 return ____exports
  end,
 ["context2d.index"] = function(...) 

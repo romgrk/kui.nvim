@@ -21,6 +21,9 @@ declare module 'kui.cairo.cairo' {
 
     rgba(r: number, g: number, b: number, a: number): void;
 
+    font_face(name: string, slant: string, weight: string): void;
+    font_size(size: number): void;
+
     line_width(): number;
     line_width(value: number): void;
     miter_limit(): number;
@@ -29,6 +32,13 @@ declare module 'kui.cairo.cairo' {
     line_cap(value: LineCap): void;
     line_join(): LineJoin;
     line_join(value: LineJoin): void;
+
+    get_matrix(): Matrix;
+    set_matrix(m: Matrix): void;
+    transform(m: Matrix): this;
+    translate(x: number, y: number): this;
+    scale(x: number, y: number): this;
+    rotate(rads: number): this;
 
     new_path(): void;
     new_sub_path(): void;
@@ -65,13 +75,8 @@ declare module 'kui.cairo.cairo' {
     clip_preserve(): void;
     clip_extends(): [number, number, number, number];
 
-    // transformations
-    get_matrix(): Matrix;
-    set_matrix(m: Matrix): void;
-    transform(m: Matrix): this;
-    translate(x: number, y: number): this;
-    scale(x: number, y: number): this;
-    rotate(rads: number): this;
+    show_text(text: string): void;
+    text_path(text: string): void;
   }
 
 
