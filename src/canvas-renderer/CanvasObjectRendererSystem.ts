@@ -122,8 +122,8 @@ export class CanvasObjectRendererSystem implements ISystem
         context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL] as CompositeOperation;
 
         // XXX: debug background
-        context2D.fillStyle = 0xff0000
-        context2D.fillRect(0, 0, context2D.width, context2D.height)
+        context2D.strokeStyle = 0xff0000
+        context2D.strokeRect(0, 0, context2D.width, context2D.height)
 
         // if (clear ?? renderer.background.clearBeforeRender)
         // {

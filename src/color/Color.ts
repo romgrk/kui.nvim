@@ -325,12 +325,14 @@ export class Color
     {
         let components: number[] | undefined;
 
-        if ((Array.isArray(value) || value instanceof Float32Array)
-            // Can be rgb or rgba
-            && value.length >= 3 && value.length <= 4
-            // make sure all values are 0 - 1
-            && value.every((v) => v <= 1 && v >= 0))
+        if (Array.isArray(value) || value instanceof Float32Array)
         {
+            const values = value as number[]
+            if ((values.length < 3 && values.length > 4) ||
+                    !values.every((v) => v <= 1 && v >= 0)) {
+                throw new Error(`Color: invalid input: ${vim.inspect(values)}`)
+            }
+
             const [r, g, b, a = 1.0] = value;
 
             components = [r, g, b, a];

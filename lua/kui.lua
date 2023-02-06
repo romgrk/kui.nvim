@@ -4321,13 +4321,14 @@ local __TS__New = ____lualib.__TS__New
 local __TS__NumberToString = ____lualib.__TS__NumberToString
 local __TS__StringSubstring = ____lualib.__TS__StringSubstring
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
-local __TS__StringStartsWith = ____lualib.__TS__StringStartsWith
+local __TS__ArrayEvery = ____lualib.__TS__ArrayEvery
 local Error = ____lualib.Error
 local RangeError = ____lualib.RangeError
 local ReferenceError = ____lualib.ReferenceError
 local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
+local __TS__StringStartsWith = ____lualib.__TS__StringStartsWith
 local ____exports = {}
 local ____colord = require("colord.index")
 local colord = ____colord.colord
@@ -4506,7 +4507,20 @@ function Color.prototype.toArray(self, out)
 end
 function Color.prototype.normalize(self, value)
     local components
-    if (__TS__ArrayIsArray(value) or __TS__InstanceOf(value, Float32Array)) and #value >= 3 and #value <= 4 and value:every(function(____, v) return v <= 1 and v >= 0 end) then
+    if __TS__ArrayIsArray(value) or __TS__InstanceOf(value, Float32Array) then
+        local values = value
+        if #values < 3 and #values > 4 or not __TS__ArrayEvery(
+            values,
+            function(____, v) return v <= 1 and v >= 0 end
+        ) then
+            error(
+                __TS__New(
+                    Error,
+                    "Color: invalid input: " .. vim.inspect(values)
+                ),
+                0
+            )
+        end
         local r, g, b, a = unpack(value)
         if a == nil then
             a = 1
@@ -10074,8 +10088,8 @@ function CanvasObjectRendererSystem.prototype.render(self, displayObject, option
     _context._activeBlendMode = BLEND_MODES.NORMAL
     _context._outerBlend = false
     context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL + 1]
-    context2D.fillStyle = 16711680
-    context2D:fillRect(0, 0, context2D.width, context2D.height)
+    context2D.strokeStyle = 16711680
+    context2D:strokeRect(0, 0, context2D.width, context2D.height)
     local tempContext = _context.activeContext
     _context.activeContext = context2D
     displayObject:renderCanvas(renderer)
@@ -15841,9 +15855,18 @@ local ____core = require("core.index")
 local Renderer = ____core.Renderer
 local ____display = require("display.index")
 local Container = ____display.Container
+local ____graphics = require("graphics.index")
+local Graphics = ____graphics.Graphics
 function ____exports.setup(self)
     local renderer = __TS__New(Renderer, {width = 150, height = 80})
     local stage = __TS__New(Container)
+    local content = __TS__New(Graphics)
+    content.x = 10
+    content.y = 10
+    content:beginFill(5873407)
+    content:drawRect(0, 0, 50, 10)
+    content:endFill()
+    stage:addChild(content)
     renderer:render(stage)
     h.setup()
     h.add_image(renderer.canvasContext.rootContext.surface, {buffer = 0, row = 0, col = 0})

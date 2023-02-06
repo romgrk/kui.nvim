@@ -8,6 +8,7 @@ import { Color } from 'src/color'
 import { Rectangle } from 'src/math'
 import { Renderer } from 'src/core'
 import { Container } from 'src/display'
+import { Graphics } from 'src/graphics'
 
 export function setup() {
   // print(new Rectangle(1, 0, 10, 10))
@@ -19,6 +20,13 @@ export function setup() {
     height: 80,
   })
   const stage = new Container()
+  const content = new Graphics()
+  content.x = 10
+  content.y = 10
+  content.beginFill(0x599eff)
+  content.drawRect(0, 0, 50, 10)
+  content.endFill()
+  stage.addChild(content)
 
   renderer.render(stage)
 
