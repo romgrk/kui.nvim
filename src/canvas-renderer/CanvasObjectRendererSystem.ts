@@ -40,7 +40,6 @@ export class CanvasObjectRendererSystem implements ISystem
      */
     public render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
-        print('CanvasObjectRendererSystem#render')
         const renderer = this.renderer;
 
         if (!renderer.view)
@@ -124,7 +123,6 @@ export class CanvasObjectRendererSystem implements ISystem
 
         // XXX: debug background
         context2D.fillStyle = 0xff0000
-        print(vim.inspect({ fill: context2D.fillStyle }))
         context2D.fillRect(0, 0, context2D.width, context2D.height)
 
         // if (clear ?? renderer.background.clearBeforeRender)

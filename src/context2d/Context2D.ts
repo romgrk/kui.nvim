@@ -75,19 +75,8 @@ export class Context2D {
   set globalAlpha(value: number) { this._globalAlpha = value }
 
   get fillStyle(): string { return this._fillColor.toHex() }
-  set fillStyle(color: ColorSource) {
-    this._fillColor = new Color(color)
-    print(vim.inspect(this._fillColor))
-    print(vim.inspect((this._fillColor as any).components))
-    print(vim.inspect(color))
-  }
+  set fillStyle(color: ColorSource) { this._fillColor = new Color(color) }
   private _fill() {
-    // print(vim.inspect({ fill: [
-    //   this._fillColor.red,
-    //   this._fillColor.green,
-    //   this._fillColor.blue,
-    //   this._fillColor.alpha * this._globalAlpha,
-    // ] }))
     this.context.rgba(
       this._fillColor.red,
       this._fillColor.green,

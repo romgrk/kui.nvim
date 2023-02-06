@@ -1,5 +1,5 @@
 import * as systems from 'src/core/systems'
-import { canvasUtils } from 'src/canvas-renderer';
+// import { canvasUtils } from 'src/canvas-renderer';
 import {
     Color,
     Matrix,

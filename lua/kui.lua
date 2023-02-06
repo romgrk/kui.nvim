@@ -6816,9 +6816,6 @@ __TS__SetDescriptor(
         end,
         set = function(self, color)
             self._fillColor = __TS__New(Color, color)
-            print(vim.inspect(self._fillColor))
-            print(vim.inspect(self._fillColor.components))
-            print(vim.inspect(color))
         end
     },
     true
@@ -10026,7 +10023,6 @@ function CanvasObjectRendererSystem.prototype.____constructor(self, renderer)
     self.lastObjectRendered = nil
 end
 function CanvasObjectRendererSystem.prototype.render(self, displayObject, options)
-    print("CanvasObjectRendererSystem#render")
     local renderer = self.renderer
     if not renderer.view then
         return
@@ -10079,7 +10075,6 @@ function CanvasObjectRendererSystem.prototype.render(self, displayObject, option
     _context._outerBlend = false
     context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL + 1]
     context2D.fillStyle = 16711680
-    print(vim.inspect({fill = context2D.fillStyle}))
     context2D:fillRect(0, 0, context2D.width, context2D.height)
     local tempContext = _context.activeContext
     _context.activeContext = context2D
