@@ -185,7 +185,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                 'startup',
                 // 'mask',
                 'canvasContext',
-                'objectRenderer'
+                'objectRenderer',
+                'graphics',
             ],
         };
 
@@ -247,14 +248,15 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
+        print('Renderer#render')
         this.objectRenderer.render(displayObject, options);
+        this.canvasContext.rootContext.surface.flush()
     }
 
     /** Clear the canvas of renderer. */
     public clear(): void
     {
-        throw new Error('unimplemented')
-        // this.canvasContext.clear();
+        this.canvasContext.clear();
     }
 
     /**

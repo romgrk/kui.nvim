@@ -1,5 +1,6 @@
 import { BLEND_MODES } from 'src/constants';
 import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
+import type { CompositeOperation } from 'src/context2d';
 
 /**
  * Maps blend combinations to Canvas.
@@ -10,7 +11,7 @@ import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
  * @returns {string[]} Mapped modes.
  */
 // TODO after upgrading to typeScript 4.6, replace `string[]` with `GlobalCompositeOperation[]`
-export function mapCanvasBlendModesToPixi(array: string[] = []): string[]
+export function mapCanvasBlendModesToPixi(array: CompositeOperation[] = []): CompositeOperation[]
 {
     if (canUseNewCanvasBlendModes())
     {

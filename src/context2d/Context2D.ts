@@ -1,7 +1,10 @@
 import * as cairo from 'kui.cairo.cairo'
 import { Color, ColorSource } from 'src/color'
 
-type DOMMatrix = {
+import { LineCap, LineJoin } from 'kui.cairo.cairo'
+export { LineCap, LineJoin } from 'kui.cairo.cairo'
+
+export type DOMMatrix = {
   a: number,
   b: number,
   c: number,
@@ -20,6 +23,22 @@ export type CompositeOperation =
   | 'destination-out'
   | 'destination-atop'
   | 'xor'
+  | 'color'
+  | 'color-burn'
+  | 'color-dodge'
+  | 'darken'
+  | 'difference'
+  | 'exclusion'
+  | 'hard-light'
+  | 'hue'
+  | 'lighten'
+  | 'lighter'
+  | 'luminosity'
+  | 'multiply'
+  | 'overlay'
+  | 'saturation'
+  | 'screen'
+  | 'soft-light'
 
 export class Context2D {
   width: number
@@ -55,9 +74,20 @@ export class Context2D {
   get globalAlpha() { return this._globalAlpha }
   set globalAlpha(value: number) { this._globalAlpha = value }
 
-  get fillStyle() { return this._fillColor }
-  set fillStyle(color: ColorSource) { this._fillColor = new Color(color) }
+  get fillStyle(): string { return this._fillColor.toHex() }
+  set fillStyle(color: ColorSource) {
+    this._fillColor = new Color(color)
+    print(vim.inspect(this._fillColor))
+    print(vim.inspect((this._fillColor as any).components))
+    print(vim.inspect(color))
+  }
   private _fill() {
+    // print(vim.inspect({ fill: [
+    //   this._fillColor.red,
+    //   this._fillColor.green,
+    //   this._fillColor.blue,
+    //   this._fillColor.alpha * this._globalAlpha,
+    // ] }))
     this.context.rgba(
       this._fillColor.red,
       this._fillColor.green,
@@ -79,6 +109,18 @@ export class Context2D {
     this.context.stroke()
   }
 
+  get lineCap() { return this.context.line_cap() }
+  set lineCap(value: LineCap) { this.context.line_cap(value) }
+
+  get lineJoin() { return this.context.line_join() }
+  set lineJoin(value: LineJoin) { this.context.line_join(value) }
+
+  get lineWidth() { return this.context.line_width() }
+  set lineWidth(value: number) { this.context.line_width(value) }
+
+  get miterLimit() { return this.context.miter_limit() }
+  set miterLimit(value: number) { this.context.miter_limit(value) }
+
   // filter
   // font
   // fontKerning
@@ -88,11 +130,7 @@ export class Context2D {
   // imageSmoothingEnabled
   // imageSmoothingQuality
   // letterSpacing
-  // lineCap
   // lineDashOffset
-  // lineJoin
-  // lineWidth
-  // miterLimit
   // shadowBlur
   // shadowColor
   // shadowOffsetX
@@ -102,13 +140,17 @@ export class Context2D {
   // textRendering
   // wordSpacing
 
-  // arc()
+  arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean) {
+    if (!counterclockwise)
+      this.context.arc(x, y, radius, startAngle, endAngle)
+    else
+      this.context.arc_negative(x, y, radius, startAngle, endAngle)
+  }
   // arcTo()
-  // beginPath()
-  // bezierCurveTo()
-  // clearRect()
-  // clip()
-  // closePath()
+  beginPath() { this.context.new_path() }
+  bezierCurveTo(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) { this.context.curve_to(x1, y1, x2, y2, x3, y3) }
+  clip() { this.context.clip() }
+  closePath() { this.context.close_path() }
   // createConicGradient()
   // createImageData()
   // createLinearGradient()
@@ -116,8 +158,13 @@ export class Context2D {
   // createRadialGradient()
   // drawFocusIfNeeded()
   // drawImage()
-  // ellipse()
-  // fill()
+  ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean) {
+    if (!counterclockwise)
+      this.context.elliptic_arc(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
+    else
+      this.context.elliptic_arc_negative(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
+  }
+  fill() { this.context.fill() }
   // fillText()
   // getContextAttributes()
   // getImageData()
@@ -125,23 +172,35 @@ export class Context2D {
   // isContextLost()
   // isPointInPath()
   // isPointInStroke()
-  // lineTo()
+  lineTo(x: number, y: number) { this.context.line_to(x, y) }
   // measureText()
-  // moveTo()
+  moveTo(x: number, y: number) { this.context.move_to(x, y) }
   // putImageData()
-  // quadraticCurveTo()
-  // rect()
+  quadraticCurveTo(x1: number, y1: number, x2: number, y2: number) { this.context.quad_curve_to(x1, y1, x2, y2) }
   // reset()
   // resetTransform()
-  // roundRect()
+  roundRect(x: number, y: number, width: number, height: number, radius: number) {
+    this.context.rounded_rectangle(x, y, width, height, radius)
+  }
   // scrollPathIntoView()
   // setLineDash()
-  // stroke()
+  stroke() { this.context.stroke() }
   // strokeText()
 
   save() { this.context.save() }
   restore() { this.context.restore() }
 
+
+  rect(x: number, y: number, width: number, height: number) {
+    this.context.rectangle(x, y, width, height)
+  }
+  clearRect(x: number, y: number, width: number, height: number) {
+    this.context.save()
+    this.context.rectangle(x, y, width, height)
+    this.context.clip()
+    this.context.paint_with_alpha(0.0)
+    this.context.restore()
+  }
   fillRect(x: number, y: number, width: number, height: number) {
     this.context.rectangle(x, y, width, height)
     this._fill()

@@ -4,7 +4,8 @@
  * @member {number}
  * @memberof PIXI
  */
-export const PI_2 = Math.PI * 2;
+export const TAU = Math.PI * 2;
+export const PI_2 = TAU;
 
 /**
  * Conversion factor for converting radians to degrees.

@@ -22,7 +22,11 @@ export class SystemManager<R=IRenderer> extends EventEmitter
     /** a collection of runners defined by the user */
     readonly runners: {[key: string]: Runner} = {};
 
-    private _systemsHash: Record<string, ISystem> = {};
+    readonly systemsByName: Record<string, ISystem> = {};
+
+    get<T extends ISystem>(name: string): T {
+        return this.systemsByName[name] as any
+    }
 
     /**
      * Set up a system with a collection of SystemClasses and runners.
@@ -74,7 +78,7 @@ export class SystemManager<R=IRenderer> extends EventEmitter
 
         (this as any)[name] = system;
 
-        this._systemsHash[name] = system;
+        this.systemsByName[name] = system;
 
         for (const i in this.runners)
         {
@@ -119,13 +123,13 @@ export class SystemManager<R=IRenderer> extends EventEmitter
      */
     emitWithCustomOptions(runner: Runner, options: Record<string, unknown>): void
     {
-        const systemHashKeys = Object.keys(this._systemsHash);
+        const systemHashKeys = Object.keys(this.systemsByName);
 
         runner.items.forEach((system) =>
         {
             // I know this does not need to be a performant function so it.. isn't!
             // its only used for init and destroy.. we can refactor if required..
-            const systemName = systemHashKeys.find((systemId) => this._systemsHash[systemId] === system) ?? 'unset';
+            const systemName = systemHashKeys.find((systemId) => this.systemsByName[systemId] === system) ?? 'unset';
 
             system[runner.name](options[systemName]);
         });
@@ -139,7 +143,7 @@ export class SystemManager<R=IRenderer> extends EventEmitter
             runner.destroy();
         });
 
-        this._systemsHash = {};
+        (this as any).systemsByName = {};
     }
 
     // TODO implement!

@@ -11,7 +11,7 @@ local function initialize()
 
   vim.g.kui_extmark_ns = vim.api.nvim_create_namespace('kui_extmark')
 
-  api.create_autocmds()
+  -- api.create_autocmds()
   state.update_dimensions()
 
   did_init = true

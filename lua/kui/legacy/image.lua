@@ -78,14 +78,6 @@ local function create(opts)
   local buffer  = opts.buffer or nil
   local extmark = nil
   if buffer then
-
-    print(vim.inspect({
-      buffer,
-      vim.g.kui_extmark_ns,
-      opts.row,
-      opts.col,
-    }))
-
     extmark = vim.api.nvim_buf_set_extmark(
       buffer,
       vim.g.kui_extmark_ns,

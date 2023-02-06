@@ -1,5 +1,6 @@
 import './setup'
 import './typedarray'
+import './graphics'
 
 import * as h from 'kui.legacy'
 import * as cairo from 'kui.cairo.cairo'
@@ -12,16 +13,14 @@ export function setup() {
   // print(new Rectangle(1, 0, 10, 10))
   // const image = cairo.image_surface('argb32', 100, 100)
   // const context = image.context()
-  // print(vim.inspect(context))
 
   const renderer = new Renderer({
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 80,
   })
   const stage = new Container()
 
   renderer.render(stage)
-  renderer.canvasContext.rootContext.surface.flush()
 
   h.setup()
   h.add_image(

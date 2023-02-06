@@ -1,6 +1,6 @@
 export function getBufferType(
     array: any /* typedarray */
-): 'Float32Array' | 'Uint32Array' | 'Int32Array' | 'Uint16Array' | 'Uint8Array' | null
+): 'Float32Array' | 'Uint32Array' | 'Int32Array' | 'Uint16Array' | 'Uint8Array'
 {
     if (array.BYTES_PER_ELEMENT === 4)
     {
@@ -31,5 +31,5 @@ export function getBufferType(
     }
 
     // TODO map out the rest of the array elements!
-    return null;
+    throw new Error('Unimplemented buffer type')
 }

@@ -468,8 +468,7 @@ map('CAIRO_FILL_RULE_', {
 
 cr.fill_rule = getset_func(C.cairo_get_fill_rule, C.cairo_set_fill_rule, 'CAIRO_FILL_RULE_')
 
-cr.get_line_width = C.cairo_get_line_width
-cr.set_line_width = C.cairo_set_line_width
+cr.line_width = getset_func(C.cairo_get_line_width, C.cairo_set_line_width)
 
 map('CAIRO_LINE_CAP_', {
 	'BUTT',

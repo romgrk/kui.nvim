@@ -26,13 +26,13 @@ export * as utils from 'src/utils';
 // Export core
 // export * from './autoDetectRenderer';
 export * from './background/BackgroundSystem';
-// export * from './batch/BatchDrawCall';
-// export * from './batch/BatchGeometry';
+export * from './batch/BatchDrawCall';
+export * from './batch/BatchGeometry';
 // export * from './batch/BatchRenderer';
 // export * from './batch/BatchShaderGenerator';
-// export * from './batch/BatchSystem';
-// export * from './batch/BatchTextureArray';
-// export * from './batch/ObjectRenderer';
+export * from './batch/BatchSystem';
+export * from './batch/BatchTextureArray';
+export * from './batch/ObjectRenderer';
 // export * from './context/ContextSystem';
 // export * from './filters/Filter';
 // export * from './filters/FilterState';

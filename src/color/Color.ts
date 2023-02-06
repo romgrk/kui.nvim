@@ -64,7 +64,7 @@ export class Color
     constructor(value: ColorSource = 0xffffff)
     {
         this._components = [1, 1, 1, 1];
-        this._value = value as any
+        this._value = -1
         this._int = -1
         this.value = value;
     }

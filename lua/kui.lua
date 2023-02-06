@@ -4356,7 +4356,7 @@ function Color.prototype.____constructor(self, value)
         value = 16777215
     end
     self._components = {1, 1, 1, 1}
-    self._value = value
+    self._value = -1
     self._int = -1
     self.value = value
 end
@@ -4582,6 +4582,583 @@ do
 end
 return ____exports
  end,
+["constants.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Different types of environments for WebGL.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name ENV
+-- @enum *
+-- @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
+-- with older / less advanced devices. If you experience unexplained flickering prefer this environment.
+-- @property {number} WEBGL - Version 1 of WebGL
+-- @property {number} WEBGL2 - Version 2 of WebGL
+____exports.ENV = ENV or ({})
+____exports.ENV.WEBGL_LEGACY = 0
+____exports.ENV[____exports.ENV.WEBGL_LEGACY] = "WEBGL_LEGACY"
+____exports.ENV.WEBGL = 1
+____exports.ENV[____exports.ENV.WEBGL] = "WEBGL"
+____exports.ENV.WEBGL2 = 2
+____exports.ENV[____exports.ENV.WEBGL2] = "WEBGL2"
+--- Constant to identify the Renderer Type.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name RENDERER_TYPE
+-- @enum *
+-- @property {number} UNKNOWN - Unknown render type.
+-- @property {number} WEBGL - WebGL render type.
+-- @property {number} CANVAS - Canvas render type.
+____exports.RENDERER_TYPE = RENDERER_TYPE or ({})
+____exports.RENDERER_TYPE.UNKNOWN = 0
+____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.UNKNOWN] = "UNKNOWN"
+____exports.RENDERER_TYPE.WEBGL = 1
+____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.WEBGL] = "WEBGL"
+____exports.RENDERER_TYPE.CANVAS = 2
+____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.CANVAS] = "CANVAS"
+--- Bitwise OR of masks that indicate the buffers to be cleared.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name BUFFER_BITS
+-- @enum *
+-- @property {number} COLOR - Indicates the buffers currently enabled for color writing.
+-- @property {number} DEPTH - Indicates the depth buffer.
+-- @property {number} STENCIL - Indicates the stencil buffer.
+____exports.BUFFER_BITS = BUFFER_BITS or ({})
+____exports.BUFFER_BITS.COLOR = 16384
+____exports.BUFFER_BITS[____exports.BUFFER_BITS.COLOR] = "COLOR"
+____exports.BUFFER_BITS.DEPTH = 256
+____exports.BUFFER_BITS[____exports.BUFFER_BITS.DEPTH] = "DEPTH"
+____exports.BUFFER_BITS.STENCIL = 1024
+____exports.BUFFER_BITS[____exports.BUFFER_BITS.STENCIL] = "STENCIL"
+--- Various blend modes supported by PIXI.
+-- 
+-- IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+-- Anything else will silently act like NORMAL.
+-- 
+-- @memberof PIXI
+-- @name BLEND_MODES
+-- @enum *
+-- @property {number} NORMAL -
+-- @property {number} ADD -
+-- @property {number} MULTIPLY -
+-- @property {number} SCREEN -
+-- @property {number} OVERLAY -
+-- @property {number} DARKEN -
+-- @property {number} LIGHTEN -
+-- @property {number} COLOR_DODGE -
+-- @property {number} COLOR_BURN -
+-- @property {number} HARD_LIGHT -
+-- @property {number} SOFT_LIGHT -
+-- @property {number} DIFFERENCE -
+-- @property {number} EXCLUSION -
+-- @property {number} HUE -
+-- @property {number} SATURATION -
+-- @property {number} COLOR -
+-- @property {number} LUMINOSITY -
+-- @property {number} NORMAL_NPM -
+-- @property {number} ADD_NPM -
+-- @property {number} SCREEN_NPM -
+-- @property {number} NONE -
+-- @property {number} SRC_IN -
+-- @property {number} SRC_OUT -
+-- @property {number} SRC_ATOP -
+-- @property {number} DST_OVER -
+-- @property {number} DST_IN -
+-- @property {number} DST_OUT -
+-- @property {number} DST_ATOP -
+-- @property {number} SUBTRACT -
+-- @property {number} SRC_OVER -
+-- @property {number} ERASE -
+-- @property {number} XOR -
+____exports.BLEND_MODES = BLEND_MODES or ({})
+____exports.BLEND_MODES.NORMAL = 0
+____exports.BLEND_MODES[____exports.BLEND_MODES.NORMAL] = "NORMAL"
+____exports.BLEND_MODES.ADD = 1
+____exports.BLEND_MODES[____exports.BLEND_MODES.ADD] = "ADD"
+____exports.BLEND_MODES.MULTIPLY = 2
+____exports.BLEND_MODES[____exports.BLEND_MODES.MULTIPLY] = "MULTIPLY"
+____exports.BLEND_MODES.SCREEN = 3
+____exports.BLEND_MODES[____exports.BLEND_MODES.SCREEN] = "SCREEN"
+____exports.BLEND_MODES.OVERLAY = 4
+____exports.BLEND_MODES[____exports.BLEND_MODES.OVERLAY] = "OVERLAY"
+____exports.BLEND_MODES.DARKEN = 5
+____exports.BLEND_MODES[____exports.BLEND_MODES.DARKEN] = "DARKEN"
+____exports.BLEND_MODES.LIGHTEN = 6
+____exports.BLEND_MODES[____exports.BLEND_MODES.LIGHTEN] = "LIGHTEN"
+____exports.BLEND_MODES.COLOR_DODGE = 7
+____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR_DODGE] = "COLOR_DODGE"
+____exports.BLEND_MODES.COLOR_BURN = 8
+____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR_BURN] = "COLOR_BURN"
+____exports.BLEND_MODES.HARD_LIGHT = 9
+____exports.BLEND_MODES[____exports.BLEND_MODES.HARD_LIGHT] = "HARD_LIGHT"
+____exports.BLEND_MODES.SOFT_LIGHT = 10
+____exports.BLEND_MODES[____exports.BLEND_MODES.SOFT_LIGHT] = "SOFT_LIGHT"
+____exports.BLEND_MODES.DIFFERENCE = 11
+____exports.BLEND_MODES[____exports.BLEND_MODES.DIFFERENCE] = "DIFFERENCE"
+____exports.BLEND_MODES.EXCLUSION = 12
+____exports.BLEND_MODES[____exports.BLEND_MODES.EXCLUSION] = "EXCLUSION"
+____exports.BLEND_MODES.HUE = 13
+____exports.BLEND_MODES[____exports.BLEND_MODES.HUE] = "HUE"
+____exports.BLEND_MODES.SATURATION = 14
+____exports.BLEND_MODES[____exports.BLEND_MODES.SATURATION] = "SATURATION"
+____exports.BLEND_MODES.COLOR = 15
+____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR] = "COLOR"
+____exports.BLEND_MODES.LUMINOSITY = 16
+____exports.BLEND_MODES[____exports.BLEND_MODES.LUMINOSITY] = "LUMINOSITY"
+____exports.BLEND_MODES.NORMAL_NPM = 17
+____exports.BLEND_MODES[____exports.BLEND_MODES.NORMAL_NPM] = "NORMAL_NPM"
+____exports.BLEND_MODES.ADD_NPM = 18
+____exports.BLEND_MODES[____exports.BLEND_MODES.ADD_NPM] = "ADD_NPM"
+____exports.BLEND_MODES.SCREEN_NPM = 19
+____exports.BLEND_MODES[____exports.BLEND_MODES.SCREEN_NPM] = "SCREEN_NPM"
+____exports.BLEND_MODES.NONE = 20
+____exports.BLEND_MODES[____exports.BLEND_MODES.NONE] = "NONE"
+____exports.BLEND_MODES.SRC_OVER = 0
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_OVER] = "SRC_OVER"
+____exports.BLEND_MODES.SRC_IN = 21
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_IN] = "SRC_IN"
+____exports.BLEND_MODES.SRC_OUT = 22
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_OUT] = "SRC_OUT"
+____exports.BLEND_MODES.SRC_ATOP = 23
+____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_ATOP] = "SRC_ATOP"
+____exports.BLEND_MODES.DST_OVER = 24
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_OVER] = "DST_OVER"
+____exports.BLEND_MODES.DST_IN = 25
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_IN] = "DST_IN"
+____exports.BLEND_MODES.DST_OUT = 26
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_OUT] = "DST_OUT"
+____exports.BLEND_MODES.DST_ATOP = 27
+____exports.BLEND_MODES[____exports.BLEND_MODES.DST_ATOP] = "DST_ATOP"
+____exports.BLEND_MODES.ERASE = 26
+____exports.BLEND_MODES[____exports.BLEND_MODES.ERASE] = "ERASE"
+____exports.BLEND_MODES.SUBTRACT = 28
+____exports.BLEND_MODES[____exports.BLEND_MODES.SUBTRACT] = "SUBTRACT"
+____exports.BLEND_MODES.XOR = 29
+____exports.BLEND_MODES[____exports.BLEND_MODES.XOR] = "XOR"
+--- Various webgl draw modes. These can be used to specify which GL drawMode to use
+-- under certain situations and renderers.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name DRAW_MODES
+-- @enum *
+-- @property {number} POINTS -
+-- @property {number} LINES -
+-- @property {number} LINE_LOOP -
+-- @property {number} LINE_STRIP -
+-- @property {number} TRIANGLES -
+-- @property {number} TRIANGLE_STRIP -
+-- @property {number} TRIANGLE_FAN -
+____exports.DRAW_MODES = DRAW_MODES or ({})
+____exports.DRAW_MODES.POINTS = 0
+____exports.DRAW_MODES[____exports.DRAW_MODES.POINTS] = "POINTS"
+____exports.DRAW_MODES.LINES = 1
+____exports.DRAW_MODES[____exports.DRAW_MODES.LINES] = "LINES"
+____exports.DRAW_MODES.LINE_LOOP = 2
+____exports.DRAW_MODES[____exports.DRAW_MODES.LINE_LOOP] = "LINE_LOOP"
+____exports.DRAW_MODES.LINE_STRIP = 3
+____exports.DRAW_MODES[____exports.DRAW_MODES.LINE_STRIP] = "LINE_STRIP"
+____exports.DRAW_MODES.TRIANGLES = 4
+____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLES] = "TRIANGLES"
+____exports.DRAW_MODES.TRIANGLE_STRIP = 5
+____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLE_STRIP] = "TRIANGLE_STRIP"
+____exports.DRAW_MODES.TRIANGLE_FAN = 6
+____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLE_FAN] = "TRIANGLE_FAN"
+--- Various GL texture/resources formats.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name FORMATS
+-- @enum *
+-- @property {number} [RGBA=6408] -
+-- @property {number} [RGB=6407] -
+-- @property {number} [RG=33319] -
+-- @property {number} [RED=6403] -
+-- @property {number} [RGBA_INTEGER=36249] -
+-- @property {number} [RGB_INTEGER=36248] -
+-- @property {number} [RG_INTEGER=33320] -
+-- @property {number} [RED_INTEGER=36244] -
+-- @property {number} [ALPHA=6406] -
+-- @property {number} [LUMINANCE=6409] -
+-- @property {number} [LUMINANCE_ALPHA=6410] -
+-- @property {number} [DEPTH_COMPONENT=6402] -
+-- @property {number} [DEPTH_STENCIL=34041] -
+____exports.FORMATS = FORMATS or ({})
+____exports.FORMATS.RGBA = 6408
+____exports.FORMATS[____exports.FORMATS.RGBA] = "RGBA"
+____exports.FORMATS.RGB = 6407
+____exports.FORMATS[____exports.FORMATS.RGB] = "RGB"
+____exports.FORMATS.RG = 33319
+____exports.FORMATS[____exports.FORMATS.RG] = "RG"
+____exports.FORMATS.RED = 6403
+____exports.FORMATS[____exports.FORMATS.RED] = "RED"
+____exports.FORMATS.RGBA_INTEGER = 36249
+____exports.FORMATS[____exports.FORMATS.RGBA_INTEGER] = "RGBA_INTEGER"
+____exports.FORMATS.RGB_INTEGER = 36248
+____exports.FORMATS[____exports.FORMATS.RGB_INTEGER] = "RGB_INTEGER"
+____exports.FORMATS.RG_INTEGER = 33320
+____exports.FORMATS[____exports.FORMATS.RG_INTEGER] = "RG_INTEGER"
+____exports.FORMATS.RED_INTEGER = 36244
+____exports.FORMATS[____exports.FORMATS.RED_INTEGER] = "RED_INTEGER"
+____exports.FORMATS.ALPHA = 6406
+____exports.FORMATS[____exports.FORMATS.ALPHA] = "ALPHA"
+____exports.FORMATS.LUMINANCE = 6409
+____exports.FORMATS[____exports.FORMATS.LUMINANCE] = "LUMINANCE"
+____exports.FORMATS.LUMINANCE_ALPHA = 6410
+____exports.FORMATS[____exports.FORMATS.LUMINANCE_ALPHA] = "LUMINANCE_ALPHA"
+____exports.FORMATS.DEPTH_COMPONENT = 6402
+____exports.FORMATS[____exports.FORMATS.DEPTH_COMPONENT] = "DEPTH_COMPONENT"
+____exports.FORMATS.DEPTH_STENCIL = 34041
+____exports.FORMATS[____exports.FORMATS.DEPTH_STENCIL] = "DEPTH_STENCIL"
+--- Various GL target types.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name TARGETS
+-- @enum *
+-- @property {number} [TEXTURE_2D=3553] -
+-- @property {number} [TEXTURE_CUBE_MAP=34067] -
+-- @property {number} [TEXTURE_2D_ARRAY=35866] -
+-- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_X=34069] -
+-- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_X=34070] -
+-- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Y=34071] -
+-- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Y=34072] -
+-- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Z=34073] -
+-- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Z=34074] -
+____exports.TARGETS = TARGETS or ({})
+____exports.TARGETS.TEXTURE_2D = 3553
+____exports.TARGETS[____exports.TARGETS.TEXTURE_2D] = "TEXTURE_2D"
+____exports.TARGETS.TEXTURE_CUBE_MAP = 34067
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP] = "TEXTURE_CUBE_MAP"
+____exports.TARGETS.TEXTURE_2D_ARRAY = 35866
+____exports.TARGETS[____exports.TARGETS.TEXTURE_2D_ARRAY] = "TEXTURE_2D_ARRAY"
+____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X = 34069
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X] = "TEXTURE_CUBE_MAP_POSITIVE_X"
+____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_X = 34070
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_X] = "TEXTURE_CUBE_MAP_NEGATIVE_X"
+____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Y = 34071
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Y] = "TEXTURE_CUBE_MAP_POSITIVE_Y"
+____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Y = 34072
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Y] = "TEXTURE_CUBE_MAP_NEGATIVE_Y"
+____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Z = 34073
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Z] = "TEXTURE_CUBE_MAP_POSITIVE_Z"
+____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074
+____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Z] = "TEXTURE_CUBE_MAP_NEGATIVE_Z"
+--- Various GL data format types.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name TYPES
+-- @enum *
+-- @property {number} [UNSIGNED_BYTE=5121] -
+-- @property {number} [UNSIGNED_SHORT=5123] -
+-- @property {number} [UNSIGNED_SHORT_5_6_5=33635] -
+-- @property {number} [UNSIGNED_SHORT_4_4_4_4=32819] -
+-- @property {number} [UNSIGNED_SHORT_5_5_5_1=32820] -
+-- @property {number} [UNSIGNED_INT=5125] -
+-- @property {number} [UNSIGNED_INT_10F_11F_11F_REV=35899] -
+-- @property {number} [UNSIGNED_INT_2_10_10_10_REV=33640] -
+-- @property {number} [UNSIGNED_INT_24_8=34042] -
+-- @property {number} [UNSIGNED_INT_5_9_9_9_REV=35902] -
+-- @property {number} [BYTE=5120] -
+-- @property {number} [SHORT=5122] -
+-- @property {number} [INT=5124] -
+-- @property {number} [FLOAT=5126] -
+-- @property {number} [FLOAT_32_UNSIGNED_INT_24_8_REV=36269] -
+-- @property {number} [HALF_FLOAT=36193] -
+____exports.TYPES = TYPES or ({})
+____exports.TYPES.UNSIGNED_BYTE = 5121
+____exports.TYPES[____exports.TYPES.UNSIGNED_BYTE] = "UNSIGNED_BYTE"
+____exports.TYPES.UNSIGNED_SHORT = 5123
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT] = "UNSIGNED_SHORT"
+____exports.TYPES.UNSIGNED_SHORT_5_6_5 = 33635
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_5_6_5] = "UNSIGNED_SHORT_5_6_5"
+____exports.TYPES.UNSIGNED_SHORT_4_4_4_4 = 32819
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_4_4_4_4] = "UNSIGNED_SHORT_4_4_4_4"
+____exports.TYPES.UNSIGNED_SHORT_5_5_5_1 = 32820
+____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_5_5_5_1] = "UNSIGNED_SHORT_5_5_5_1"
+____exports.TYPES.UNSIGNED_INT = 5125
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT] = "UNSIGNED_INT"
+____exports.TYPES.UNSIGNED_INT_10F_11F_11F_REV = 35899
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_10F_11F_11F_REV] = "UNSIGNED_INT_10F_11F_11F_REV"
+____exports.TYPES.UNSIGNED_INT_2_10_10_10_REV = 33640
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_2_10_10_10_REV] = "UNSIGNED_INT_2_10_10_10_REV"
+____exports.TYPES.UNSIGNED_INT_24_8 = 34042
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_24_8] = "UNSIGNED_INT_24_8"
+____exports.TYPES.UNSIGNED_INT_5_9_9_9_REV = 35902
+____exports.TYPES[____exports.TYPES.UNSIGNED_INT_5_9_9_9_REV] = "UNSIGNED_INT_5_9_9_9_REV"
+____exports.TYPES.BYTE = 5120
+____exports.TYPES[____exports.TYPES.BYTE] = "BYTE"
+____exports.TYPES.SHORT = 5122
+____exports.TYPES[____exports.TYPES.SHORT] = "SHORT"
+____exports.TYPES.INT = 5124
+____exports.TYPES[____exports.TYPES.INT] = "INT"
+____exports.TYPES.FLOAT = 5126
+____exports.TYPES[____exports.TYPES.FLOAT] = "FLOAT"
+____exports.TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV = 36269
+____exports.TYPES[____exports.TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV] = "FLOAT_32_UNSIGNED_INT_24_8_REV"
+____exports.TYPES.HALF_FLOAT = 36193
+____exports.TYPES[____exports.TYPES.HALF_FLOAT] = "HALF_FLOAT"
+--- Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
+-- WebGL1 works only with FLOAT.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name SAMPLER_TYPES
+-- @enum *
+-- @property {number} [FLOAT=0] -
+-- @property {number} [INT=1] -
+-- @property {number} [UINT=2] -
+____exports.SAMPLER_TYPES = SAMPLER_TYPES or ({})
+____exports.SAMPLER_TYPES.FLOAT = 0
+____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.FLOAT] = "FLOAT"
+____exports.SAMPLER_TYPES.INT = 1
+____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.INT] = "INT"
+____exports.SAMPLER_TYPES.UINT = 2
+____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.UINT] = "UINT"
+--- The scale modes that are supported by pixi.
+-- 
+-- The {@link PIXI.BaseTexture.defaultOptions.scaleMode } scale mode affects the default scaling mode of future operations.
+-- It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
+-- 
+-- @memberof PIXI
+-- @static
+-- @name SCALE_MODES
+-- @enum *
+-- @property {number} LINEAR Smooth scaling
+-- @property {number} NEAREST Pixelating scaling
+____exports.SCALE_MODES = SCALE_MODES or ({})
+____exports.SCALE_MODES.NEAREST = 0
+____exports.SCALE_MODES[____exports.SCALE_MODES.NEAREST] = "NEAREST"
+____exports.SCALE_MODES.LINEAR = 1
+____exports.SCALE_MODES[____exports.SCALE_MODES.LINEAR] = "LINEAR"
+--- The wrap modes that are supported by pixi.
+-- 
+-- The wrap mode affects the default wrapping mode of future operations.
+-- It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
+-- If the texture is non power of two then clamp will be used regardless as WebGL can
+-- only use REPEAT if the texture is po2.
+-- 
+-- This property only affects WebGL.
+-- 
+-- @name WRAP_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} CLAMP - The textures uvs are clamped
+-- @property {number} REPEAT - The texture uvs tile and repeat
+-- @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
+____exports.WRAP_MODES = WRAP_MODES or ({})
+____exports.WRAP_MODES.CLAMP = 33071
+____exports.WRAP_MODES[____exports.WRAP_MODES.CLAMP] = "CLAMP"
+____exports.WRAP_MODES.REPEAT = 10497
+____exports.WRAP_MODES[____exports.WRAP_MODES.REPEAT] = "REPEAT"
+____exports.WRAP_MODES.MIRRORED_REPEAT = 33648
+____exports.WRAP_MODES[____exports.WRAP_MODES.MIRRORED_REPEAT] = "MIRRORED_REPEAT"
+--- Mipmap filtering modes that are supported by pixi.
+-- 
+-- The {@link PIXI.BaseTexture.defaultOptions.mipmap } affects default texture filtering.
+-- Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
+-- or its `POW2` and texture dimensions are powers of 2.
+-- Since WebGL 1 don't support mipmap for non-power-of-two textures,
+-- `ON` option will work like `POW2` for WebGL 1.
+-- 
+-- This property only affects WebGL.
+-- 
+-- @name MIPMAP_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} OFF - No mipmaps.
+-- @property {number} POW2 - Generate mipmaps if texture dimensions are powers of 2.
+-- @property {number} ON - Always generate mipmaps.
+-- @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them;
+-- this is used with a resource that supports buffering each level-of-detail.
+____exports.MIPMAP_MODES = MIPMAP_MODES or ({})
+____exports.MIPMAP_MODES.OFF = 0
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.OFF] = "OFF"
+____exports.MIPMAP_MODES.POW2 = 1
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.POW2] = "POW2"
+____exports.MIPMAP_MODES.ON = 2
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.ON] = "ON"
+____exports.MIPMAP_MODES.ON_MANUAL = 3
+____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.ON_MANUAL] = "ON_MANUAL"
+--- How to treat textures with premultiplied alpha
+-- 
+-- @name ALPHA_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
+-- Option for compressed and data textures that are created from typed arrays.
+-- @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
+-- Default option, used for all loaded images.
+-- @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
+-- Example: spine atlases with `_pma` suffix.
+-- @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
+-- @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
+-- @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
+____exports.ALPHA_MODES = ALPHA_MODES or ({})
+____exports.ALPHA_MODES.NPM = 0
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.NPM] = "NPM"
+____exports.ALPHA_MODES.UNPACK = 1
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.UNPACK] = "UNPACK"
+____exports.ALPHA_MODES.PMA = 2
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.PMA] = "PMA"
+____exports.ALPHA_MODES.NO_PREMULTIPLIED_ALPHA = 0
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.NO_PREMULTIPLIED_ALPHA] = "NO_PREMULTIPLIED_ALPHA"
+____exports.ALPHA_MODES.PREMULTIPLY_ON_UPLOAD = 1
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLY_ON_UPLOAD] = "PREMULTIPLY_ON_UPLOAD"
+____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA = 2
+____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA] = "PREMULTIPLIED_ALPHA"
+--- Configure whether filter textures are cleared after binding.
+-- 
+-- Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
+-- this and skip clearing as an optimization.
+-- 
+-- @name CLEAR_MODES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} BLEND - Do not clear the filter texture. The filter's output will blend on top of the output texture.
+-- @property {number} CLEAR - Always clear the filter texture.
+-- @property {number} BLIT - Clear only if {@link FilterSystem.forceClear } is set or if the filter uses pixel blending.
+-- @property {number} NO - Alias for BLEND, same as `false` in earlier versions
+-- @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
+-- @property {number} AUTO - Alias for BLIT
+____exports.CLEAR_MODES = CLEAR_MODES or ({})
+____exports.CLEAR_MODES.NO = 0
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.NO] = "NO"
+____exports.CLEAR_MODES.YES = 1
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.YES] = "YES"
+____exports.CLEAR_MODES.AUTO = 2
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.AUTO] = "AUTO"
+____exports.CLEAR_MODES.BLEND = 0
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLEND] = "BLEND"
+____exports.CLEAR_MODES.CLEAR = 1
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.CLEAR] = "CLEAR"
+____exports.CLEAR_MODES.BLIT = 2
+____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLIT] = "BLIT"
+--- The gc modes that are supported by pixi.
+-- 
+-- The {@link PIXI.TextureGCSystem.defaultMode } Garbage Collection mode for PixiJS textures is AUTO
+-- If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
+-- used for a specified period of time they will be removed from the GPU. They will of course
+-- be uploaded again when they are required. This is a silent behind the scenes process that
+-- should ensure that the GPU does not  get filled up.
+-- 
+-- Handy for mobile devices!
+-- This property only affects WebGL.
+-- 
+-- @name GC_MODES
+-- @enum *
+-- @static
+-- @memberof PIXI
+-- @property {number} AUTO - Garbage collection will happen periodically automatically
+-- @property {number} MANUAL - Garbage collection will need to be called manually
+____exports.GC_MODES = GC_MODES or ({})
+____exports.GC_MODES.AUTO = 0
+____exports.GC_MODES[____exports.GC_MODES.AUTO] = "AUTO"
+____exports.GC_MODES.MANUAL = 1
+____exports.GC_MODES[____exports.GC_MODES.MANUAL] = "MANUAL"
+--- Constants that specify float precision in shaders.
+-- 
+-- @name PRECISION
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {string} [LOW='lowp'] -
+-- @property {string} [MEDIUM='mediump'] -
+-- @property {string} [HIGH='highp'] -
+____exports.PRECISION = PRECISION or ({})
+____exports.PRECISION.LOW = "lowp"
+____exports.PRECISION.MEDIUM = "mediump"
+____exports.PRECISION.HIGH = "highp"
+--- Constants for mask implementations.
+-- We use `type` suffix because it leads to very different behaviours
+-- 
+-- @name MASK_TYPES
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} NONE - Mask is ignored
+-- @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
+-- @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
+-- @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
+-- @property {number} COLOR - Color mask (RGBA)
+____exports.MASK_TYPES = MASK_TYPES or ({})
+____exports.MASK_TYPES.NONE = 0
+____exports.MASK_TYPES[____exports.MASK_TYPES.NONE] = "NONE"
+____exports.MASK_TYPES.SCISSOR = 1
+____exports.MASK_TYPES[____exports.MASK_TYPES.SCISSOR] = "SCISSOR"
+____exports.MASK_TYPES.STENCIL = 2
+____exports.MASK_TYPES[____exports.MASK_TYPES.STENCIL] = "STENCIL"
+____exports.MASK_TYPES.SPRITE = 3
+____exports.MASK_TYPES[____exports.MASK_TYPES.SPRITE] = "SPRITE"
+____exports.MASK_TYPES.COLOR = 4
+____exports.MASK_TYPES[____exports.MASK_TYPES.COLOR] = "COLOR"
+--- Bitwise OR of masks that indicate the color channels that are rendered to.
+-- 
+-- @static
+-- @memberof PIXI
+-- @name COLOR_MASK_BITS
+-- @enum *
+-- @property {number} RED - Red channel.
+-- @property {number} GREEN - Green channel
+-- @property {number} BLUE - Blue channel.
+-- @property {number} ALPHA - Alpha channel.
+____exports.COLOR_MASK_BITS = COLOR_MASK_BITS or ({})
+____exports.COLOR_MASK_BITS.RED = 1
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.RED] = "RED"
+____exports.COLOR_MASK_BITS.GREEN = 2
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.GREEN] = "GREEN"
+____exports.COLOR_MASK_BITS.BLUE = 4
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.BLUE] = "BLUE"
+____exports.COLOR_MASK_BITS.ALPHA = 8
+____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.ALPHA] = "ALPHA"
+--- Constants for multi-sampling antialiasing.
+-- 
+-- @see PIXI.Framebuffer#multisample *
+-- @name MSAA_QUALITY
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} NONE - No multisampling for this renderTexture
+-- @property {number} LOW - Try 2 samples
+-- @property {number} MEDIUM - Try 4 samples
+-- @property {number} HIGH - Try 8 samples
+____exports.MSAA_QUALITY = MSAA_QUALITY or ({})
+____exports.MSAA_QUALITY.NONE = 0
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.NONE] = "NONE"
+____exports.MSAA_QUALITY.LOW = 2
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.LOW] = "LOW"
+____exports.MSAA_QUALITY.MEDIUM = 4
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.MEDIUM] = "MEDIUM"
+____exports.MSAA_QUALITY.HIGH = 8
+____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.HIGH] = "HIGH"
+--- Constants for various buffer types in Pixi
+-- 
+-- @see PIXI.BUFFER_TYPE *
+-- @name BUFFER_TYPE
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {number} ELEMENT_ARRAY_BUFFER - buffer type for using as an index buffer
+-- @property {number} ARRAY_BUFFER - buffer type for using attribute data
+-- @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
+____exports.BUFFER_TYPE = BUFFER_TYPE or ({})
+____exports.BUFFER_TYPE.ELEMENT_ARRAY_BUFFER = 34963
+____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.ELEMENT_ARRAY_BUFFER] = "ELEMENT_ARRAY_BUFFER"
+____exports.BUFFER_TYPE.ARRAY_BUFFER = 34962
+____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.ARRAY_BUFFER] = "ARRAY_BUFFER"
+____exports.BUFFER_TYPE.UNIFORM_BUFFER = 35345
+____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.UNIFORM_BUFFER] = "UNIFORM_BUFFER"
+return ____exports
+ end,
 ["math.const"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
@@ -4590,7 +5167,8 @@ local ____exports = {}
 -- @static
 -- @member {number}
 -- @memberof PIXI
-____exports.PI_2 = math.pi * 2
+____exports.TAU = math.pi * 2
+____exports.PI_2 = ____exports.TAU
 --- Conversion factor for converting radians to degrees.
 -- 
 -- @static
@@ -6026,583 +6604,6 @@ do
 end
 return ____exports
  end,
-["constants.index"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
---- Different types of environments for WebGL.
--- 
--- @static
--- @memberof PIXI
--- @name ENV
--- @enum *
--- @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
--- with older / less advanced devices. If you experience unexplained flickering prefer this environment.
--- @property {number} WEBGL - Version 1 of WebGL
--- @property {number} WEBGL2 - Version 2 of WebGL
-____exports.ENV = ENV or ({})
-____exports.ENV.WEBGL_LEGACY = 0
-____exports.ENV[____exports.ENV.WEBGL_LEGACY] = "WEBGL_LEGACY"
-____exports.ENV.WEBGL = 1
-____exports.ENV[____exports.ENV.WEBGL] = "WEBGL"
-____exports.ENV.WEBGL2 = 2
-____exports.ENV[____exports.ENV.WEBGL2] = "WEBGL2"
---- Constant to identify the Renderer Type.
--- 
--- @static
--- @memberof PIXI
--- @name RENDERER_TYPE
--- @enum *
--- @property {number} UNKNOWN - Unknown render type.
--- @property {number} WEBGL - WebGL render type.
--- @property {number} CANVAS - Canvas render type.
-____exports.RENDERER_TYPE = RENDERER_TYPE or ({})
-____exports.RENDERER_TYPE.UNKNOWN = 0
-____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.UNKNOWN] = "UNKNOWN"
-____exports.RENDERER_TYPE.WEBGL = 1
-____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.WEBGL] = "WEBGL"
-____exports.RENDERER_TYPE.CANVAS = 2
-____exports.RENDERER_TYPE[____exports.RENDERER_TYPE.CANVAS] = "CANVAS"
---- Bitwise OR of masks that indicate the buffers to be cleared.
--- 
--- @static
--- @memberof PIXI
--- @name BUFFER_BITS
--- @enum *
--- @property {number} COLOR - Indicates the buffers currently enabled for color writing.
--- @property {number} DEPTH - Indicates the depth buffer.
--- @property {number} STENCIL - Indicates the stencil buffer.
-____exports.BUFFER_BITS = BUFFER_BITS or ({})
-____exports.BUFFER_BITS.COLOR = 16384
-____exports.BUFFER_BITS[____exports.BUFFER_BITS.COLOR] = "COLOR"
-____exports.BUFFER_BITS.DEPTH = 256
-____exports.BUFFER_BITS[____exports.BUFFER_BITS.DEPTH] = "DEPTH"
-____exports.BUFFER_BITS.STENCIL = 1024
-____exports.BUFFER_BITS[____exports.BUFFER_BITS.STENCIL] = "STENCIL"
---- Various blend modes supported by PIXI.
--- 
--- IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
--- Anything else will silently act like NORMAL.
--- 
--- @memberof PIXI
--- @name BLEND_MODES
--- @enum *
--- @property {number} NORMAL -
--- @property {number} ADD -
--- @property {number} MULTIPLY -
--- @property {number} SCREEN -
--- @property {number} OVERLAY -
--- @property {number} DARKEN -
--- @property {number} LIGHTEN -
--- @property {number} COLOR_DODGE -
--- @property {number} COLOR_BURN -
--- @property {number} HARD_LIGHT -
--- @property {number} SOFT_LIGHT -
--- @property {number} DIFFERENCE -
--- @property {number} EXCLUSION -
--- @property {number} HUE -
--- @property {number} SATURATION -
--- @property {number} COLOR -
--- @property {number} LUMINOSITY -
--- @property {number} NORMAL_NPM -
--- @property {number} ADD_NPM -
--- @property {number} SCREEN_NPM -
--- @property {number} NONE -
--- @property {number} SRC_IN -
--- @property {number} SRC_OUT -
--- @property {number} SRC_ATOP -
--- @property {number} DST_OVER -
--- @property {number} DST_IN -
--- @property {number} DST_OUT -
--- @property {number} DST_ATOP -
--- @property {number} SUBTRACT -
--- @property {number} SRC_OVER -
--- @property {number} ERASE -
--- @property {number} XOR -
-____exports.BLEND_MODES = BLEND_MODES or ({})
-____exports.BLEND_MODES.NORMAL = 0
-____exports.BLEND_MODES[____exports.BLEND_MODES.NORMAL] = "NORMAL"
-____exports.BLEND_MODES.ADD = 1
-____exports.BLEND_MODES[____exports.BLEND_MODES.ADD] = "ADD"
-____exports.BLEND_MODES.MULTIPLY = 2
-____exports.BLEND_MODES[____exports.BLEND_MODES.MULTIPLY] = "MULTIPLY"
-____exports.BLEND_MODES.SCREEN = 3
-____exports.BLEND_MODES[____exports.BLEND_MODES.SCREEN] = "SCREEN"
-____exports.BLEND_MODES.OVERLAY = 4
-____exports.BLEND_MODES[____exports.BLEND_MODES.OVERLAY] = "OVERLAY"
-____exports.BLEND_MODES.DARKEN = 5
-____exports.BLEND_MODES[____exports.BLEND_MODES.DARKEN] = "DARKEN"
-____exports.BLEND_MODES.LIGHTEN = 6
-____exports.BLEND_MODES[____exports.BLEND_MODES.LIGHTEN] = "LIGHTEN"
-____exports.BLEND_MODES.COLOR_DODGE = 7
-____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR_DODGE] = "COLOR_DODGE"
-____exports.BLEND_MODES.COLOR_BURN = 8
-____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR_BURN] = "COLOR_BURN"
-____exports.BLEND_MODES.HARD_LIGHT = 9
-____exports.BLEND_MODES[____exports.BLEND_MODES.HARD_LIGHT] = "HARD_LIGHT"
-____exports.BLEND_MODES.SOFT_LIGHT = 10
-____exports.BLEND_MODES[____exports.BLEND_MODES.SOFT_LIGHT] = "SOFT_LIGHT"
-____exports.BLEND_MODES.DIFFERENCE = 11
-____exports.BLEND_MODES[____exports.BLEND_MODES.DIFFERENCE] = "DIFFERENCE"
-____exports.BLEND_MODES.EXCLUSION = 12
-____exports.BLEND_MODES[____exports.BLEND_MODES.EXCLUSION] = "EXCLUSION"
-____exports.BLEND_MODES.HUE = 13
-____exports.BLEND_MODES[____exports.BLEND_MODES.HUE] = "HUE"
-____exports.BLEND_MODES.SATURATION = 14
-____exports.BLEND_MODES[____exports.BLEND_MODES.SATURATION] = "SATURATION"
-____exports.BLEND_MODES.COLOR = 15
-____exports.BLEND_MODES[____exports.BLEND_MODES.COLOR] = "COLOR"
-____exports.BLEND_MODES.LUMINOSITY = 16
-____exports.BLEND_MODES[____exports.BLEND_MODES.LUMINOSITY] = "LUMINOSITY"
-____exports.BLEND_MODES.NORMAL_NPM = 17
-____exports.BLEND_MODES[____exports.BLEND_MODES.NORMAL_NPM] = "NORMAL_NPM"
-____exports.BLEND_MODES.ADD_NPM = 18
-____exports.BLEND_MODES[____exports.BLEND_MODES.ADD_NPM] = "ADD_NPM"
-____exports.BLEND_MODES.SCREEN_NPM = 19
-____exports.BLEND_MODES[____exports.BLEND_MODES.SCREEN_NPM] = "SCREEN_NPM"
-____exports.BLEND_MODES.NONE = 20
-____exports.BLEND_MODES[____exports.BLEND_MODES.NONE] = "NONE"
-____exports.BLEND_MODES.SRC_OVER = 0
-____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_OVER] = "SRC_OVER"
-____exports.BLEND_MODES.SRC_IN = 21
-____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_IN] = "SRC_IN"
-____exports.BLEND_MODES.SRC_OUT = 22
-____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_OUT] = "SRC_OUT"
-____exports.BLEND_MODES.SRC_ATOP = 23
-____exports.BLEND_MODES[____exports.BLEND_MODES.SRC_ATOP] = "SRC_ATOP"
-____exports.BLEND_MODES.DST_OVER = 24
-____exports.BLEND_MODES[____exports.BLEND_MODES.DST_OVER] = "DST_OVER"
-____exports.BLEND_MODES.DST_IN = 25
-____exports.BLEND_MODES[____exports.BLEND_MODES.DST_IN] = "DST_IN"
-____exports.BLEND_MODES.DST_OUT = 26
-____exports.BLEND_MODES[____exports.BLEND_MODES.DST_OUT] = "DST_OUT"
-____exports.BLEND_MODES.DST_ATOP = 27
-____exports.BLEND_MODES[____exports.BLEND_MODES.DST_ATOP] = "DST_ATOP"
-____exports.BLEND_MODES.ERASE = 26
-____exports.BLEND_MODES[____exports.BLEND_MODES.ERASE] = "ERASE"
-____exports.BLEND_MODES.SUBTRACT = 28
-____exports.BLEND_MODES[____exports.BLEND_MODES.SUBTRACT] = "SUBTRACT"
-____exports.BLEND_MODES.XOR = 29
-____exports.BLEND_MODES[____exports.BLEND_MODES.XOR] = "XOR"
---- Various webgl draw modes. These can be used to specify which GL drawMode to use
--- under certain situations and renderers.
--- 
--- @memberof PIXI
--- @static
--- @name DRAW_MODES
--- @enum *
--- @property {number} POINTS -
--- @property {number} LINES -
--- @property {number} LINE_LOOP -
--- @property {number} LINE_STRIP -
--- @property {number} TRIANGLES -
--- @property {number} TRIANGLE_STRIP -
--- @property {number} TRIANGLE_FAN -
-____exports.DRAW_MODES = DRAW_MODES or ({})
-____exports.DRAW_MODES.POINTS = 0
-____exports.DRAW_MODES[____exports.DRAW_MODES.POINTS] = "POINTS"
-____exports.DRAW_MODES.LINES = 1
-____exports.DRAW_MODES[____exports.DRAW_MODES.LINES] = "LINES"
-____exports.DRAW_MODES.LINE_LOOP = 2
-____exports.DRAW_MODES[____exports.DRAW_MODES.LINE_LOOP] = "LINE_LOOP"
-____exports.DRAW_MODES.LINE_STRIP = 3
-____exports.DRAW_MODES[____exports.DRAW_MODES.LINE_STRIP] = "LINE_STRIP"
-____exports.DRAW_MODES.TRIANGLES = 4
-____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLES] = "TRIANGLES"
-____exports.DRAW_MODES.TRIANGLE_STRIP = 5
-____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLE_STRIP] = "TRIANGLE_STRIP"
-____exports.DRAW_MODES.TRIANGLE_FAN = 6
-____exports.DRAW_MODES[____exports.DRAW_MODES.TRIANGLE_FAN] = "TRIANGLE_FAN"
---- Various GL texture/resources formats.
--- 
--- @memberof PIXI
--- @static
--- @name FORMATS
--- @enum *
--- @property {number} [RGBA=6408] -
--- @property {number} [RGB=6407] -
--- @property {number} [RG=33319] -
--- @property {number} [RED=6403] -
--- @property {number} [RGBA_INTEGER=36249] -
--- @property {number} [RGB_INTEGER=36248] -
--- @property {number} [RG_INTEGER=33320] -
--- @property {number} [RED_INTEGER=36244] -
--- @property {number} [ALPHA=6406] -
--- @property {number} [LUMINANCE=6409] -
--- @property {number} [LUMINANCE_ALPHA=6410] -
--- @property {number} [DEPTH_COMPONENT=6402] -
--- @property {number} [DEPTH_STENCIL=34041] -
-____exports.FORMATS = FORMATS or ({})
-____exports.FORMATS.RGBA = 6408
-____exports.FORMATS[____exports.FORMATS.RGBA] = "RGBA"
-____exports.FORMATS.RGB = 6407
-____exports.FORMATS[____exports.FORMATS.RGB] = "RGB"
-____exports.FORMATS.RG = 33319
-____exports.FORMATS[____exports.FORMATS.RG] = "RG"
-____exports.FORMATS.RED = 6403
-____exports.FORMATS[____exports.FORMATS.RED] = "RED"
-____exports.FORMATS.RGBA_INTEGER = 36249
-____exports.FORMATS[____exports.FORMATS.RGBA_INTEGER] = "RGBA_INTEGER"
-____exports.FORMATS.RGB_INTEGER = 36248
-____exports.FORMATS[____exports.FORMATS.RGB_INTEGER] = "RGB_INTEGER"
-____exports.FORMATS.RG_INTEGER = 33320
-____exports.FORMATS[____exports.FORMATS.RG_INTEGER] = "RG_INTEGER"
-____exports.FORMATS.RED_INTEGER = 36244
-____exports.FORMATS[____exports.FORMATS.RED_INTEGER] = "RED_INTEGER"
-____exports.FORMATS.ALPHA = 6406
-____exports.FORMATS[____exports.FORMATS.ALPHA] = "ALPHA"
-____exports.FORMATS.LUMINANCE = 6409
-____exports.FORMATS[____exports.FORMATS.LUMINANCE] = "LUMINANCE"
-____exports.FORMATS.LUMINANCE_ALPHA = 6410
-____exports.FORMATS[____exports.FORMATS.LUMINANCE_ALPHA] = "LUMINANCE_ALPHA"
-____exports.FORMATS.DEPTH_COMPONENT = 6402
-____exports.FORMATS[____exports.FORMATS.DEPTH_COMPONENT] = "DEPTH_COMPONENT"
-____exports.FORMATS.DEPTH_STENCIL = 34041
-____exports.FORMATS[____exports.FORMATS.DEPTH_STENCIL] = "DEPTH_STENCIL"
---- Various GL target types.
--- 
--- @memberof PIXI
--- @static
--- @name TARGETS
--- @enum *
--- @property {number} [TEXTURE_2D=3553] -
--- @property {number} [TEXTURE_CUBE_MAP=34067] -
--- @property {number} [TEXTURE_2D_ARRAY=35866] -
--- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_X=34069] -
--- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_X=34070] -
--- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Y=34071] -
--- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Y=34072] -
--- @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Z=34073] -
--- @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Z=34074] -
-____exports.TARGETS = TARGETS or ({})
-____exports.TARGETS.TEXTURE_2D = 3553
-____exports.TARGETS[____exports.TARGETS.TEXTURE_2D] = "TEXTURE_2D"
-____exports.TARGETS.TEXTURE_CUBE_MAP = 34067
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP] = "TEXTURE_CUBE_MAP"
-____exports.TARGETS.TEXTURE_2D_ARRAY = 35866
-____exports.TARGETS[____exports.TARGETS.TEXTURE_2D_ARRAY] = "TEXTURE_2D_ARRAY"
-____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X = 34069
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X] = "TEXTURE_CUBE_MAP_POSITIVE_X"
-____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_X = 34070
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_X] = "TEXTURE_CUBE_MAP_NEGATIVE_X"
-____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Y = 34071
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Y] = "TEXTURE_CUBE_MAP_POSITIVE_Y"
-____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Y = 34072
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Y] = "TEXTURE_CUBE_MAP_NEGATIVE_Y"
-____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Z = 34073
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_POSITIVE_Z] = "TEXTURE_CUBE_MAP_POSITIVE_Z"
-____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074
-____exports.TARGETS[____exports.TARGETS.TEXTURE_CUBE_MAP_NEGATIVE_Z] = "TEXTURE_CUBE_MAP_NEGATIVE_Z"
---- Various GL data format types.
--- 
--- @memberof PIXI
--- @static
--- @name TYPES
--- @enum *
--- @property {number} [UNSIGNED_BYTE=5121] -
--- @property {number} [UNSIGNED_SHORT=5123] -
--- @property {number} [UNSIGNED_SHORT_5_6_5=33635] -
--- @property {number} [UNSIGNED_SHORT_4_4_4_4=32819] -
--- @property {number} [UNSIGNED_SHORT_5_5_5_1=32820] -
--- @property {number} [UNSIGNED_INT=5125] -
--- @property {number} [UNSIGNED_INT_10F_11F_11F_REV=35899] -
--- @property {number} [UNSIGNED_INT_2_10_10_10_REV=33640] -
--- @property {number} [UNSIGNED_INT_24_8=34042] -
--- @property {number} [UNSIGNED_INT_5_9_9_9_REV=35902] -
--- @property {number} [BYTE=5120] -
--- @property {number} [SHORT=5122] -
--- @property {number} [INT=5124] -
--- @property {number} [FLOAT=5126] -
--- @property {number} [FLOAT_32_UNSIGNED_INT_24_8_REV=36269] -
--- @property {number} [HALF_FLOAT=36193] -
-____exports.TYPES = TYPES or ({})
-____exports.TYPES.UNSIGNED_BYTE = 5121
-____exports.TYPES[____exports.TYPES.UNSIGNED_BYTE] = "UNSIGNED_BYTE"
-____exports.TYPES.UNSIGNED_SHORT = 5123
-____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT] = "UNSIGNED_SHORT"
-____exports.TYPES.UNSIGNED_SHORT_5_6_5 = 33635
-____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_5_6_5] = "UNSIGNED_SHORT_5_6_5"
-____exports.TYPES.UNSIGNED_SHORT_4_4_4_4 = 32819
-____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_4_4_4_4] = "UNSIGNED_SHORT_4_4_4_4"
-____exports.TYPES.UNSIGNED_SHORT_5_5_5_1 = 32820
-____exports.TYPES[____exports.TYPES.UNSIGNED_SHORT_5_5_5_1] = "UNSIGNED_SHORT_5_5_5_1"
-____exports.TYPES.UNSIGNED_INT = 5125
-____exports.TYPES[____exports.TYPES.UNSIGNED_INT] = "UNSIGNED_INT"
-____exports.TYPES.UNSIGNED_INT_10F_11F_11F_REV = 35899
-____exports.TYPES[____exports.TYPES.UNSIGNED_INT_10F_11F_11F_REV] = "UNSIGNED_INT_10F_11F_11F_REV"
-____exports.TYPES.UNSIGNED_INT_2_10_10_10_REV = 33640
-____exports.TYPES[____exports.TYPES.UNSIGNED_INT_2_10_10_10_REV] = "UNSIGNED_INT_2_10_10_10_REV"
-____exports.TYPES.UNSIGNED_INT_24_8 = 34042
-____exports.TYPES[____exports.TYPES.UNSIGNED_INT_24_8] = "UNSIGNED_INT_24_8"
-____exports.TYPES.UNSIGNED_INT_5_9_9_9_REV = 35902
-____exports.TYPES[____exports.TYPES.UNSIGNED_INT_5_9_9_9_REV] = "UNSIGNED_INT_5_9_9_9_REV"
-____exports.TYPES.BYTE = 5120
-____exports.TYPES[____exports.TYPES.BYTE] = "BYTE"
-____exports.TYPES.SHORT = 5122
-____exports.TYPES[____exports.TYPES.SHORT] = "SHORT"
-____exports.TYPES.INT = 5124
-____exports.TYPES[____exports.TYPES.INT] = "INT"
-____exports.TYPES.FLOAT = 5126
-____exports.TYPES[____exports.TYPES.FLOAT] = "FLOAT"
-____exports.TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV = 36269
-____exports.TYPES[____exports.TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV] = "FLOAT_32_UNSIGNED_INT_24_8_REV"
-____exports.TYPES.HALF_FLOAT = 36193
-____exports.TYPES[____exports.TYPES.HALF_FLOAT] = "HALF_FLOAT"
---- Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
--- WebGL1 works only with FLOAT.
--- 
--- @memberof PIXI
--- @static
--- @name SAMPLER_TYPES
--- @enum *
--- @property {number} [FLOAT=0] -
--- @property {number} [INT=1] -
--- @property {number} [UINT=2] -
-____exports.SAMPLER_TYPES = SAMPLER_TYPES or ({})
-____exports.SAMPLER_TYPES.FLOAT = 0
-____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.FLOAT] = "FLOAT"
-____exports.SAMPLER_TYPES.INT = 1
-____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.INT] = "INT"
-____exports.SAMPLER_TYPES.UINT = 2
-____exports.SAMPLER_TYPES[____exports.SAMPLER_TYPES.UINT] = "UINT"
---- The scale modes that are supported by pixi.
--- 
--- The {@link PIXI.BaseTexture.defaultOptions.scaleMode } scale mode affects the default scaling mode of future operations.
--- It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
--- 
--- @memberof PIXI
--- @static
--- @name SCALE_MODES
--- @enum *
--- @property {number} LINEAR Smooth scaling
--- @property {number} NEAREST Pixelating scaling
-____exports.SCALE_MODES = SCALE_MODES or ({})
-____exports.SCALE_MODES.NEAREST = 0
-____exports.SCALE_MODES[____exports.SCALE_MODES.NEAREST] = "NEAREST"
-____exports.SCALE_MODES.LINEAR = 1
-____exports.SCALE_MODES[____exports.SCALE_MODES.LINEAR] = "LINEAR"
---- The wrap modes that are supported by pixi.
--- 
--- The wrap mode affects the default wrapping mode of future operations.
--- It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
--- If the texture is non power of two then clamp will be used regardless as WebGL can
--- only use REPEAT if the texture is po2.
--- 
--- This property only affects WebGL.
--- 
--- @name WRAP_MODES
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} CLAMP - The textures uvs are clamped
--- @property {number} REPEAT - The texture uvs tile and repeat
--- @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
-____exports.WRAP_MODES = WRAP_MODES or ({})
-____exports.WRAP_MODES.CLAMP = 33071
-____exports.WRAP_MODES[____exports.WRAP_MODES.CLAMP] = "CLAMP"
-____exports.WRAP_MODES.REPEAT = 10497
-____exports.WRAP_MODES[____exports.WRAP_MODES.REPEAT] = "REPEAT"
-____exports.WRAP_MODES.MIRRORED_REPEAT = 33648
-____exports.WRAP_MODES[____exports.WRAP_MODES.MIRRORED_REPEAT] = "MIRRORED_REPEAT"
---- Mipmap filtering modes that are supported by pixi.
--- 
--- The {@link PIXI.BaseTexture.defaultOptions.mipmap } affects default texture filtering.
--- Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
--- or its `POW2` and texture dimensions are powers of 2.
--- Since WebGL 1 don't support mipmap for non-power-of-two textures,
--- `ON` option will work like `POW2` for WebGL 1.
--- 
--- This property only affects WebGL.
--- 
--- @name MIPMAP_MODES
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} OFF - No mipmaps.
--- @property {number} POW2 - Generate mipmaps if texture dimensions are powers of 2.
--- @property {number} ON - Always generate mipmaps.
--- @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them;
--- this is used with a resource that supports buffering each level-of-detail.
-____exports.MIPMAP_MODES = MIPMAP_MODES or ({})
-____exports.MIPMAP_MODES.OFF = 0
-____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.OFF] = "OFF"
-____exports.MIPMAP_MODES.POW2 = 1
-____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.POW2] = "POW2"
-____exports.MIPMAP_MODES.ON = 2
-____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.ON] = "ON"
-____exports.MIPMAP_MODES.ON_MANUAL = 3
-____exports.MIPMAP_MODES[____exports.MIPMAP_MODES.ON_MANUAL] = "ON_MANUAL"
---- How to treat textures with premultiplied alpha
--- 
--- @name ALPHA_MODES
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
--- Option for compressed and data textures that are created from typed arrays.
--- @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
--- Default option, used for all loaded images.
--- @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
--- Example: spine atlases with `_pma` suffix.
--- @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
--- @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
--- @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
-____exports.ALPHA_MODES = ALPHA_MODES or ({})
-____exports.ALPHA_MODES.NPM = 0
-____exports.ALPHA_MODES[____exports.ALPHA_MODES.NPM] = "NPM"
-____exports.ALPHA_MODES.UNPACK = 1
-____exports.ALPHA_MODES[____exports.ALPHA_MODES.UNPACK] = "UNPACK"
-____exports.ALPHA_MODES.PMA = 2
-____exports.ALPHA_MODES[____exports.ALPHA_MODES.PMA] = "PMA"
-____exports.ALPHA_MODES.NO_PREMULTIPLIED_ALPHA = 0
-____exports.ALPHA_MODES[____exports.ALPHA_MODES.NO_PREMULTIPLIED_ALPHA] = "NO_PREMULTIPLIED_ALPHA"
-____exports.ALPHA_MODES.PREMULTIPLY_ON_UPLOAD = 1
-____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLY_ON_UPLOAD] = "PREMULTIPLY_ON_UPLOAD"
-____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA = 2
-____exports.ALPHA_MODES[____exports.ALPHA_MODES.PREMULTIPLIED_ALPHA] = "PREMULTIPLIED_ALPHA"
---- Configure whether filter textures are cleared after binding.
--- 
--- Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
--- this and skip clearing as an optimization.
--- 
--- @name CLEAR_MODES
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} BLEND - Do not clear the filter texture. The filter's output will blend on top of the output texture.
--- @property {number} CLEAR - Always clear the filter texture.
--- @property {number} BLIT - Clear only if {@link FilterSystem.forceClear } is set or if the filter uses pixel blending.
--- @property {number} NO - Alias for BLEND, same as `false` in earlier versions
--- @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
--- @property {number} AUTO - Alias for BLIT
-____exports.CLEAR_MODES = CLEAR_MODES or ({})
-____exports.CLEAR_MODES.NO = 0
-____exports.CLEAR_MODES[____exports.CLEAR_MODES.NO] = "NO"
-____exports.CLEAR_MODES.YES = 1
-____exports.CLEAR_MODES[____exports.CLEAR_MODES.YES] = "YES"
-____exports.CLEAR_MODES.AUTO = 2
-____exports.CLEAR_MODES[____exports.CLEAR_MODES.AUTO] = "AUTO"
-____exports.CLEAR_MODES.BLEND = 0
-____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLEND] = "BLEND"
-____exports.CLEAR_MODES.CLEAR = 1
-____exports.CLEAR_MODES[____exports.CLEAR_MODES.CLEAR] = "CLEAR"
-____exports.CLEAR_MODES.BLIT = 2
-____exports.CLEAR_MODES[____exports.CLEAR_MODES.BLIT] = "BLIT"
---- The gc modes that are supported by pixi.
--- 
--- The {@link PIXI.TextureGCSystem.defaultMode } Garbage Collection mode for PixiJS textures is AUTO
--- If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
--- used for a specified period of time they will be removed from the GPU. They will of course
--- be uploaded again when they are required. This is a silent behind the scenes process that
--- should ensure that the GPU does not  get filled up.
--- 
--- Handy for mobile devices!
--- This property only affects WebGL.
--- 
--- @name GC_MODES
--- @enum *
--- @static
--- @memberof PIXI
--- @property {number} AUTO - Garbage collection will happen periodically automatically
--- @property {number} MANUAL - Garbage collection will need to be called manually
-____exports.GC_MODES = GC_MODES or ({})
-____exports.GC_MODES.AUTO = 0
-____exports.GC_MODES[____exports.GC_MODES.AUTO] = "AUTO"
-____exports.GC_MODES.MANUAL = 1
-____exports.GC_MODES[____exports.GC_MODES.MANUAL] = "MANUAL"
---- Constants that specify float precision in shaders.
--- 
--- @name PRECISION
--- @memberof PIXI
--- @static
--- @enum *
--- @property {string} [LOW='lowp'] -
--- @property {string} [MEDIUM='mediump'] -
--- @property {string} [HIGH='highp'] -
-____exports.PRECISION = PRECISION or ({})
-____exports.PRECISION.LOW = "lowp"
-____exports.PRECISION.MEDIUM = "mediump"
-____exports.PRECISION.HIGH = "highp"
---- Constants for mask implementations.
--- We use `type` suffix because it leads to very different behaviours
--- 
--- @name MASK_TYPES
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} NONE - Mask is ignored
--- @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
--- @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
--- @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
--- @property {number} COLOR - Color mask (RGBA)
-____exports.MASK_TYPES = MASK_TYPES or ({})
-____exports.MASK_TYPES.NONE = 0
-____exports.MASK_TYPES[____exports.MASK_TYPES.NONE] = "NONE"
-____exports.MASK_TYPES.SCISSOR = 1
-____exports.MASK_TYPES[____exports.MASK_TYPES.SCISSOR] = "SCISSOR"
-____exports.MASK_TYPES.STENCIL = 2
-____exports.MASK_TYPES[____exports.MASK_TYPES.STENCIL] = "STENCIL"
-____exports.MASK_TYPES.SPRITE = 3
-____exports.MASK_TYPES[____exports.MASK_TYPES.SPRITE] = "SPRITE"
-____exports.MASK_TYPES.COLOR = 4
-____exports.MASK_TYPES[____exports.MASK_TYPES.COLOR] = "COLOR"
---- Bitwise OR of masks that indicate the color channels that are rendered to.
--- 
--- @static
--- @memberof PIXI
--- @name COLOR_MASK_BITS
--- @enum *
--- @property {number} RED - Red channel.
--- @property {number} GREEN - Green channel
--- @property {number} BLUE - Blue channel.
--- @property {number} ALPHA - Alpha channel.
-____exports.COLOR_MASK_BITS = COLOR_MASK_BITS or ({})
-____exports.COLOR_MASK_BITS.RED = 1
-____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.RED] = "RED"
-____exports.COLOR_MASK_BITS.GREEN = 2
-____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.GREEN] = "GREEN"
-____exports.COLOR_MASK_BITS.BLUE = 4
-____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.BLUE] = "BLUE"
-____exports.COLOR_MASK_BITS.ALPHA = 8
-____exports.COLOR_MASK_BITS[____exports.COLOR_MASK_BITS.ALPHA] = "ALPHA"
---- Constants for multi-sampling antialiasing.
--- 
--- @see PIXI.Framebuffer#multisample *
--- @name MSAA_QUALITY
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} NONE - No multisampling for this renderTexture
--- @property {number} LOW - Try 2 samples
--- @property {number} MEDIUM - Try 4 samples
--- @property {number} HIGH - Try 8 samples
-____exports.MSAA_QUALITY = MSAA_QUALITY or ({})
-____exports.MSAA_QUALITY.NONE = 0
-____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.NONE] = "NONE"
-____exports.MSAA_QUALITY.LOW = 2
-____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.LOW] = "LOW"
-____exports.MSAA_QUALITY.MEDIUM = 4
-____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.MEDIUM] = "MEDIUM"
-____exports.MSAA_QUALITY.HIGH = 8
-____exports.MSAA_QUALITY[____exports.MSAA_QUALITY.HIGH] = "HIGH"
---- Constants for various buffer types in Pixi
--- 
--- @see PIXI.BUFFER_TYPE *
--- @name BUFFER_TYPE
--- @memberof PIXI
--- @static
--- @enum *
--- @property {number} ELEMENT_ARRAY_BUFFER - buffer type for using as an index buffer
--- @property {number} ARRAY_BUFFER - buffer type for using attribute data
--- @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
-____exports.BUFFER_TYPE = BUFFER_TYPE or ({})
-____exports.BUFFER_TYPE.ELEMENT_ARRAY_BUFFER = 34963
-____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.ELEMENT_ARRAY_BUFFER] = "ELEMENT_ARRAY_BUFFER"
-____exports.BUFFER_TYPE.ARRAY_BUFFER = 34962
-____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.ARRAY_BUFFER] = "ARRAY_BUFFER"
-____exports.BUFFER_TYPE.UNIFORM_BUFFER = 35345
-____exports.BUFFER_TYPE[____exports.BUFFER_TYPE.UNIFORM_BUFFER] = "UNIFORM_BUFFER"
-return ____exports
- end,
 ["runner.Runner"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -6811,10 +6812,13 @@ __TS__SetDescriptor(
     "fillStyle",
     {
         get = function(self)
-            return self._fillColor
+            return self._fillColor:toHex()
         end,
         set = function(self, color)
             self._fillColor = __TS__New(Color, color)
+            print(vim.inspect(self._fillColor))
+            print(vim.inspect(self._fillColor.components))
+            print(vim.inspect(color))
         end
     },
     true
@@ -6832,6 +6836,58 @@ __TS__SetDescriptor(
     },
     true
 )
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "lineCap",
+    {
+        get = function(self)
+            return self.context:line_cap()
+        end,
+        set = function(self, value)
+            self.context:line_cap(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "lineJoin",
+    {
+        get = function(self)
+            return self.context:line_join()
+        end,
+        set = function(self, value)
+            self.context:line_join(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "lineWidth",
+    {
+        get = function(self)
+            return self.context:line_width()
+        end,
+        set = function(self, value)
+            self.context:line_width(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "miterLimit",
+    {
+        get = function(self)
+            return self.context:miter_limit()
+        end,
+        set = function(self, value)
+            self.context:miter_limit(value)
+        end
+    },
+    true
+)
 function Context2D.prototype._fill(self)
     self.context:rgba(self._fillColor.red, self._fillColor.green, self._fillColor.blue, self._fillColor.alpha * self._globalAlpha)
     self.context:fill()
@@ -6840,10 +6896,105 @@ function Context2D.prototype._stroke(self)
     self.context:rgba(self._strokeColor.red, self._strokeColor.green, self._strokeColor.blue, self._strokeColor.alpha * self._globalAlpha)
     self.context:stroke()
 end
+function Context2D.prototype.arc(self, x, y, radius, startAngle, endAngle, counterclockwise)
+    if not counterclockwise then
+        self.context:arc(
+            x,
+            y,
+            radius,
+            startAngle,
+            endAngle
+        )
+    else
+        self.context:arc_negative(
+            x,
+            y,
+            radius,
+            startAngle,
+            endAngle
+        )
+    end
+end
+function Context2D.prototype.beginPath(self)
+    self.context:new_path()
+end
+function Context2D.prototype.bezierCurveTo(self, x1, y1, x2, y2, x3, y3)
+    self.context:curve_to(
+        x1,
+        y1,
+        x2,
+        y2,
+        x3,
+        y3
+    )
+end
+function Context2D.prototype.clip(self)
+    self.context:clip()
+end
+function Context2D.prototype.closePath(self)
+    self.context:close_path()
+end
+function Context2D.prototype.ellipse(self, x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise)
+    if not counterclockwise then
+        self.context:elliptic_arc(
+            x,
+            y,
+            radiusX,
+            radiusY,
+            rotation,
+            startAngle,
+            endAngle
+        )
+    else
+        self.context:elliptic_arc_negative(
+            x,
+            y,
+            radiusX,
+            radiusY,
+            rotation,
+            startAngle,
+            endAngle
+        )
+    end
+end
+function Context2D.prototype.fill(self)
+    self.context:fill()
+end
+function Context2D.prototype.lineTo(self, x, y)
+    self.context:line_to(x, y)
+end
+function Context2D.prototype.moveTo(self, x, y)
+    self.context:move_to(x, y)
+end
+function Context2D.prototype.quadraticCurveTo(self, x1, y1, x2, y2)
+    self.context:quad_curve_to(x1, y1, x2, y2)
+end
+function Context2D.prototype.roundRect(self, x, y, width, height, radius)
+    self.context:rounded_rectangle(
+        x,
+        y,
+        width,
+        height,
+        radius
+    )
+end
+function Context2D.prototype.stroke(self)
+    self.context:stroke()
+end
 function Context2D.prototype.save(self)
     self.context:save()
 end
 function Context2D.prototype.restore(self)
+    self.context:restore()
+end
+function Context2D.prototype.rect(self, x, y, width, height)
+    self.context:rectangle(x, y, width, height)
+end
+function Context2D.prototype.clearRect(self, x, y, width, height)
+    self.context:save()
+    self.context:rectangle(x, y, width, height)
+    self.context:clip()
+    self.context:paint_with_alpha(0)
     self.context:restore()
 end
 function Context2D.prototype.fillRect(self, x, y, width, height)
@@ -7838,6 +7989,13 @@ return ____exports
 ["utils.data.getBufferType"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
 local ____exports = {}
 function ____exports.getBufferType(self, array)
     if array.BYTES_PER_ELEMENT == 4 then
@@ -7856,7 +8014,10 @@ function ____exports.getBufferType(self, array)
             return "Uint8Array"
         end
     end
-    return nil
+    error(
+        __TS__New(Error, "Unimplemented buffer type"),
+        0
+    )
 end
 return ____exports
  end,
@@ -9779,7 +9940,10 @@ __TS__ClassExtends(SystemManager, EventEmitter)
 function SystemManager.prototype.____constructor(self, ...)
     EventEmitter.prototype.____constructor(self, ...)
     self.runners = {}
-    self._systemsHash = {}
+    self.systemsByName = {}
+end
+function SystemManager.prototype.get(self, name)
+    return self.systemsByName[name]
 end
 function SystemManager.prototype.setup(self, config)
     self:addRunners(unpack(config.runners))
@@ -9812,20 +9976,20 @@ function SystemManager.prototype.addSystem(self, ClassRef, name)
         )
     end
     self[name] = system
-    self._systemsHash[name] = system
+    self.systemsByName[name] = system
     for i in pairs(self.runners) do
         self.runners[i]:add(system)
     end
     return self
 end
 function SystemManager.prototype.emitWithCustomOptions(self, runner, options)
-    local systemHashKeys = __TS__ObjectKeys(self._systemsHash)
+    local systemHashKeys = __TS__ObjectKeys(self.systemsByName)
     __TS__ArrayForEach(
         runner.items,
         function(____, system)
             local systemName = __TS__ArrayFind(
                 systemHashKeys,
-                function(____, systemId) return self._systemsHash[systemId] == system end
+                function(____, systemId) return self.systemsByName[systemId] == system end
             ) or "unset"
             system[runner.name](system, options[systemName])
         end
@@ -9838,7 +10002,7 @@ function SystemManager.prototype.destroy(self)
             runner:destroy()
         end
     )
-    self._systemsHash = {}
+    self.systemsByName = {}
 end
 return ____exports
  end,
@@ -9862,6 +10026,7 @@ function CanvasObjectRendererSystem.prototype.____constructor(self, renderer)
     self.lastObjectRendered = nil
 end
 function CanvasObjectRendererSystem.prototype.render(self, displayObject, options)
+    print("CanvasObjectRendererSystem#render")
     local renderer = self.renderer
     if not renderer.view then
         return
@@ -9914,6 +10079,7 @@ function CanvasObjectRendererSystem.prototype.render(self, displayObject, option
     _context._outerBlend = false
     context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL + 1]
     context2D.fillStyle = 16711680
+    print(vim.inspect({fill = context2D.fillStyle}))
     context2D:fillRect(0, 0, context2D.width, context2D.height)
     local tempContext = _context.activeContext
     _context.activeContext = context2D
@@ -9937,13 +10103,6 @@ local __TS__Class = ____lualib.__TS__Class
 local __TS__ClassExtends = ____lualib.__TS__ClassExtends
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
-local Error = ____lualib.Error
-local RangeError = ____lualib.RangeError
-local ReferenceError = ____lualib.ReferenceError
-local SyntaxError = ____lualib.SyntaxError
-local TypeError = ____lualib.TypeError
-local URIError = ____lualib.URIError
-local __TS__New = ____lualib.__TS__New
 local __TS__ArrayReverse = ____lualib.__TS__ArrayReverse
 local ____exports = {}
 local ____settings = require("settings")
@@ -10011,7 +10170,8 @@ function CanvasRenderer.prototype.____constructor(self, options)
         "_view",
         "startup",
         "canvasContext",
-        "objectRenderer"
+        "objectRenderer",
+        "graphics"
     }}
     self.background = nil
     self.startup = nil
@@ -10090,13 +10250,12 @@ end
 function CanvasRenderer.prototype.reset(self)
 end
 function CanvasRenderer.prototype.render(self, displayObject, options)
+    print("Renderer#render")
     self.objectRenderer:render(displayObject, options)
+    self.canvasContext.rootContext.surface:flush()
 end
 function CanvasRenderer.prototype.clear(self)
-    error(
-        __TS__New(Error, "unimplemented"),
-        0
-    )
+    self.canvasContext:clear()
 end
 function CanvasRenderer.prototype.destroy(self, removeView)
     __TS__ArrayReverse(self.runners.destroy.items)
@@ -10111,16 +10270,22 @@ return ____exports
  end,
 ["canvas-renderer.CanvasContextSystem"] = function(...) 
 local ____lualib = require("lualib_bundle")
-local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
 local ____exports = {}
 local systems = require("core.systems")
+local ____math = require("math.index")
+local Matrix = ____math.Matrix
 local ____constants = require("constants.index")
 local BLEND_MODES = ____constants.BLEND_MODES
+local ____color = require("color.index")
+local Color = ____color.Color
 local ____mapCanvasBlendModesToPixi = require("canvas-renderer.utils.mapCanvasBlendModesToPixi")
 local mapCanvasBlendModesToPixi = ____mapCanvasBlendModesToPixi.mapCanvasBlendModesToPixi
 local ____context2d = require("context2d.index")
 local Context2D = ____context2d.Context2D
+local tempMatrix = __TS__New(Matrix)
 --- System that manages the canvas `2d` contexts
 -- 
 -- @memberof PIXI
@@ -10144,6 +10309,65 @@ function CanvasContextSystem.prototype.init(self)
     end
     self.activeContext = self.rootContext
 end
+function CanvasContextSystem.prototype.setContextTransform(self, transform, roundPixels, localResolution)
+    local mat = transform
+    local proj = self._projTransform
+    local contextResolution = self.activeResolution
+    localResolution = localResolution or contextResolution
+    if proj then
+        mat = tempMatrix
+        mat:copyFrom(transform)
+        mat:prepend(proj)
+    end
+    if roundPixels then
+        self.activeContext:setTransform(
+            mat.a * localResolution,
+            mat.b * localResolution,
+            mat.c * localResolution,
+            mat.d * localResolution,
+            bit.bor(mat.tx * contextResolution, 0),
+            bit.bor(mat.ty * contextResolution, 0)
+        )
+    else
+        self.activeContext:setTransform(
+            mat.a * localResolution,
+            mat.b * localResolution,
+            mat.c * localResolution,
+            mat.d * localResolution,
+            mat.tx * contextResolution,
+            mat.ty * contextResolution
+        )
+    end
+end
+function CanvasContextSystem.prototype.clear(self, clearColor, alpha)
+    local context = self.activeContext
+    local renderer = self.renderer
+    local fillColor = clearColor and Color.shared:setValue(clearColor) or self.renderer.background.backgroundColor
+    context:clearRect(0, 0, renderer.width, renderer.height)
+    if clearColor then
+        context.globalAlpha = alpha or self.renderer.background.alpha
+        context.fillStyle = fillColor:toHex()
+        context:fillRect(0, 0, renderer.width, renderer.height)
+        context.globalAlpha = 1
+    end
+end
+function CanvasContextSystem.prototype.setBlendMode(self, blendMode, readyForOuterBlend)
+    local outerBlend = blendMode == BLEND_MODES.SRC_IN or blendMode == BLEND_MODES.SRC_OUT or blendMode == BLEND_MODES.DST_IN or blendMode == BLEND_MODES.DST_ATOP
+    if not readyForOuterBlend and outerBlend then
+        blendMode = BLEND_MODES.NORMAL
+    end
+    if self._activeBlendMode == blendMode then
+        return
+    end
+    self._activeBlendMode = blendMode
+    self._outerBlend = outerBlend
+    self.activeContext.globalCompositeOperation = self.blendModes[blendMode + 1]
+end
+function CanvasContextSystem.prototype.resize(self)
+end
+function CanvasContextSystem.prototype.invalidateBlendMode(self)
+    self._activeBlendMode = __TS__ArrayIndexOf(self.blendModes, self.activeContext.globalCompositeOperation)
+end
 function CanvasContextSystem.prototype.destroy(self)
     local ____self = self
     ____self.renderer = nil
@@ -10157,6 +10381,19 @@ return ____exports
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 ____exports.placeholder = 0
+return ____exports
+ end,
+["canvas-renderer.canvasUtils"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Utility methods for Sprite/Texture tinting.
+-- 
+-- Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
+-- so be aware of the performance implications.
+-- 
+-- @namespace PIXI.canvasUtils
+-- @memberof PIXI
+____exports.canvasUtils = {}
 return ____exports
  end,
 ["canvas-renderer.index"] = function(...) 
@@ -10189,6 +10426,14 @@ do
 end
 do
     local ____export = require("canvas-renderer.CanvasRenderer")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.canvasUtils")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
             ____exports[____exportKey] = ____exportValue
@@ -10284,6 +10529,695 @@ end
 function BackgroundSystem.prototype.destroy(self)
 end
 systems:register("background", ____exports.BackgroundSystem)
+return ____exports
+ end,
+["core.batch.BatchTextureArray"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+--- Used by the batcher to build texture batches.
+-- Holds list of textures and their respective locations.
+-- 
+-- @memberof PIXI
+____exports.BatchTextureArray = __TS__Class()
+local BatchTextureArray = ____exports.BatchTextureArray
+BatchTextureArray.name = "BatchTextureArray"
+function BatchTextureArray.prototype.____constructor(self)
+    self.elements = {}
+    self.ids = {}
+    self.count = 0
+end
+function BatchTextureArray.prototype.clear(self)
+    do
+        local i = 0
+        while i < self.count do
+            self.elements[i + 1] = nil
+            i = i + 1
+        end
+    end
+    self.count = 0
+end
+return ____exports
+ end,
+["core.batch.BatchDrawCall"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+local ____constants = require("constants.index")
+local DRAW_MODES = ____constants.DRAW_MODES
+--- Used by the batcher to draw batches.
+-- Each one of these contains all information required to draw a bound geometry.
+-- 
+-- @memberof PIXI
+____exports.BatchDrawCall = __TS__Class()
+local BatchDrawCall = ____exports.BatchDrawCall
+BatchDrawCall.name = "BatchDrawCall"
+function BatchDrawCall.prototype.____constructor(self)
+    self.texArray = nil
+    self.blend = 0
+    self.type = DRAW_MODES.TRIANGLES
+    self.start = 0
+    self.size = 0
+    self.data = nil
+end
+return ____exports
+ end,
+["core.geometry.Buffer"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local ____exports = {}
+local ____constants = require("constants.index")
+local BUFFER_TYPE = ____constants.BUFFER_TYPE
+local ____runner = require("runner.index")
+local Runner = ____runner.Runner
+local UID = 0
+--- A wrapper for data so that it can be used and uploaded by WebGL
+-- 
+-- @memberof PIXI
+____exports.Buffer = __TS__Class()
+local Buffer = ____exports.Buffer
+Buffer.name = "Buffer"
+function Buffer.prototype.____constructor(self, data, _static, index)
+    if _static == nil then
+        _static = true
+    end
+    if index == nil then
+        index = false
+    end
+    self.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER
+    self.data = data or __TS__New(Float32Array, 1)
+    self.index = index
+    self.static = _static
+    local ____UID_0 = UID
+    UID = ____UID_0 + 1
+    self.id = ____UID_0
+    self.disposeRunner = __TS__New(Runner, "disposeBuffer")
+end
+__TS__SetDescriptor(
+    Buffer.prototype,
+    "index",
+    {
+        get = function(self)
+            return self.type == BUFFER_TYPE.ELEMENT_ARRAY_BUFFER
+        end,
+        set = function(self, value)
+            self.type = value and BUFFER_TYPE.ELEMENT_ARRAY_BUFFER or BUFFER_TYPE.ARRAY_BUFFER
+        end
+    },
+    true
+)
+function Buffer.prototype.update(self, data)
+    if __TS__InstanceOf(data, Array) then
+        data = __TS__New(Float32Array, data)
+    end
+    self.data = data or self.data
+end
+function Buffer.prototype.dispose(self)
+    self.disposeRunner:emit(self, false)
+end
+function Buffer.prototype.destroy(self)
+    self:dispose()
+    self.data = nil
+end
+function Buffer.from(self, data)
+    if __TS__InstanceOf(data, Array) then
+        data = __TS__New(Float32Array, data)
+    end
+    return __TS__New(____exports.Buffer, data)
+end
+return ____exports
+ end,
+["core.geometry.Attribute"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____constants = require("constants.index")
+local TYPES = ____constants.TYPES
+--- Holds the information for a single attribute structure required to render geometry.
+-- 
+-- This does not contain the actual data, but instead has a buffer id that maps to a {_link PIXI.Buffer}
+-- This can include anything from positions, uvs, normals, colors etc.
+-- 
+-- @memberof PIXI
+____exports.Attribute = __TS__Class()
+local Attribute = ____exports.Attribute
+Attribute.name = "Attribute"
+function Attribute.prototype.____constructor(self, buffer, size, normalized, ____type, stride, start, instance, divisor)
+    if size == nil then
+        size = 0
+    end
+    if normalized == nil then
+        normalized = false
+    end
+    if ____type == nil then
+        ____type = TYPES.FLOAT
+    end
+    if stride == nil then
+        stride = 0
+    end
+    if start == nil then
+        start = 0
+    end
+    if instance == nil then
+        instance = false
+    end
+    if divisor == nil then
+        divisor = 1
+    end
+    self.buffer = buffer
+    self.size = size
+    self.normalized = normalized
+    self.type = ____type
+    self.stride = stride
+    self.start = start
+    self.instance = instance
+    self.divisor = divisor
+end
+function Attribute.prototype.destroy(self)
+    self.buffer = nil
+end
+function Attribute.from(self, buffer, size, normalized, ____type, stride)
+    return __TS__New(
+        ____exports.Attribute,
+        buffer,
+        size,
+        normalized,
+        ____type,
+        stride
+    )
+end
+return ____exports
+ end,
+["core.geometry.utils.interleaveTypedArrays"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____utils = require("utils.index")
+local getBufferType = ____utils.getBufferType
+local map = {Float32Array = Float32Array, Uint32Array = Uint32Array, Int32Array = Int32Array, Uint8Array = Uint8Array}
+function ____exports.interleaveTypedArrays(self, arrays, sizes)
+    local outSize = 0
+    local stride = 0
+    local views = {}
+    do
+        local i = 0
+        while i < #arrays do
+            stride = stride + sizes[i + 1]
+            outSize = outSize + arrays[i + 1].length
+            i = i + 1
+        end
+    end
+    local buffer = __TS__New(ArrayBuffer, outSize * 4)
+    local out = nil
+    local littleOffset = 0
+    do
+        local i = 0
+        while i < #arrays do
+            local size = sizes[i + 1]
+            local array = arrays[i + 1]
+            local ____type = getBufferType(nil, array)
+            if not views[____type] then
+                views[____type] = __TS__New(map[____type], buffer)
+            end
+            out = views[____type]
+            do
+                local j = 0
+                while j < array.length do
+                    local indexStart = bit.bor(j / size, 0) * stride + littleOffset
+                    local index = j % size
+                    out[indexStart + index] = array[j]
+                    j = j + 1
+                end
+            end
+            littleOffset = littleOffset + size
+            i = i + 1
+        end
+    end
+    return __TS__New(Float32Array, buffer)
+end
+return ____exports
+ end,
+["core.geometry.Geometry"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local ____exports = {}
+local ____constants = require("constants.index")
+local BUFFER_TYPE = ____constants.BUFFER_TYPE
+local ____runner = require("runner.index")
+local Runner = ____runner.Runner
+local ____utils = require("utils.index")
+local getBufferType = ____utils.getBufferType
+local ____Attribute = require("core.geometry.Attribute")
+local Attribute = ____Attribute.Attribute
+local ____Buffer = require("core.geometry.Buffer")
+local Buffer = ____Buffer.Buffer
+local ____interleaveTypedArrays = require("core.geometry.utils.interleaveTypedArrays")
+local interleaveTypedArrays = ____interleaveTypedArrays.interleaveTypedArrays
+local byteSizeMap = {[5126] = 4, [5123] = 2, [5121] = 1}
+local UID = 0
+local map = {
+    Float32Array = Float32Array,
+    Uint32Array = Uint32Array,
+    Int32Array = Int32Array,
+    Uint8Array = Uint8Array,
+    Uint16Array = Uint16Array
+}
+--- The Geometry represents a model. It consists of two components:
+-- - GeometryStyle - The structure of the model such as the attributes layout
+-- - GeometryData - the data of the model - this consists of buffers.
+-- This can include anything from positions, uvs, normals, colors etc.
+-- 
+-- Geometry can be defined without passing in a style or data if required (thats how I prefer!)
+-- 
+-- @example import { Geometry } from 'pixi.js';
+-- 
+-- const geometry = new Geometry();
+-- 
+-- geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
+-- geometry.addAttribute('uvs', [0, 0, 1, 0, 1, 1, 0, 1], 2);
+-- geometry.addIndex([0, 1, 2, 1, 3, 2]);
+-- @memberof PIXI
+____exports.Geometry = __TS__Class()
+local Geometry = ____exports.Geometry
+Geometry.name = "Geometry"
+function Geometry.prototype.____constructor(self, buffers, attributes)
+    if buffers == nil then
+        buffers = {}
+    end
+    if attributes == nil then
+        attributes = {}
+    end
+    self.buffers = buffers
+    self.indexBuffer = nil
+    self.attributes = attributes
+    local ____UID_0 = UID
+    UID = ____UID_0 + 1
+    self.id = ____UID_0
+    self.instanced = false
+    self.instanceCount = 1
+    self.disposeRunner = __TS__New(Runner, "disposeGeometry")
+    self.refCount = 0
+end
+function Geometry.prototype.addAttribute(self, id, buffer, size, normalized, ____type, stride, start, instance)
+    if size == nil then
+        size = 0
+    end
+    if normalized == nil then
+        normalized = false
+    end
+    if instance == nil then
+        instance = false
+    end
+    if not buffer then
+        error(
+            __TS__New(Error, "You must pass a buffer when creating an attribute"),
+            0
+        )
+    end
+    if not __TS__InstanceOf(buffer, Buffer) then
+        if __TS__InstanceOf(buffer, Array) then
+            buffer = __TS__New(Float32Array, buffer)
+        end
+        buffer = __TS__New(Buffer, buffer)
+    end
+    local ids = __TS__StringSplit(id, "|")
+    if #ids > 1 then
+        do
+            local i = 0
+            while i < #ids do
+                self:addAttribute(
+                    ids[i + 1],
+                    buffer,
+                    size,
+                    normalized,
+                    ____type
+                )
+                i = i + 1
+            end
+        end
+        return self
+    end
+    local bufferIndex = __TS__ArrayIndexOf(self.buffers, buffer)
+    if bufferIndex == -1 then
+        local ____self_buffers_1 = self.buffers
+        ____self_buffers_1[#____self_buffers_1 + 1] = buffer
+        bufferIndex = #self.buffers - 1
+    end
+    self.attributes[id] = __TS__New(
+        Attribute,
+        bufferIndex,
+        size,
+        normalized,
+        ____type,
+        stride,
+        start,
+        instance
+    )
+    self.instanced = self.instanced or instance
+    return self
+end
+function Geometry.prototype.getAttribute(self, id)
+    return self.attributes[id]
+end
+function Geometry.prototype.getBuffer(self, id)
+    return self.buffers[self:getAttribute(id).buffer + 1]
+end
+function Geometry.prototype.addIndex(self, buffer)
+    if not __TS__InstanceOf(buffer, Buffer) then
+        if __TS__InstanceOf(buffer, Array) then
+            buffer = __TS__New(Uint16Array, buffer)
+        end
+        buffer = __TS__New(Buffer, buffer or nil)
+    end
+    buffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER
+    self.indexBuffer = buffer
+    if not __TS__ArrayIncludes(self.buffers, buffer) then
+        local ____self_buffers_2 = self.buffers
+        ____self_buffers_2[#____self_buffers_2 + 1] = buffer
+    end
+    return self
+end
+function Geometry.prototype.getIndex(self)
+    return self.indexBuffer
+end
+function Geometry.prototype.interleave(self)
+    if #self.buffers == 1 or #self.buffers == 2 and self.indexBuffer then
+        return self
+    end
+    local arrays = {}
+    local sizes = {}
+    local interleavedBuffer = __TS__New(Buffer, nil)
+    local i
+    for ____value in pairs(self.attributes) do
+        i = ____value
+        local attribute = self.attributes[i]
+        local buffer = self.buffers[attribute.buffer + 1]
+        arrays[#arrays + 1] = buffer.data
+        sizes[#sizes + 1] = attribute.size * byteSizeMap[attribute.type] / 4
+        attribute.buffer = 0
+    end
+    interleavedBuffer.data = interleaveTypedArrays(nil, arrays, sizes)
+    do
+        i = 0
+        while i < #self.buffers do
+            if self.buffers[i + 1] ~= self.indexBuffer then
+                self.buffers[i + 1]:destroy()
+            end
+            i = i + 1
+        end
+    end
+    self.buffers = {interleavedBuffer}
+    if self.indexBuffer then
+        local ____self_buffers_3 = self.buffers
+        ____self_buffers_3[#____self_buffers_3 + 1] = self.indexBuffer
+    end
+    return self
+end
+function Geometry.prototype.getSize(self)
+    for i in pairs(self.attributes) do
+        local attribute = self.attributes[i]
+        local buffer = self.buffers[attribute.buffer + 1]
+        return buffer.data.length / (attribute.stride / 4 or attribute.size)
+    end
+    return 0
+end
+function Geometry.prototype.dispose(self)
+    self.disposeRunner:emit(self, false)
+end
+function Geometry.prototype.destroy(self)
+    self:dispose()
+    self.buffers = nil
+    self.indexBuffer = nil
+    self.attributes = nil
+end
+function Geometry.prototype.clone(self)
+    local geometry = __TS__New(____exports.Geometry)
+    do
+        local i = 0
+        while i < #self.buffers do
+            geometry.buffers[i + 1] = __TS__New(
+                Buffer,
+                self.buffers[i + 1].data:slice(0)
+            )
+            i = i + 1
+        end
+    end
+    for i in pairs(self.attributes) do
+        local attrib = self.attributes[i]
+        geometry.attributes[i] = __TS__New(
+            Attribute,
+            attrib.buffer,
+            attrib.size,
+            attrib.normalized,
+            attrib.type,
+            attrib.stride,
+            attrib.start,
+            attrib.instance
+        )
+    end
+    if self.indexBuffer then
+        geometry.indexBuffer = geometry.buffers[__TS__ArrayIndexOf(self.buffers, self.indexBuffer) + 1]
+        geometry.indexBuffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER
+    end
+    return geometry
+end
+function Geometry.merge(self, geometries)
+    local geometryOut = __TS__New(____exports.Geometry)
+    local arrays = {}
+    local sizes = {}
+    local offsets = {}
+    local geometry
+    do
+        local i = 0
+        while i < #geometries do
+            geometry = geometries[i + 1]
+            do
+                local j = 0
+                while j < #geometry.buffers do
+                    sizes[j + 1] = sizes[j + 1] or 0
+                    local ____sizes_4, ____temp_5 = sizes, j + 1
+                    ____sizes_4[____temp_5] = ____sizes_4[____temp_5] + geometry.buffers[j + 1].data.length
+                    offsets[j + 1] = 0
+                    j = j + 1
+                end
+            end
+            i = i + 1
+        end
+    end
+    if geometry == nil then
+        error(
+            __TS__New(Error, "Could not merge geometries"),
+            0
+        )
+    end
+    do
+        local i = 0
+        while i < #geometry.buffers do
+            arrays[i + 1] = __TS__New(
+                map[getBufferType(nil, geometry.buffers[i + 1].data)],
+                sizes[i + 1]
+            )
+            geometryOut.buffers[i + 1] = __TS__New(Buffer, arrays[i + 1])
+            i = i + 1
+        end
+    end
+    do
+        local i = 0
+        while i < #geometries do
+            geometry = geometries[i + 1]
+            do
+                local j = 0
+                while j < #geometry.buffers do
+                    arrays[j + 1]:set(geometry.buffers[j + 1].data, offsets[j + 1])
+                    local ____offsets_6, ____temp_7 = offsets, j + 1
+                    ____offsets_6[____temp_7] = ____offsets_6[____temp_7] + geometry.buffers[j + 1].data.length
+                    j = j + 1
+                end
+            end
+            i = i + 1
+        end
+    end
+    geometryOut.attributes = geometry.attributes
+    if geometry.indexBuffer then
+        geometryOut.indexBuffer = geometryOut.buffers[__TS__ArrayIndexOf(geometry.buffers, geometry.indexBuffer) + 1]
+        geometryOut.indexBuffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER
+        local offset = 0
+        local stride = 0
+        local offset2 = 0
+        local bufferIndexToCount = 0
+        do
+            local i = 0
+            while i < #geometry.buffers do
+                if geometry.buffers[i + 1] ~= geometry.indexBuffer then
+                    bufferIndexToCount = i
+                    break
+                end
+                i = i + 1
+            end
+        end
+        for i in pairs(geometry.attributes) do
+            local attribute = geometry.attributes[i]
+            if bit.bor(attribute.buffer, 0) == bufferIndexToCount then
+                stride = stride + attribute.size * byteSizeMap[attribute.type] / 4
+            end
+        end
+        do
+            local i = 0
+            while i < #geometries do
+                local indexBufferData = geometries[i + 1].indexBuffer.data
+                do
+                    local j = 0
+                    while j < indexBufferData.length do
+                        local ____geometryOut_indexBuffer_data_8, ____temp_9 = geometryOut.indexBuffer.data, j + offset2
+                        ____geometryOut_indexBuffer_data_8[____temp_9] = ____geometryOut_indexBuffer_data_8[____temp_9] + offset
+                        j = j + 1
+                    end
+                end
+                offset = offset + geometries[i + 1].buffers[bufferIndexToCount + 1].data.length / stride
+                offset2 = offset2 + indexBufferData.length
+                i = i + 1
+            end
+        end
+    end
+    return geometryOut
+end
+return ____exports
+ end,
+["core.batch.BatchGeometry"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____constants = require("constants.index")
+local TYPES = ____constants.TYPES
+local ____Buffer = require("core.geometry.Buffer")
+local Buffer = ____Buffer.Buffer
+local ____Geometry = require("core.geometry.Geometry")
+local Geometry = ____Geometry.Geometry
+--- Geometry used to batch standard PIXI content (e.g. Mesh, Sprite, Graphics objects).
+-- 
+-- @memberof PIXI
+____exports.BatchGeometry = __TS__Class()
+local BatchGeometry = ____exports.BatchGeometry
+BatchGeometry.name = "BatchGeometry"
+__TS__ClassExtends(BatchGeometry, Geometry)
+function BatchGeometry.prototype.____constructor(self, _static)
+    if _static == nil then
+        _static = false
+    end
+    Geometry.prototype.____constructor(self)
+    self._buffer = __TS__New(Buffer, nil, _static, false)
+    self._indexBuffer = __TS__New(Buffer, nil, _static, true)
+    self:addAttribute(
+        "aVertexPosition",
+        self._buffer,
+        2,
+        false,
+        TYPES.FLOAT
+    ):addAttribute(
+        "aTextureCoord",
+        self._buffer,
+        2,
+        false,
+        TYPES.FLOAT
+    ):addAttribute(
+        "aColor",
+        self._buffer,
+        4,
+        true,
+        TYPES.UNSIGNED_BYTE
+    ):addAttribute(
+        "aTextureId",
+        self._buffer,
+        1,
+        true,
+        TYPES.FLOAT
+    ):addIndex(self._indexBuffer)
+end
+return ____exports
+ end,
+["core.batch.ObjectRenderer"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+--- Base for a common object renderer that can be used as a
+-- system renderer plugin.
+-- 
+-- @memberof PIXI
+____exports.ObjectRenderer = __TS__Class()
+local ObjectRenderer = ____exports.ObjectRenderer
+ObjectRenderer.name = "ObjectRenderer"
+function ObjectRenderer.prototype.____constructor(self, renderer)
+    self.renderer = renderer
+end
+function ObjectRenderer.prototype.flush(self)
+end
+function ObjectRenderer.prototype.destroy(self)
+    self.renderer = nil
+end
+function ObjectRenderer.prototype.start(self)
+end
+function ObjectRenderer.prototype.stop(self)
+    self:flush()
+end
+function ObjectRenderer.prototype.render(self, _object)
+end
+return ____exports
+ end,
+["core.batch.BatchSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local systems = require("core.systems")
+local ____ObjectRenderer = require("core.batch.ObjectRenderer")
+local ObjectRenderer = ____ObjectRenderer.ObjectRenderer
+--- System plugin to the renderer to manage batching.
+-- 
+-- @memberof PIXI
+____exports.BatchSystem = __TS__Class()
+local BatchSystem = ____exports.BatchSystem
+BatchSystem.name = "BatchSystem"
+function BatchSystem.prototype.____constructor(self, renderer)
+    self.renderer = renderer
+    self.emptyRenderer = __TS__New(ObjectRenderer, renderer)
+    self.currentRenderer = self.emptyRenderer
+end
+function BatchSystem.prototype.setObjectRenderer(self, objectRenderer)
+    if self.currentRenderer == objectRenderer then
+        return
+    end
+    self.currentRenderer:stop()
+    self.currentRenderer = objectRenderer
+    self.currentRenderer:start()
+end
+function BatchSystem.prototype.flush(self)
+    self:setObjectRenderer(self.emptyRenderer)
+end
+function BatchSystem.prototype.reset(self)
+    self:setObjectRenderer(self.emptyRenderer)
+end
+function BatchSystem.prototype.destroy(self)
+    self.renderer = nil
+end
+BatchSystem.systemName = "batch"
+systems:register(____exports.BatchSystem.systemName, ____exports.BatchSystem)
 return ____exports
  end,
 ["core.view.ViewSystem"] = function(...) 
@@ -10424,6 +11358,46 @@ do
     end
 end
 do
+    local ____export = require("core.batch.BatchDrawCall")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.batch.BatchGeometry")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.batch.BatchSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.batch.BatchTextureArray")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.batch.ObjectRenderer")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
     local ____export = require("core.Renderer")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
@@ -10458,22 +11432,4424 @@ do
 end
 return ____exports
  end,
+["graphics.styles.FillStyle"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+--- Fill style object for Graphics.
+-- 
+-- @memberof PIXI
+____exports.FillStyle = __TS__Class()
+local FillStyle = ____exports.FillStyle
+FillStyle.name = "FillStyle"
+function FillStyle.prototype.____constructor(self)
+    self.color = 16777215
+    self.alpha = 1
+    self.matrix = nil
+    self.visible = false
+    self:reset()
+end
+function FillStyle.prototype.clone(self)
+    local obj = __TS__New(____exports.FillStyle)
+    obj.color = self.color
+    obj.alpha = self.alpha
+    obj.matrix = self.matrix
+    obj.visible = self.visible
+    return obj
+end
+function FillStyle.prototype.reset(self)
+    self.color = 16777215
+    self.alpha = 1
+    self.matrix = nil
+    self.visible = false
+end
+function FillStyle.prototype.destroy(self)
+    self.matrix = nil
+end
+return ____exports
+ end,
+["graphics.const"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Number = ____lualib.__TS__Number
+local __TS__NumberIsNaN = ____lualib.__TS__NumberIsNaN
+local ____exports = {}
+--- Supported line joints in `PIXI.LineStyle` for graphics.
+-- 
+-- @see PIXI.Graphics#lineStyle *
+-- @see https ://graphicdesign.stackexchange.com/questions/59018/what-is-a-bevel-join-of-two-lines-exactly-illustrator
+-- @name LINE_JOIN
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {string} MITER - 'miter': make a sharp corner where outer part of lines meet
+-- @property {string} BEVEL - 'bevel': add a square butt at each end of line segment and fill the triangle at turn
+-- @property {string} ROUND - 'round': add an arc at the joint
+____exports.LINE_JOIN = LINE_JOIN or ({})
+____exports.LINE_JOIN.MITER = "miter"
+____exports.LINE_JOIN.BEVEL = "bevel"
+____exports.LINE_JOIN.ROUND = "round"
+--- Support line caps in `PIXI.LineStyle` for graphics.
+-- 
+-- @see PIXI.Graphics#lineStyle *
+-- @name LINE_CAP
+-- @memberof PIXI
+-- @static
+-- @enum *
+-- @property {string} BUTT - 'butt': don't add any cap at line ends (leaves orthogonal edges)
+-- @property {string} ROUND - 'round': add semicircle at ends
+-- @property {string} SQUARE - 'square': add square at end (like `BUTT` except more length at end)
+____exports.LINE_CAP = LINE_CAP or ({})
+____exports.LINE_CAP.BUTT = "butt"
+____exports.LINE_CAP.ROUND = "round"
+____exports.LINE_CAP.SQUARE = "square"
+---
+-- @private
+____exports.curves = {
+    adaptive = true,
+    maxLength = 10,
+    minSegments = 8,
+    maxSegments = 2048,
+    epsilon = 0.0001,
+    _segmentsCount = function(self, length, defaultSegments)
+        if defaultSegments == nil then
+            defaultSegments = 20
+        end
+        if not self.adaptive or not length or __TS__NumberIsNaN(__TS__Number(length)) then
+            return defaultSegments
+        end
+        local result = math.ceil(length / self.maxLength)
+        if result < self.minSegments then
+            result = self.minSegments
+        elseif result > self.maxSegments then
+            result = self.maxSegments
+        end
+        return result
+    end
+}
+---
+-- @static
+-- @readonly
+-- @memberof PIXI
+-- @name GRAPHICS_CURVES
+-- @type {object}
+-- @deprecated since 7.1.0
+-- @see PIXI.Graphics.curves
+____exports.GRAPHICS_CURVES = ____exports.curves
+return ____exports
+ end,
+["graphics.styles.LineStyle"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____const = require("graphics.const")
+local LINE_CAP = ____const.LINE_CAP
+local LINE_JOIN = ____const.LINE_JOIN
+local ____FillStyle = require("graphics.styles.FillStyle")
+local FillStyle = ____FillStyle.FillStyle
+--- Represents the line style for Graphics.
+-- 
+-- @memberof PIXI
+____exports.LineStyle = __TS__Class()
+local LineStyle = ____exports.LineStyle
+LineStyle.name = "LineStyle"
+__TS__ClassExtends(LineStyle, FillStyle)
+function LineStyle.prototype.____constructor(self, ...)
+    FillStyle.prototype.____constructor(self, ...)
+    self.width = 0
+    self.alignment = 0.5
+    self.native = false
+    self.cap = LINE_CAP.BUTT
+    self.join = LINE_JOIN.MITER
+    self.miterLimit = 10
+end
+function LineStyle.prototype.clone(self)
+    local obj = __TS__New(____exports.LineStyle)
+    obj.color = self.color
+    obj.alpha = self.alpha
+    obj.matrix = self.matrix
+    obj.visible = self.visible
+    obj.width = self.width
+    obj.alignment = self.alignment
+    obj.native = self.native
+    obj.cap = self.cap
+    obj.join = self.join
+    obj.miterLimit = self.miterLimit
+    return obj
+end
+function LineStyle.prototype.reset(self)
+    FillStyle.prototype.reset(self)
+    self.color = 0
+    self.alignment = 0.5
+    self.width = 0
+    self.native = false
+end
+return ____exports
+ end,
+["graphics.GraphicsData"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local ____exports = {}
+--- A class to contain data useful for Graphics objects
+-- 
+-- @memberof PIXI
+____exports.GraphicsData = __TS__Class()
+local GraphicsData = ____exports.GraphicsData
+GraphicsData.name = "GraphicsData"
+function GraphicsData.prototype.____constructor(self, shape, fillStyle, lineStyle, matrix)
+    if fillStyle == nil then
+        fillStyle = nil
+    end
+    if lineStyle == nil then
+        lineStyle = nil
+    end
+    if matrix == nil then
+        matrix = nil
+    end
+    self.points = {}
+    self.holes = {}
+    self.shape = shape
+    self.lineStyle = lineStyle
+    self.fillStyle = fillStyle
+    self.matrix = matrix
+    self.type = shape.type
+end
+function GraphicsData.prototype.clone(self)
+    return __TS__New(
+        ____exports.GraphicsData,
+        self.shape,
+        self.fillStyle,
+        self.lineStyle,
+        self.matrix
+    )
+end
+function GraphicsData.prototype.destroy(self)
+    self.shape = nil
+    __TS__ArraySetLength(self.holes, 0)
+    self.holes = nil
+    __TS__ArraySetLength(self.points, 0)
+    self.points = nil
+    self.lineStyle = nil
+    self.fillStyle = nil
+end
+return ____exports
+ end,
+["graphics.GraphicsGeometry"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+local ____core = require("core.index")
+local BatchGeometry = ____core.BatchGeometry
+local Color = ____core.Color
+local Point = ____core.Point
+local utils = ____core.utils
+local ____display = require("display.index")
+local Bounds = ____display.Bounds
+local ____GraphicsData = require("graphics.GraphicsData")
+local GraphicsData = ____GraphicsData.GraphicsData
+local ____utils = require("graphics.utils.index")
+local BATCH_POOL = ____utils.BATCH_POOL
+local BatchPart = ____utils.BatchPart
+local buildLine = ____utils.buildLine
+local buildPoly = ____utils.buildPoly
+local DRAW_CALL_POOL = ____utils.DRAW_CALL_POOL
+local FILL_COMMANDS = ____utils.FILL_COMMANDS
+local tmpPoint = __TS__New(Point)
+--- The Graphics class contains methods used to draw primitive shapes such as lines, circles and
+-- rectangles to the display, and to color and fill them.
+-- 
+-- GraphicsGeometry is designed to not be continually updating the geometry since it's expensive
+-- to re-tesselate using **earcut**. Consider using {_link PIXI.Mesh} for this use-case, it's much faster.
+-- 
+-- @memberof PIXI
+____exports.GraphicsGeometry = __TS__Class()
+local GraphicsGeometry = ____exports.GraphicsGeometry
+GraphicsGeometry.name = "GraphicsGeometry"
+__TS__ClassExtends(GraphicsGeometry, BatchGeometry)
+function GraphicsGeometry.prototype.____constructor(self)
+    BatchGeometry.prototype.____constructor(self)
+    self.closePointEps = 0.0001
+    self.boundsPadding = 0
+    self.uvsFloat32 = nil
+    self.indicesUint16 = nil
+    self.batchable = false
+    self.points = {}
+    self.colors = {}
+    self.uvs = {}
+    self.indices = {}
+    self.textureIds = {}
+    self.graphicsData = {}
+    self.drawCalls = {}
+    self.batchDirty = -1
+    self.batches = {}
+    self.dirty = 0
+    self.cacheDirty = -1
+    self.clearDirty = 0
+    self.shapeIndex = 0
+    self._bounds = __TS__New(Bounds)
+    self.boundsDirty = -1
+end
+__TS__SetDescriptor(
+    GraphicsGeometry.prototype,
+    "bounds",
+    {get = function(self)
+        self:updateBatches()
+        if self.boundsDirty ~= self.dirty then
+            self.boundsDirty = self.dirty
+            self:calculateBounds()
+        end
+        return self._bounds
+    end},
+    true
+)
+function GraphicsGeometry.prototype.invalidate(self)
+    self.boundsDirty = -1
+    self.dirty = self.dirty + 1
+    self.batchDirty = self.batchDirty + 1
+    self.shapeIndex = 0
+    __TS__ArraySetLength(self.points, 0)
+    __TS__ArraySetLength(self.colors, 0)
+    __TS__ArraySetLength(self.uvs, 0)
+    __TS__ArraySetLength(self.indices, 0)
+    __TS__ArraySetLength(self.textureIds, 0)
+    do
+        local i = 0
+        while i < #self.drawCalls do
+            self.drawCalls[i + 1].texArray:clear()
+            DRAW_CALL_POOL[#DRAW_CALL_POOL + 1] = self.drawCalls[i + 1]
+            i = i + 1
+        end
+    end
+    __TS__ArraySetLength(self.drawCalls, 0)
+    do
+        local i = 0
+        while i < #self.batches do
+            local batchPart = self.batches[i + 1]
+            batchPart:reset()
+            BATCH_POOL[#BATCH_POOL + 1] = batchPart
+            i = i + 1
+        end
+    end
+    __TS__ArraySetLength(self.batches, 0)
+end
+function GraphicsGeometry.prototype.clear(self)
+    if #self.graphicsData > 0 then
+        self:invalidate()
+        self.clearDirty = self.clearDirty + 1
+        __TS__ArraySetLength(self.graphicsData, 0)
+    end
+    return self
+end
+function GraphicsGeometry.prototype.drawShape(self, shape, fillStyle, lineStyle, matrix)
+    if fillStyle == nil then
+        fillStyle = nil
+    end
+    if lineStyle == nil then
+        lineStyle = nil
+    end
+    if matrix == nil then
+        matrix = nil
+    end
+    local data = __TS__New(
+        GraphicsData,
+        shape,
+        fillStyle,
+        lineStyle,
+        matrix
+    )
+    local ____self_graphicsData_0 = self.graphicsData
+    ____self_graphicsData_0[#____self_graphicsData_0 + 1] = data
+    self.dirty = self.dirty + 1
+    return self
+end
+function GraphicsGeometry.prototype.drawHole(self, shape, matrix)
+    if matrix == nil then
+        matrix = nil
+    end
+    if not #self.graphicsData then
+        return nil
+    end
+    local data = __TS__New(
+        GraphicsData,
+        shape,
+        nil,
+        nil,
+        matrix
+    )
+    local lastShape = self.graphicsData[#self.graphicsData]
+    data.lineStyle = lastShape.lineStyle
+    local ____lastShape_holes_1 = lastShape.holes
+    ____lastShape_holes_1[#____lastShape_holes_1 + 1] = data
+    self.dirty = self.dirty + 1
+    return self
+end
+function GraphicsGeometry.prototype.destroy(self)
+    BatchGeometry.prototype.destroy(self)
+    do
+        local i = 0
+        while i < #self.graphicsData do
+            self.graphicsData[i + 1]:destroy()
+            i = i + 1
+        end
+    end
+    __TS__ArraySetLength(self.points, 0)
+    self.points = nil
+    __TS__ArraySetLength(self.colors, 0)
+    self.colors = nil
+    __TS__ArraySetLength(self.uvs, 0)
+    self.uvs = nil
+    __TS__ArraySetLength(self.indices, 0)
+    self.indices = nil
+    local ____opt_2 = self.indexBuffer
+    if ____opt_2 ~= nil then
+        ____opt_2:destroy()
+    end
+    self.indexBuffer = nil
+    __TS__ArraySetLength(self.graphicsData, 0)
+    self.graphicsData = nil
+    __TS__ArraySetLength(self.drawCalls, 0)
+    self.drawCalls = nil
+    __TS__ArraySetLength(self.batches, 0)
+    self.batches = nil
+    self._bounds = nil
+end
+function GraphicsGeometry.prototype.containsPoint(self, point)
+    local graphicsData = self.graphicsData
+    do
+        local i = 0
+        while i < #graphicsData do
+            do
+                local data = graphicsData[i + 1]
+                local ____opt_4 = data.fillStyle
+                if not (____opt_4 and ____opt_4.visible) then
+                    goto __continue16
+                end
+                if data.shape ~= nil then
+                    if data.matrix then
+                        data.matrix:applyInverse(point, tmpPoint)
+                    else
+                        tmpPoint:copyFrom(point)
+                    end
+                    if data.shape:contains(tmpPoint.x, tmpPoint.y) then
+                        local hitHole = false
+                        if data.holes ~= nil then
+                            do
+                                local i = 0
+                                while i < #data.holes do
+                                    local hole = data.holes[i + 1]
+                                    if hole.shape:contains(tmpPoint.x, tmpPoint.y) then
+                                        hitHole = true
+                                        break
+                                    end
+                                    i = i + 1
+                                end
+                            end
+                        end
+                        if not hitHole then
+                            return true
+                        end
+                    end
+                end
+            end
+            ::__continue16::
+            i = i + 1
+        end
+    end
+    return false
+end
+function GraphicsGeometry.prototype.updateBatches(self)
+    if not #self.graphicsData then
+        self.batchable = true
+        return
+    end
+    if not self:validateBatching() then
+        return
+    end
+    self.cacheDirty = self.dirty
+    local uvs = self.uvs
+    local graphicsData = self.graphicsData
+    local batchPart = nil
+    local currentStyle = nil
+    if #self.batches > 0 then
+        batchPart = self.batches[#self.batches]
+        currentStyle = batchPart.style
+    end
+    do
+        local i = self.shapeIndex
+        while i < #graphicsData do
+            self.shapeIndex = self.shapeIndex + 1
+            local data = graphicsData[i + 1]
+            local fillStyle = data.fillStyle
+            local lineStyle = data.lineStyle
+            local command = FILL_COMMANDS[data.type]
+            command:build(data)
+            if data.matrix then
+                self:transformPoints(data.points, data.matrix)
+            end
+            if fillStyle and fillStyle.visible or lineStyle and lineStyle.visible then
+                self:processHoles(data.holes)
+            end
+            do
+                local j = 0
+                while j < 2 do
+                    do
+                        local ____temp_10
+                        if j == 0 then
+                            ____temp_10 = fillStyle
+                        else
+                            ____temp_10 = lineStyle
+                        end
+                        local style = ____temp_10
+                        if not (style and style.visible) then
+                            goto __continue33
+                        end
+                        local index = #self.indices
+                        local attribIndex = #self.points / 2
+                        if j == 0 then
+                            self:processFill(data)
+                        else
+                            self:processLine(data)
+                        end
+                        local size = #self.points / 2 - attribIndex
+                        if size == 0 then
+                            goto __continue33
+                        end
+                        if batchPart and not self:_compareStyles(currentStyle, style) then
+                            batchPart["end"](batchPart, index, attribIndex)
+                            batchPart = nil
+                        end
+                        if not batchPart then
+                            batchPart = table.remove(BATCH_POOL) or __TS__New(BatchPart)
+                            batchPart:begin(style, index, attribIndex)
+                            local ____self_batches_13 = self.batches
+                            ____self_batches_13[#____self_batches_13 + 1] = batchPart
+                            currentStyle = style
+                        end
+                    end
+                    ::__continue33::
+                    j = j + 1
+                end
+            end
+            i = i + 1
+        end
+    end
+    local index = #self.indices
+    local attrib = #self.points / 2
+    if batchPart then
+        batchPart["end"](batchPart, index, attrib)
+    end
+    if #self.batches == 0 then
+        self.batchable = true
+        return
+    end
+    local need32 = attrib > 65535
+    if self.indicesUint16 and #self.indices == self.indicesUint16.length and need32 == (self.indicesUint16.BYTES_PER_ELEMENT > 2) then
+        self.indicesUint16:set(self.indices)
+    else
+        self.indicesUint16 = need32 and __TS__New(Uint32Array, self.indices) or __TS__New(Uint16Array, self.indices)
+    end
+    self.batchable = self:isBatchable()
+    if self.batchable then
+        self:packBatches()
+    else
+        self:buildDrawCalls()
+    end
+end
+function GraphicsGeometry.prototype._compareStyles(self, styleA, styleB)
+    if not styleA or not styleB then
+        return false
+    end
+    if styleA.color + styleA.alpha ~= styleB.color + styleB.alpha then
+        return false
+    end
+    if not not styleA.native ~= not not styleB.native then
+        return false
+    end
+    return true
+end
+function GraphicsGeometry.prototype.validateBatching(self)
+    if self.dirty == self.cacheDirty or not #self.graphicsData then
+        return false
+    end
+    return true
+end
+function GraphicsGeometry.prototype.packBatches(self)
+    self.batchDirty = self.batchDirty + 1
+    self.uvsFloat32 = __TS__New(Float32Array, self.uvs)
+    local batches = self.batches
+    do
+        local i = 0
+        local l = #batches
+        while i < l do
+            local batch = batches[i + 1]
+            do
+                local j = 0
+                while j < batch.size do
+                    local index = batch.start + j
+                    self.indicesUint16[index] = self.indicesUint16[index] - batch.attribStart
+                    j = j + 1
+                end
+            end
+            i = i + 1
+        end
+    end
+end
+function GraphicsGeometry.prototype.isBatchable(self)
+    if #self.points > 65535 * 2 then
+        return false
+    end
+    local batches = self.batches
+    do
+        local i = 0
+        while i < #batches do
+            if batches[i + 1].style.native then
+                return false
+            end
+            i = i + 1
+        end
+    end
+    return #self.points < ____exports.GraphicsGeometry.BATCHABLE_SIZE * 2
+end
+function GraphicsGeometry.prototype.buildDrawCalls(self)
+    error(
+        __TS__New(Error, "buildDrawCalls unimplemented"),
+        0
+    )
+end
+function GraphicsGeometry.prototype.packAttributes(self)
+    local verts = self.points
+    local uvs = self.uvs
+    local colors = self.colors
+    local textureIds = self.textureIds
+    local glPoints = __TS__New(ArrayBuffer, #verts * 3 * 4)
+    local f32 = __TS__New(Float32Array, glPoints)
+    local u32 = __TS__New(Uint32Array, glPoints)
+    local p = 0
+    do
+        local i = 0
+        while i < #verts / 2 do
+            local ____p_14 = p
+            p = ____p_14 + 1
+            f32[____p_14] = verts[i * 2 + 1]
+            local ____p_15 = p
+            p = ____p_15 + 1
+            f32[____p_15] = verts[i * 2 + 1 + 1]
+            local ____p_16 = p
+            p = ____p_16 + 1
+            f32[____p_16] = uvs[i * 2 + 1]
+            local ____p_17 = p
+            p = ____p_17 + 1
+            f32[____p_17] = uvs[i * 2 + 1 + 1]
+            local ____p_18 = p
+            p = ____p_18 + 1
+            u32[____p_18] = colors[i + 1]
+            local ____p_19 = p
+            p = ____p_19 + 1
+            f32[____p_19] = textureIds[i + 1]
+            i = i + 1
+        end
+    end
+    self._buffer:update(glPoints)
+    self._indexBuffer:update(self.indicesUint16)
+end
+function GraphicsGeometry.prototype.processFill(self, data)
+    if #data.holes > 0 then
+        buildPoly:triangulate(data, self)
+    else
+        local command = FILL_COMMANDS[data.type]
+        command:triangulate(data, self)
+    end
+end
+function GraphicsGeometry.prototype.processLine(self, data)
+    buildLine(nil, data, self)
+    do
+        local i = 0
+        while i < #data.holes do
+            buildLine(nil, data.holes[i + 1], self)
+            i = i + 1
+        end
+    end
+end
+function GraphicsGeometry.prototype.processHoles(self, holes)
+    do
+        local i = 0
+        while i < #holes do
+            local hole = holes[i + 1]
+            local command = FILL_COMMANDS[hole.type]
+            command:build(hole)
+            if hole.matrix then
+                self:transformPoints(hole.points, hole.matrix)
+            end
+            i = i + 1
+        end
+    end
+end
+function GraphicsGeometry.prototype.calculateBounds(self)
+    local bounds = self._bounds
+    bounds:clear()
+    bounds:addVertexData(self.points, 0, #self.points)
+    bounds:pad(self.boundsPadding, self.boundsPadding)
+end
+function GraphicsGeometry.prototype.transformPoints(self, points, matrix)
+    do
+        local i = 0
+        while i < #points / 2 do
+            local x = points[i * 2 + 1]
+            local y = points[i * 2 + 1 + 1]
+            points[i * 2 + 1] = matrix.a * x + matrix.c * y + matrix.tx
+            points[i * 2 + 1 + 1] = matrix.b * x + matrix.d * y + matrix.ty
+            i = i + 1
+        end
+    end
+end
+function GraphicsGeometry.prototype.addColors(self, colors, color, alpha, size, offset)
+    if offset == nil then
+        offset = 0
+    end
+    local rgb = Color.shared:setValue(color):toLittleEndianNumber()
+    local rgba = utils:premultiplyTint(rgb, alpha)
+    __TS__ArraySetLength(
+        colors,
+        math.max(#colors, offset + size)
+    )
+    do
+        local i = 0
+        while i < size do
+            colors[offset + i + 1] = rgba
+            i = i + 1
+        end
+    end
+end
+function GraphicsGeometry.prototype.addTextureIds(self, textureIds, id, size, offset)
+    if offset == nil then
+        offset = 0
+    end
+    __TS__ArraySetLength(
+        textureIds,
+        math.max(#textureIds, offset + size)
+    )
+    do
+        local i = 0
+        while i < size do
+            textureIds[offset + i + 1] = id
+            i = i + 1
+        end
+    end
+end
+GraphicsGeometry.BATCHABLE_SIZE = 100
+return ____exports
+ end,
+["graphics.utils.IShapeBuildCommand"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+return ____exports
+ end,
+["graphics.utils.buildCircle"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local ____exports = {}
+local ____core = require("core.index")
+local SHAPES = ____core.SHAPES
+--- Builds a circle to draw
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object to draw
+-- @param webGLData - an object containing all the WebGL-specific information to create this shape
+-- @param webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
+____exports.buildCircle = {
+    build = function(self, graphicsData)
+        local points = graphicsData.points
+        local x
+        local y
+        local dx
+        local dy
+        local rx
+        local ry
+        if graphicsData.type == SHAPES.CIRC then
+            local circle = graphicsData.shape
+            x = circle.x
+            y = circle.y
+            ry = circle.radius
+            rx = ry
+            dy = 0
+            dx = dy
+        elseif graphicsData.type == SHAPES.ELIP then
+            local ellipse = graphicsData.shape
+            x = ellipse.x
+            y = ellipse.y
+            rx = ellipse.width
+            ry = ellipse.height
+            dy = 0
+            dx = dy
+        else
+            local roundedRect = graphicsData.shape
+            local halfWidth = roundedRect.width / 2
+            local halfHeight = roundedRect.height / 2
+            x = roundedRect.x + halfWidth
+            y = roundedRect.y + halfHeight
+            ry = math.max(
+                0,
+                math.min(
+                    roundedRect.radius,
+                    math.min(halfWidth, halfHeight)
+                )
+            )
+            rx = ry
+            dx = halfWidth - rx
+            dy = halfHeight - ry
+        end
+        if not (rx >= 0 and ry >= 0 and dx >= 0 and dy >= 0) then
+            __TS__ArraySetLength(points, 0)
+            return
+        end
+        local n = math.ceil(2.3 * math.sqrt(rx + ry))
+        local m = n * 8 + (dx and dx ~= 0 and 4 or 0) + (dy and dy ~= 0 and 4 or 0)
+        __TS__ArraySetLength(points, m)
+        if m == 0 then
+            return
+        end
+        if n == 0 then
+            __TS__ArraySetLength(points, 8)
+            local ____temp_0 = x + dx
+            points[7] = ____temp_0
+            points[1] = ____temp_0
+            local ____temp_1 = y + dy
+            points[4] = ____temp_1
+            points[2] = ____temp_1
+            local ____temp_2 = x - dx
+            points[5] = ____temp_2
+            points[3] = ____temp_2
+            local ____temp_3 = y - dy
+            points[8] = ____temp_3
+            points[6] = ____temp_3
+            return
+        end
+        local j1 = 0
+        local j2 = n * 4 + (dx and dx ~= 0 and 2 or 0) + 2
+        local j3 = j2
+        local j4 = m
+        do
+            local x0 = dx + rx
+            local y0 = dy
+            local x1 = x + x0
+            local x2 = x - x0
+            local y1 = y + y0
+            local ____j1_4 = j1
+            j1 = ____j1_4 + 1
+            points[____j1_4 + 1] = x1
+            local ____j1_5 = j1
+            j1 = ____j1_5 + 1
+            points[____j1_5 + 1] = y1
+            j2 = j2 - 1
+            points[j2 + 1] = y1
+            j2 = j2 - 1
+            points[j2 + 1] = x2
+            if dy ~= nil then
+                local y2 = y - y0
+                local ____j3_6 = j3
+                j3 = ____j3_6 + 1
+                points[____j3_6 + 1] = x2
+                local ____j3_7 = j3
+                j3 = ____j3_7 + 1
+                points[____j3_7 + 1] = y2
+                j4 = j4 - 1
+                points[j4 + 1] = y2
+                j4 = j4 - 1
+                points[j4 + 1] = x1
+            end
+        end
+        do
+            local i = 1
+            while i < n do
+                local a = math.pi / 2 * (i / n)
+                local x0 = dx + math.cos(a) * rx
+                local y0 = dy + math.sin(a) * ry
+                local x1 = x + x0
+                local x2 = x - x0
+                local y1 = y + y0
+                local y2 = y - y0
+                local ____j1_8 = j1
+                j1 = ____j1_8 + 1
+                points[____j1_8 + 1] = x1
+                local ____j1_9 = j1
+                j1 = ____j1_9 + 1
+                points[____j1_9 + 1] = y1
+                j2 = j2 - 1
+                points[j2 + 1] = y1
+                j2 = j2 - 1
+                points[j2 + 1] = x2
+                local ____j3_10 = j3
+                j3 = ____j3_10 + 1
+                points[____j3_10 + 1] = x2
+                local ____j3_11 = j3
+                j3 = ____j3_11 + 1
+                points[____j3_11 + 1] = y2
+                j4 = j4 - 1
+                points[j4 + 1] = y2
+                j4 = j4 - 1
+                points[j4 + 1] = x1
+                i = i + 1
+            end
+        end
+        do
+            local x0 = dx
+            local y0 = dy + ry
+            local x1 = x + x0
+            local x2 = x - x0
+            local y1 = y + y0
+            local y2 = y - y0
+            local ____j1_12 = j1
+            j1 = ____j1_12 + 1
+            points[____j1_12 + 1] = x1
+            local ____j1_13 = j1
+            j1 = ____j1_13 + 1
+            points[____j1_13 + 1] = y1
+            j4 = j4 - 1
+            points[j4 + 1] = y2
+            j4 = j4 - 1
+            points[j4 + 1] = x1
+            if dx and dx ~= 0 then
+                local ____j1_14 = j1
+                j1 = ____j1_14 + 1
+                points[____j1_14 + 1] = x2
+                local ____j1_15 = j1
+                j1 = ____j1_15 + 1
+                points[____j1_15 + 1] = y1
+                j4 = j4 - 1
+                points[j4 + 1] = y2
+                j4 = j4 - 1
+                points[j4 + 1] = x2
+            end
+        end
+    end,
+    triangulate = function(self, graphicsData, graphicsGeometry)
+        local points = graphicsData.points
+        local verts = graphicsGeometry.points
+        local indices = graphicsGeometry.indices
+        if #points == 0 then
+            return
+        end
+        local vertPos = #verts / 2
+        local center = vertPos
+        local x
+        local y
+        if graphicsData.type ~= SHAPES.RREC then
+            local circle = graphicsData.shape
+            x = circle.x
+            y = circle.y
+        else
+            local roundedRect = graphicsData.shape
+            x = roundedRect.x + roundedRect.width / 2
+            y = roundedRect.y + roundedRect.height / 2
+        end
+        local matrix = graphicsData.matrix
+        if not matrix then
+            return
+        end
+        __TS__ArrayPush(verts, graphicsData.matrix and matrix.a * x + matrix.c * y + matrix.tx or x, graphicsData.matrix and matrix.b * x + matrix.d * y + matrix.ty or y)
+        vertPos = vertPos + 1
+        __TS__ArrayPush(verts, points[1], points[2])
+        do
+            local i = 2
+            while i < #points do
+                __TS__ArrayPush(verts, points[i + 1], points[i + 1 + 1])
+                local ____vertPos_16 = vertPos
+                vertPos = ____vertPos_16 + 1
+                __TS__ArrayPush(indices, ____vertPos_16, center, vertPos)
+                i = i + 2
+            end
+        end
+        __TS__ArrayPush(indices, center + 1, center, vertPos)
+    end
+}
+return ____exports
+ end,
+["earcut.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArraySort = ____lualib.__TS__ArraySort
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+local linkedList, filterPoints, earcutLinked, isEar, isEarHashed, cureLocalIntersections, splitEarcut, eliminateHoles, compareX, eliminateHole, findHoleBridge, sectorContainsSector, indexCurve, sortLinked, zOrder, getLeftmost, pointInTriangle, isValidDiagonal, area, equals, intersects, onSegment, sign, intersectsPolygon, locallyInside, middleInside, splitPolygon, insertNode, removeNode, signedArea, Node
+____exports.earcut = setmetatable(
+    {},
+    {__call = function(____, self, data, holeIndices, dim)
+        dim = dim or 2
+        local hasHoles = holeIndices and #holeIndices
+        local outerLen = holeIndices and #holeIndices and holeIndices[1] * dim or #data
+        local outerNode = linkedList(
+            nil,
+            data,
+            0,
+            outerLen,
+            dim,
+            true
+        )
+        local triangles = {}
+        if not outerNode or outerNode.next == outerNode.prev then
+            return triangles
+        end
+        local minX
+        local minY
+        local maxX
+        local maxY
+        local x
+        local y
+        local invSize
+        if hasHoles then
+            outerNode = eliminateHoles(
+                nil,
+                data,
+                holeIndices,
+                outerNode,
+                dim
+            )
+        end
+        if #data > 80 * dim then
+            maxX = data[1]
+            minX = maxX
+            maxY = data[2]
+            minY = maxY
+            do
+                local i = dim
+                while i < outerLen do
+                    x = data[i + 1]
+                    y = data[i + 1 + 1]
+                    if x < minX then
+                        minX = x
+                    end
+                    if y < minY then
+                        minY = y
+                    end
+                    if x > maxX then
+                        maxX = x
+                    end
+                    if y > maxY then
+                        maxY = y
+                    end
+                    i = i + dim
+                end
+            end
+            invSize = math.max(maxX - minX, maxY - minY)
+            invSize = invSize ~= 0 and 32767 / invSize or 0
+        end
+        earcutLinked(
+            nil,
+            outerNode,
+            triangles,
+            dim,
+            minX,
+            minY,
+            invSize,
+            0
+        )
+        return triangles
+    end}
+)
+function linkedList(self, data, start, ____end, dim, clockwise)
+    local i
+    local last
+    if clockwise == (signedArea(
+        nil,
+        data,
+        start,
+        ____end,
+        dim
+    ) > 0) then
+        do
+            i = start
+            while i < ____end do
+                last = insertNode(
+                    nil,
+                    i,
+                    data[i],
+                    data[i + 1],
+                    last
+                )
+                i = i + dim
+            end
+        end
+    else
+        do
+            i = ____end - dim
+            while i >= start do
+                last = insertNode(
+                    nil,
+                    i,
+                    data[i],
+                    data[i + 1],
+                    last
+                )
+                i = i - dim
+            end
+        end
+    end
+    if last and equals(nil, last, last.next) then
+        removeNode(nil, last)
+        last = last.next
+    end
+    return last
+end
+function filterPoints(self, start, ____end)
+    if not start then
+        return start
+    end
+    if not ____end then
+        ____end = start
+    end
+    local p = start
+    local again
+    repeat
+        do
+            again = false
+            if not p.steiner and (equals(nil, p, p.next) or area(nil, p.prev, p, p.next) == 0) then
+                removeNode(nil, p)
+                ____end = p.prev
+                p = ____end
+                if p == p.next then
+                    break
+                end
+                again = true
+            else
+                p = p.next
+            end
+        end
+    until not (again or p ~= ____end)
+    return ____end
+end
+function earcutLinked(self, ear, triangles, dim, minX, minY, invSize, pass)
+    if not ear then
+        return
+    end
+    if not pass and invSize then
+        indexCurve(
+            nil,
+            ear,
+            minX,
+            minY,
+            invSize
+        )
+    end
+    local stop = ear
+    local prev
+    local next
+    while ear.prev ~= ear.next do
+        do
+            prev = ear.prev
+            next = ear.next
+            local ____invSize_0
+            if invSize then
+                ____invSize_0 = isEarHashed(
+                    nil,
+                    ear,
+                    minX,
+                    minY,
+                    invSize
+                )
+            else
+                ____invSize_0 = isEar(nil, ear)
+            end
+            if ____invSize_0 then
+                triangles:push(bit.bor(prev.i / dim, 0))
+                triangles:push(bit.bor(ear.i / dim, 0))
+                triangles:push(bit.bor(next.i / dim, 0))
+                removeNode(nil, ear)
+                ear = next.next
+                stop = next.next
+                goto __continue27
+            end
+            ear = next
+            if ear == stop then
+                if not pass then
+                    earcutLinked(
+                        nil,
+                        filterPoints(nil, ear),
+                        triangles,
+                        dim,
+                        minX,
+                        minY,
+                        invSize,
+                        1
+                    )
+                elseif pass == 1 then
+                    ear = cureLocalIntersections(
+                        nil,
+                        filterPoints(nil, ear),
+                        triangles,
+                        dim
+                    )
+                    earcutLinked(
+                        nil,
+                        ear,
+                        triangles,
+                        dim,
+                        minX,
+                        minY,
+                        invSize,
+                        2
+                    )
+                elseif pass == 2 then
+                    splitEarcut(
+                        nil,
+                        ear,
+                        triangles,
+                        dim,
+                        minX,
+                        minY,
+                        invSize
+                    )
+                end
+                break
+            end
+        end
+        ::__continue27::
+    end
+end
+function isEar(self, ear)
+    local a = ear.prev
+    local b = ear
+    local c = ear.next
+    if area(nil, a, b, c) >= 0 then
+        return false
+    end
+    local ax = a.x
+    local bx = b.x
+    local cx = c.x
+    local ay = a.y
+    local by = b.y
+    local cy = c.y
+    local ____temp_3
+    if ax < bx then
+        local ____temp_1
+        if ax < cx then
+            ____temp_1 = ax
+        else
+            ____temp_1 = cx
+        end
+        ____temp_3 = ____temp_1
+    else
+        local ____temp_2
+        if bx < cx then
+            ____temp_2 = bx
+        else
+            ____temp_2 = cx
+        end
+        ____temp_3 = ____temp_2
+    end
+    local ____temp_6
+    if ay < by then
+        local ____temp_4
+        if ay < cy then
+            ____temp_4 = ay
+        else
+            ____temp_4 = cy
+        end
+        ____temp_6 = ____temp_4
+    else
+        local ____temp_5
+        if by < cy then
+            ____temp_5 = by
+        else
+            ____temp_5 = cy
+        end
+        ____temp_6 = ____temp_5
+    end
+    local ____temp_9
+    if ax > bx then
+        local ____temp_7
+        if ax > cx then
+            ____temp_7 = ax
+        else
+            ____temp_7 = cx
+        end
+        ____temp_9 = ____temp_7
+    else
+        local ____temp_8
+        if bx > cx then
+            ____temp_8 = bx
+        else
+            ____temp_8 = cx
+        end
+        ____temp_9 = ____temp_8
+    end
+    local ____temp_12
+    if ay > by then
+        local ____temp_10
+        if ay > cy then
+            ____temp_10 = ay
+        else
+            ____temp_10 = cy
+        end
+        ____temp_12 = ____temp_10
+    else
+        local ____temp_11
+        if by > cy then
+            ____temp_11 = by
+        else
+            ____temp_11 = cy
+        end
+        ____temp_12 = ____temp_11
+    end
+    local x0 = ____temp_3
+    local y0 = ____temp_6
+    local x1 = ____temp_9
+    local y1 = ____temp_12
+    local p = c.next
+    while p ~= a do
+        if p.x >= x0 and p.x <= x1 and p.y >= y0 and p.y <= y1 and pointInTriangle(
+            nil,
+            ax,
+            ay,
+            bx,
+            by,
+            cx,
+            cy,
+            p.x,
+            p.y
+        ) and area(nil, p.prev, p, p.next) >= 0 then
+            return false
+        end
+        p = p.next
+    end
+    return true
+end
+function isEarHashed(self, ear, minX, minY, invSize)
+    local a = ear.prev
+    local b = ear
+    local c = ear.next
+    if area(nil, a, b, c) >= 0 then
+        return false
+    end
+    local ax = a.x
+    local bx = b.x
+    local cx = c.x
+    local ay = a.y
+    local by = b.y
+    local cy = c.y
+    local ____temp_15
+    if ax < bx then
+        local ____temp_13
+        if ax < cx then
+            ____temp_13 = ax
+        else
+            ____temp_13 = cx
+        end
+        ____temp_15 = ____temp_13
+    else
+        local ____temp_14
+        if bx < cx then
+            ____temp_14 = bx
+        else
+            ____temp_14 = cx
+        end
+        ____temp_15 = ____temp_14
+    end
+    local ____temp_18
+    if ay < by then
+        local ____temp_16
+        if ay < cy then
+            ____temp_16 = ay
+        else
+            ____temp_16 = cy
+        end
+        ____temp_18 = ____temp_16
+    else
+        local ____temp_17
+        if by < cy then
+            ____temp_17 = by
+        else
+            ____temp_17 = cy
+        end
+        ____temp_18 = ____temp_17
+    end
+    local ____temp_21
+    if ax > bx then
+        local ____temp_19
+        if ax > cx then
+            ____temp_19 = ax
+        else
+            ____temp_19 = cx
+        end
+        ____temp_21 = ____temp_19
+    else
+        local ____temp_20
+        if bx > cx then
+            ____temp_20 = bx
+        else
+            ____temp_20 = cx
+        end
+        ____temp_21 = ____temp_20
+    end
+    local ____temp_24
+    if ay > by then
+        local ____temp_22
+        if ay > cy then
+            ____temp_22 = ay
+        else
+            ____temp_22 = cy
+        end
+        ____temp_24 = ____temp_22
+    else
+        local ____temp_23
+        if by > cy then
+            ____temp_23 = by
+        else
+            ____temp_23 = cy
+        end
+        ____temp_24 = ____temp_23
+    end
+    local x0 = ____temp_15
+    local y0 = ____temp_18
+    local x1 = ____temp_21
+    local y1 = ____temp_24
+    local minZ = zOrder(
+        nil,
+        x0,
+        y0,
+        minX,
+        minY,
+        invSize
+    )
+    local maxZ = zOrder(
+        nil,
+        x1,
+        y1,
+        minX,
+        minY,
+        invSize
+    )
+    local p = ear.prevZ
+    local n = ear.nextZ
+    while p and p.z >= minZ and n and n.z <= maxZ do
+        if p.x >= x0 and p.x <= x1 and p.y >= y0 and p.y <= y1 and p ~= a and p ~= c and pointInTriangle(
+            nil,
+            ax,
+            ay,
+            bx,
+            by,
+            cx,
+            cy,
+            p.x,
+            p.y
+        ) and area(nil, p.prev, p, p.next) >= 0 then
+            return false
+        end
+        p = p.prevZ
+        if n.x >= x0 and n.x <= x1 and n.y >= y0 and n.y <= y1 and n ~= a and n ~= c and pointInTriangle(
+            nil,
+            ax,
+            ay,
+            bx,
+            by,
+            cx,
+            cy,
+            n.x,
+            n.y
+        ) and area(nil, n.prev, n, n.next) >= 0 then
+            return false
+        end
+        n = n.nextZ
+    end
+    while p and p.z >= minZ do
+        if p.x >= x0 and p.x <= x1 and p.y >= y0 and p.y <= y1 and p ~= a and p ~= c and pointInTriangle(
+            nil,
+            ax,
+            ay,
+            bx,
+            by,
+            cx,
+            cy,
+            p.x,
+            p.y
+        ) and area(nil, p.prev, p, p.next) >= 0 then
+            return false
+        end
+        p = p.prevZ
+    end
+    while n and n.z <= maxZ do
+        if n.x >= x0 and n.x <= x1 and n.y >= y0 and n.y <= y1 and n ~= a and n ~= c and pointInTriangle(
+            nil,
+            ax,
+            ay,
+            bx,
+            by,
+            cx,
+            cy,
+            n.x,
+            n.y
+        ) and area(nil, n.prev, n, n.next) >= 0 then
+            return false
+        end
+        n = n.nextZ
+    end
+    return true
+end
+function cureLocalIntersections(self, start, triangles, dim)
+    local p = start
+    repeat
+        do
+            local a = p.prev
+            local b = p.next.next
+            if not equals(nil, a, b) and intersects(
+                nil,
+                a,
+                p,
+                p.next,
+                b
+            ) and locallyInside(nil, a, b) and locallyInside(nil, b, a) then
+                triangles:push(bit.bor(a.i / dim, 0))
+                triangles:push(bit.bor(p.i / dim, 0))
+                triangles:push(bit.bor(b.i / dim, 0))
+                removeNode(nil, p)
+                removeNode(nil, p.next)
+                start = b
+                p = start
+            end
+            p = p.next
+        end
+    until not (p ~= start)
+    return filterPoints(nil, p)
+end
+function splitEarcut(self, start, triangles, dim, minX, minY, invSize)
+    local a = start
+    repeat
+        do
+            local b = a.next.next
+            while b ~= a.prev do
+                if a.i ~= b.i and isValidDiagonal(nil, a, b) then
+                    local c = splitPolygon(nil, a, b)
+                    a = filterPoints(nil, a, a.next)
+                    c = filterPoints(nil, c, c.next)
+                    earcutLinked(
+                        nil,
+                        a,
+                        triangles,
+                        dim,
+                        minX,
+                        minY,
+                        invSize,
+                        0
+                    )
+                    earcutLinked(
+                        nil,
+                        c,
+                        triangles,
+                        dim,
+                        minX,
+                        minY,
+                        invSize,
+                        0
+                    )
+                    return
+                end
+                b = b.next
+            end
+            a = a.next
+        end
+    until not (a ~= start)
+end
+function eliminateHoles(self, data, holeIndices, outerNode, dim)
+    local queue = {}
+    local i
+    local len
+    local start
+    local ____end
+    local list
+    do
+        do
+            i = 0
+            len = holeIndices.length
+        end
+        while i < len do
+            start = holeIndices[i] * dim
+            ____end = i < len - 1 and holeIndices[i + 1] * dim or data.length
+            list = linkedList(
+                nil,
+                data,
+                start,
+                ____end,
+                dim,
+                false
+            )
+            if list == list.next then
+                list.steiner = true
+            end
+            queue[#queue + 1] = getLeftmost(nil, list)
+            i = i + 1
+        end
+    end
+    __TS__ArraySort(queue, compareX)
+    do
+        i = 0
+        while i < #queue do
+            outerNode = eliminateHole(nil, queue[i + 1], outerNode)
+            i = i + 1
+        end
+    end
+    return outerNode
+end
+function compareX(self, a, b)
+    return a.x - b.x
+end
+function eliminateHole(self, hole, outerNode)
+    local bridge = findHoleBridge(nil, hole, outerNode)
+    if not bridge then
+        return outerNode
+    end
+    local bridgeReverse = splitPolygon(nil, bridge, hole)
+    filterPoints(nil, bridgeReverse, bridgeReverse.next)
+    return filterPoints(nil, bridge, bridge.next)
+end
+function findHoleBridge(self, hole, outerNode)
+    local p = outerNode
+    local hx = hole.x
+    local hy = hole.y
+    local qx = -math.huge
+    local m
+    repeat
+        do
+            if hy <= p.y and hy >= p.next.y and p.next.y ~= p.y then
+                local x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y)
+                if x <= hx and x > qx then
+                    qx = x
+                    local ____temp_25
+                    if p.x < p.next.x then
+                        ____temp_25 = p
+                    else
+                        ____temp_25 = p.next
+                    end
+                    m = ____temp_25
+                    if x == hx then
+                        return m
+                    end
+                end
+            end
+            p = p.next
+        end
+    until not (p ~= outerNode)
+    if not m then
+        return nil
+    end
+    local stop = m
+    local mx = m.x
+    local my = m.y
+    local tanMin = math.huge
+    local tan
+    p = m
+    repeat
+        do
+            local ____temp_28 = hx >= p.x and p.x >= mx and hx ~= p.x
+            if ____temp_28 then
+                local ____pointInTriangle_27 = pointInTriangle
+                local ____temp_26
+                if hy < my then
+                    ____temp_26 = hx
+                else
+                    ____temp_26 = qx
+                end
+                ____temp_28 = ____pointInTriangle_27(
+                    nil,
+                    ____temp_26,
+                    hy,
+                    mx,
+                    my,
+                    hy < my and qx or hx,
+                    hy,
+                    p.x,
+                    p.y
+                )
+            end
+            if ____temp_28 then
+                tan = math.abs(hy - p.y) / (hx - p.x)
+                if locallyInside(nil, p, hole) and (tan < tanMin or tan == tanMin and (p.x > m.x or p.x == m.x and sectorContainsSector(nil, m, p))) then
+                    m = p
+                    tanMin = tan
+                end
+            end
+            p = p.next
+        end
+    until not (p ~= stop)
+    return m
+end
+function sectorContainsSector(self, m, p)
+    return area(nil, m.prev, m, p.prev) < 0 and area(nil, p.next, m, m.next) < 0
+end
+function indexCurve(self, start, minX, minY, invSize)
+    local p = start
+    repeat
+        do
+            if p.z == 0 then
+                p.z = zOrder(
+                    nil,
+                    p.x,
+                    p.y,
+                    minX,
+                    minY,
+                    invSize
+                )
+            end
+            p.prevZ = p.prev
+            p.nextZ = p.next
+            p = p.next
+        end
+    until not (p ~= start)
+    p.prevZ.nextZ = nil
+    p.prevZ = nil
+    sortLinked(nil, p)
+end
+function sortLinked(self, list)
+    local i
+    local p
+    local q
+    local e
+    local tail
+    local numMerges
+    local pSize
+    local qSize
+    local inSize = 1
+    repeat
+        do
+            p = list
+            list = nil
+            tail = nil
+            numMerges = 0
+            while p do
+                numMerges = numMerges + 1
+                q = p
+                pSize = 0
+                do
+                    i = 0
+                    while i < inSize do
+                        pSize = pSize + 1
+                        q = q.nextZ
+                        if not q then
+                            break
+                        end
+                        i = i + 1
+                    end
+                end
+                qSize = inSize
+                while pSize > 0 or qSize > 0 and q do
+                    if pSize ~= 0 and (qSize == 0 or not q or p.z <= q.z) then
+                        e = p
+                        p = p.nextZ
+                        pSize = pSize - 1
+                    else
+                        e = q
+                        q = q.nextZ
+                        qSize = qSize - 1
+                    end
+                    if tail then
+                        tail.nextZ = e
+                    else
+                        list = e
+                    end
+                    e.prevZ = tail
+                    tail = e
+                end
+                p = q
+            end
+            tail.nextZ = nil
+            inSize = inSize * 2
+        end
+    until not (numMerges > 1)
+    return list
+end
+function zOrder(self, x, y, minX, minY, invSize)
+    x = bit.bor((x - minX) * invSize, 0)
+    y = bit.bor((y - minY) * invSize, 0)
+    x = bit.band(
+        bit.bor(
+            x,
+            bit.lshift(x, 8)
+        ),
+        16711935
+    )
+    x = bit.band(
+        bit.bor(
+            x,
+            bit.lshift(x, 4)
+        ),
+        252645135
+    )
+    x = bit.band(
+        bit.bor(
+            x,
+            bit.lshift(x, 2)
+        ),
+        858993459
+    )
+    x = bit.band(
+        bit.bor(
+            x,
+            bit.lshift(x, 1)
+        ),
+        1431655765
+    )
+    y = bit.band(
+        bit.bor(
+            y,
+            bit.lshift(y, 8)
+        ),
+        16711935
+    )
+    y = bit.band(
+        bit.bor(
+            y,
+            bit.lshift(y, 4)
+        ),
+        252645135
+    )
+    y = bit.band(
+        bit.bor(
+            y,
+            bit.lshift(y, 2)
+        ),
+        858993459
+    )
+    y = bit.band(
+        bit.bor(
+            y,
+            bit.lshift(y, 1)
+        ),
+        1431655765
+    )
+    return bit.bor(
+        x,
+        bit.lshift(y, 1)
+    )
+end
+function getLeftmost(self, start)
+    local p = start
+    local leftmost = start
+    repeat
+        do
+            if p.x < leftmost.x or p.x == leftmost.x and p.y < leftmost.y then
+                leftmost = p
+            end
+            p = p.next
+        end
+    until not (p ~= start)
+    return leftmost
+end
+function pointInTriangle(self, ax, ay, bx, by, cx, cy, px, py)
+    return (cx - px) * (ay - py) >= (ax - px) * (cy - py) and (ax - px) * (by - py) >= (bx - px) * (ay - py) and (bx - px) * (cy - py) >= (cx - px) * (by - py)
+end
+function isValidDiagonal(self, a, b)
+    return a.next.i ~= b.i and a.prev.i ~= b.i and not intersectsPolygon(nil, a, b) and (locallyInside(nil, a, b) and locallyInside(nil, b, a) and middleInside(nil, a, b) and (area(nil, a.prev, a, b.prev) or area(nil, a, b.prev, b)) or equals(nil, a, b) and area(nil, a.prev, a, a.next) > 0 and area(nil, b.prev, b, b.next) > 0)
+end
+function area(self, p, q, r)
+    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+end
+function equals(self, p1, p2)
+    return p1.x == p2.x and p1.y == p2.y
+end
+function intersects(self, p1, q1, p2, q2)
+    local o1 = sign(
+        nil,
+        area(nil, p1, q1, p2)
+    )
+    local o2 = sign(
+        nil,
+        area(nil, p1, q1, q2)
+    )
+    local o3 = sign(
+        nil,
+        area(nil, p2, q2, p1)
+    )
+    local o4 = sign(
+        nil,
+        area(nil, p2, q2, q1)
+    )
+    if o1 ~= o2 and o3 ~= o4 then
+        return true
+    end
+    if o1 == 0 and onSegment(nil, p1, p2, q1) then
+        return true
+    end
+    if o2 == 0 and onSegment(nil, p1, q2, q1) then
+        return true
+    end
+    if o3 == 0 and onSegment(nil, p2, p1, q2) then
+        return true
+    end
+    if o4 == 0 and onSegment(nil, p2, q1, q2) then
+        return true
+    end
+    return false
+end
+function onSegment(self, p, q, r)
+    return q.x <= math.max(p.x, r.x) and q.x >= math.min(p.x, r.x) and q.y <= math.max(p.y, r.y) and q.y >= math.min(p.y, r.y)
+end
+function sign(self, num)
+    return num > 0 and 1 or (num < 0 and -1 or 0)
+end
+function intersectsPolygon(self, a, b)
+    local p = a
+    repeat
+        do
+            if p.i ~= a.i and p.next.i ~= a.i and p.i ~= b.i and p.next.i ~= b.i and intersects(
+                nil,
+                p,
+                p.next,
+                a,
+                b
+            ) then
+                return true
+            end
+            p = p.next
+        end
+    until not (p ~= a)
+    return false
+end
+function locallyInside(self, a, b)
+    local ____temp_29
+    if area(nil, a.prev, a, a.next) < 0 then
+        ____temp_29 = area(nil, a, b, a.next) >= 0 and area(nil, a, a.prev, b) >= 0
+    else
+        ____temp_29 = area(nil, a, b, a.prev) < 0 or area(nil, a, a.next, b) < 0
+    end
+    return ____temp_29
+end
+function middleInside(self, a, b)
+    local p = a
+    local inside = false
+    local px = (a.x + b.x) / 2
+    local py = (a.y + b.y) / 2
+    repeat
+        do
+            if p.y > py ~= (p.next.y > py) and p.next.y ~= p.y and px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x then
+                inside = not inside
+            end
+            p = p.next
+        end
+    until not (p ~= a)
+    return inside
+end
+function splitPolygon(self, a, b)
+    local a2 = __TS__New(Node, a.i, a.x, a.y)
+    local b2 = __TS__New(Node, b.i, b.x, b.y)
+    local an = a.next
+    local bp = b.prev
+    a.next = b
+    b.prev = a
+    a2.next = an
+    an.prev = a2
+    b2.next = a2
+    a2.prev = b2
+    bp.next = b2
+    b2.prev = bp
+    return b2
+end
+function insertNode(self, i, x, y, last)
+    local p = __TS__New(Node, i, x, y)
+    if not last then
+        p.prev = p
+        p.next = p
+    else
+        p.next = last.next
+        p.prev = last
+        last.next.prev = p
+        last.next = p
+    end
+    return p
+end
+function removeNode(self, p)
+    p.next.prev = p.prev
+    p.prev.next = p.next
+    if p.prevZ then
+        p.prevZ.nextZ = p.nextZ
+    end
+    if p.nextZ then
+        p.nextZ.prevZ = p.prevZ
+    end
+end
+function signedArea(self, data, start, ____end, dim)
+    local sum = 0
+    do
+        local i = start
+        local j = ____end - dim
+        while i < ____end do
+            sum = sum + (data[j] - data[i]) * (data[i + 1] + data[j + 1])
+            j = i
+            i = i + dim
+        end
+    end
+    return sum
+end
+____exports.default = ____exports.earcut
+Node = __TS__Class()
+Node.name = "Node"
+function Node.prototype.____constructor(self, i, x, y)
+    self.i = i
+    self.x = x
+    self.y = y
+    self.prev = nil
+    self.next = nil
+    self.z = 0
+    self.prevZ = nil
+    self.nextZ = nil
+    self.steiner = false
+end
+____exports.earcut.deviation = function(self, data, holeIndices, dim, triangles)
+    local hasHoles = holeIndices and holeIndices.length
+    local outerLen = hasHoles and holeIndices[0] * dim or data.length
+    local polygonArea = math.abs(signedArea(
+        nil,
+        data,
+        0,
+        outerLen,
+        dim
+    ))
+    if hasHoles then
+        do
+            local i = 0
+            local len = holeIndices.length
+            while i < len do
+                local start = holeIndices[i] * dim
+                local ____end = i < len - 1 and holeIndices[i + 1] * dim or data.length
+                polygonArea = polygonArea - math.abs(signedArea(
+                    nil,
+                    data,
+                    start,
+                    ____end,
+                    dim
+                ))
+                i = i + 1
+            end
+        end
+    end
+    local trianglesArea = 0
+    do
+        local i = 0
+        while i < triangles.length do
+            local a = triangles[i] * dim
+            local b = triangles[i + 1] * dim
+            local c = triangles[i + 2] * dim
+            trianglesArea = trianglesArea + math.abs((data[a] - data[c]) * (data[b + 1] - data[a + 1]) - (data[a] - data[b]) * (data[c + 1] - data[a + 1]))
+            i = i + 3
+        end
+    end
+    return polygonArea == 0 and trianglesArea == 0 and 0 or math.abs((trianglesArea - polygonArea) / polygonArea)
+end
+____exports.earcut.flatten = function(self, data)
+    local dim = data[0][0].length
+    local result = {vertices = {}, holes = {}, dimensions = dim}
+    local holeIndex = 0
+    do
+        local i = 0
+        while i < data.length do
+            do
+                local j = 0
+                while j < data[i].length do
+                    do
+                        local d = 0
+                        while d < dim do
+                            local ____result_vertices_30 = result.vertices
+                            ____result_vertices_30[#____result_vertices_30 + 1] = data[i][j][d]
+                            d = d + 1
+                        end
+                    end
+                    j = j + 1
+                end
+            end
+            if i > 0 then
+                holeIndex = holeIndex + data[i - 1].length
+                local ____result_holes_31 = result.holes
+                ____result_holes_31[#____result_holes_31 + 1] = holeIndex
+            end
+            i = i + 1
+        end
+    end
+    return result
+end
+return ____exports
+ end,
+["graphics.utils.buildPoly"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local __TS__ArrayConcat = ____lualib.__TS__ArrayConcat
+local ____exports = {}
+local ____earcut = require("earcut.index")
+local earcut = ____earcut.default
+local function fixOrientation(self, points, hole)
+    if hole == nil then
+        hole = false
+    end
+    local m = #points
+    if m < 6 then
+        return
+    end
+    local area = 0
+    do
+        local i = 0
+        local x1 = points[m - 2 + 1]
+        local y1 = points[m]
+        while i < m do
+            local x2 = points[i + 1]
+            local y2 = points[i + 1 + 1]
+            area = area + (x2 - x1) * (y2 + y1)
+            x1 = x2
+            y1 = y2
+            i = i + 2
+        end
+    end
+    if not hole and area > 0 or hole and area <= 0 then
+        local n = m / 2
+        do
+            local i = n + n % 2
+            while i < m do
+                local i1 = m - i - 2
+                local i2 = m - i - 1
+                local i3 = i
+                local i4 = i + 1
+                local ____temp_0 = {points[i3 + 1], points[i1 + 1]}
+                points[i1 + 1] = ____temp_0[1]
+                points[i3 + 1] = ____temp_0[2]
+                local ____temp_1 = {points[i4 + 1], points[i2 + 1]}
+                points[i2 + 1] = ____temp_1[1]
+                points[i4 + 1] = ____temp_1[2]
+                i = i + 2
+            end
+        end
+    end
+end
+--- Builds a polygon to draw
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object containing all the necessary properties
+-- @param webGLData - an object containing all the WebGL-specific information to create this shape
+-- @param webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
+____exports.buildPoly = {
+    build = function(self, graphicsData)
+        graphicsData.points = __TS__ArraySlice(graphicsData.shape.points)
+    end,
+    triangulate = function(self, graphicsData, graphicsGeometry)
+        local points = graphicsData.points
+        local holes = graphicsData.holes
+        local verts = graphicsGeometry.points
+        local indices = graphicsGeometry.indices
+        if #points >= 6 then
+            fixOrientation(nil, points, false)
+            local holeArray = {}
+            do
+                local i = 0
+                while i < #holes do
+                    local hole = holes[i + 1]
+                    fixOrientation(nil, hole.points, true)
+                    holeArray[#holeArray + 1] = #points / 2
+                    points = __TS__ArrayConcat(points, hole.points)
+                    i = i + 1
+                end
+            end
+            local triangles = earcut(nil, points, holeArray, 2)
+            if not triangles then
+                return
+            end
+            local vertPos = #verts / 2
+            do
+                local i = 0
+                while i < #triangles do
+                    indices[#indices + 1] = triangles[i + 1] + vertPos
+                    indices[#indices + 1] = triangles[i + 1 + 1] + vertPos
+                    indices[#indices + 1] = triangles[i + 2 + 1] + vertPos
+                    i = i + 3
+                end
+            end
+            do
+                local i = 0
+                while i < #points do
+                    verts[#verts + 1] = points[i + 1]
+                    i = i + 1
+                end
+            end
+        end
+    end
+}
+return ____exports
+ end,
+["graphics.utils.buildRectangle"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local ____exports = {}
+--- Builds a rectangle to draw
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object containing all the necessary properties
+-- @param webGLData - an object containing all the WebGL-specific information to create this shape
+-- @param webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
+____exports.buildRectangle = {
+    build = function(self, graphicsData)
+        local rectData = graphicsData.shape
+        local x = rectData.x
+        local y = rectData.y
+        local width = rectData.width
+        local height = rectData.height
+        local points = graphicsData.points
+        __TS__ArraySetLength(points, 0)
+        if not (width >= 0 and height >= 0) then
+            return
+        end
+        __TS__ArrayPush(
+            points,
+            x,
+            y,
+            x + width,
+            y,
+            x + width,
+            y + height,
+            x,
+            y + height
+        )
+    end,
+    triangulate = function(self, graphicsData, graphicsGeometry)
+        local points = graphicsData.points
+        local verts = graphicsGeometry.points
+        if #points == 0 then
+            return
+        end
+        local vertPos = #verts / 2
+        __TS__ArrayPush(
+            verts,
+            points[1],
+            points[2],
+            points[3],
+            points[4],
+            points[7],
+            points[8],
+            points[5],
+            points[6]
+        )
+        __TS__ArrayPush(
+            graphicsGeometry.indices,
+            vertPos,
+            vertPos + 1,
+            vertPos + 2,
+            vertPos + 1,
+            vertPos + 2,
+            vertPos + 3
+        )
+    end
+}
+return ____exports
+ end,
+["graphics.utils.buildRoundedRectangle"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____buildCircle = require("graphics.utils.buildCircle")
+local buildCircle = ____buildCircle.buildCircle
+--- Builds a rounded rectangle to draw
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object containing all the necessary properties
+-- @param webGLData - an object containing all the WebGL-specific information to create this shape
+-- @param webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
+____exports.buildRoundedRectangle = {
+    build = function(self, graphicsData)
+        buildCircle:build(graphicsData)
+    end,
+    triangulate = function(self, graphicsData, graphicsGeometry)
+        buildCircle:triangulate(graphicsData, graphicsGeometry)
+    end
+}
+return ____exports
+ end,
+["graphics.utils.BatchPart"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+--- A structure to hold interim batch objects for Graphics.
+-- 
+-- @memberof PIXI.graphicsUtils
+____exports.BatchPart = __TS__Class()
+local BatchPart = ____exports.BatchPart
+BatchPart.name = "BatchPart"
+function BatchPart.prototype.____constructor(self)
+    self.style = nil
+    self.size = 0
+    self.start = 0
+    self.attribStart = 0
+    self.attribSize = 0
+end
+function BatchPart.prototype.begin(self, style, startIndex, attribStart)
+    self:reset()
+    self.style = style
+    self.start = startIndex
+    self.attribStart = attribStart
+end
+BatchPart.prototype["end"] = function(self, endIndex, endAttrib)
+    self.attribSize = endAttrib - self.attribStart
+    self.size = endIndex - self.start
+end
+function BatchPart.prototype.reset(self)
+    self.style = nil
+    self.size = 0
+    self.start = 0
+    self.attribStart = 0
+    self.attribSize = 0
+end
+return ____exports
+ end,
+["graphics.utils.ArcUtils"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local ____exports = {}
+local ____math = require("math.index")
+local TAU = ____math.TAU
+local ____const = require("graphics.const")
+local curves = ____const.curves
+--- Utilities for arc curves.
+-- 
+-- @private
+____exports.ArcUtils = __TS__Class()
+local ArcUtils = ____exports.ArcUtils
+ArcUtils.name = "ArcUtils"
+function ArcUtils.prototype.____constructor(self)
+end
+function ArcUtils.curveTo(self, x1, y1, x2, y2, radius, points)
+    local fromX = points[#points - 2 + 1]
+    local fromY = points[#points]
+    local a1 = fromY - y1
+    local b1 = fromX - x1
+    local a2 = y2 - y1
+    local b2 = x2 - x1
+    local mm = math.abs(a1 * b2 - b1 * a2)
+    if mm < 1e-8 or radius == 0 then
+        if points[#points - 2 + 1] ~= x1 or points[#points] ~= y1 then
+            __TS__ArrayPush(points, x1, y1)
+        end
+        return nil
+    end
+    local dd = a1 * a1 + b1 * b1
+    local cc = a2 * a2 + b2 * b2
+    local tt = a1 * a2 + b1 * b2
+    local k1 = radius * math.sqrt(dd) / mm
+    local k2 = radius * math.sqrt(cc) / mm
+    local j1 = k1 * tt / dd
+    local j2 = k2 * tt / cc
+    local cx = k1 * b2 + k2 * b1
+    local cy = k1 * a2 + k2 * a1
+    local px = b1 * (k2 + j1)
+    local py = a1 * (k2 + j1)
+    local qx = b2 * (k1 + j2)
+    local qy = a2 * (k1 + j2)
+    local startAngle = math.atan2(py - cy, px - cx)
+    local endAngle = math.atan2(qy - cy, qx - cx)
+    return {
+        cx = cx + x1,
+        cy = cy + y1,
+        radius = radius,
+        startAngle = startAngle,
+        endAngle = endAngle,
+        anticlockwise = b1 * a2 > b2 * a1
+    }
+end
+function ArcUtils.arc(self, _startX, _startY, cx, cy, radius, startAngle, endAngle, _anticlockwise, points)
+    local sweep = endAngle - startAngle
+    local n = curves:_segmentsCount(
+        math.abs(sweep) * radius,
+        math.ceil(math.abs(sweep) / TAU) * 40
+    )
+    local theta = sweep / (n * 2)
+    local theta2 = theta * 2
+    local cTheta = math.cos(theta)
+    local sTheta = math.sin(theta)
+    local segMinus = n - 1
+    local remainder = segMinus % 1 / segMinus
+    do
+        local i = 0
+        while i <= segMinus do
+            local real = i + remainder * i
+            local angle = theta + startAngle + theta2 * real
+            local c = math.cos(angle)
+            local s = -math.sin(angle)
+            __TS__ArrayPush(points, (cTheta * c + sTheta * s) * radius + cx, (cTheta * -s + sTheta * c) * radius + cy)
+            i = i + 1
+        end
+    end
+end
+return ____exports
+ end,
+["graphics.utils.BezierUtils"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local ____exports = {}
+local ____const = require("graphics.const")
+local curves = ____const.curves
+--- Utilities for bezier curves
+-- 
+-- @private
+____exports.BezierUtils = __TS__Class()
+local BezierUtils = ____exports.BezierUtils
+BezierUtils.name = "BezierUtils"
+function BezierUtils.prototype.____constructor(self)
+end
+function BezierUtils.curveLength(self, fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY)
+    local n = 10
+    local result = 0
+    local t = 0
+    local t2 = 0
+    local t3 = 0
+    local nt = 0
+    local nt2 = 0
+    local nt3 = 0
+    local x = 0
+    local y = 0
+    local dx = 0
+    local dy = 0
+    local prevX = fromX
+    local prevY = fromY
+    do
+        local i = 1
+        while i <= n do
+            t = i / n
+            t2 = t * t
+            t3 = t2 * t
+            nt = 1 - t
+            nt2 = nt * nt
+            nt3 = nt2 * nt
+            x = nt3 * fromX + 3 * nt2 * t * cpX + 3 * nt * t2 * cpX2 + t3 * toX
+            y = nt3 * fromY + 3 * nt2 * t * cpY + 3 * nt * t2 * cpY2 + t3 * toY
+            dx = prevX - x
+            dy = prevY - y
+            prevX = x
+            prevY = y
+            result = result + math.sqrt(dx * dx + dy * dy)
+            i = i + 1
+        end
+    end
+    return result
+end
+function BezierUtils.curveTo(self, cpX, cpY, cpX2, cpY2, toX, toY, points)
+    local fromX = points[#points - 2 + 1]
+    local fromY = points[#points]
+    __TS__ArraySetLength(points, #points - 2)
+    local n = curves:_segmentsCount(____exports.BezierUtils:curveLength(
+        fromX,
+        fromY,
+        cpX,
+        cpY,
+        cpX2,
+        cpY2,
+        toX,
+        toY
+    ))
+    local dt = 0
+    local dt2 = 0
+    local dt3 = 0
+    local t2 = 0
+    local t3 = 0
+    __TS__ArrayPush(points, fromX, fromY)
+    do
+        local i = 1
+        local j = 0
+        while i <= n do
+            j = i / n
+            dt = 1 - j
+            dt2 = dt * dt
+            dt3 = dt2 * dt
+            t2 = j * j
+            t3 = t2 * j
+            __TS__ArrayPush(points, dt3 * fromX + 3 * dt2 * j * cpX + 3 * dt * t2 * cpX2 + t3 * toX, dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY)
+            i = i + 1
+        end
+    end
+end
+return ____exports
+ end,
+["graphics.utils.buildLine"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local __TS__New = ____lualib.__TS__New
+local __TS__ArrayUnshift = ____lualib.__TS__ArrayUnshift
+local ____exports = {}
+local ____core = require("core.index")
+local Point = ____core.Point
+local SHAPES = ____core.SHAPES
+local ____const = require("graphics.const")
+local curves = ____const.curves
+local LINE_CAP = ____const.LINE_CAP
+local LINE_JOIN = ____const.LINE_JOIN
+--- Buffers vertices to draw a square cap.
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param x - X-coord of end point
+-- @param y - Y-coord of end point
+-- @param nx - X-coord of line normal pointing inside
+-- @param ny - Y-coord of line normal pointing inside
+-- @param innerWeight - Weight of inner points
+-- @param outerWeight - Weight of outer points
+-- @param clockwise - Whether the cap is drawn clockwise
+-- @param verts - vertex buffer
+-- @returns - no. of vertices pushed
+local function square(self, x, y, nx, ny, innerWeight, outerWeight, clockwise, verts)
+    local ix = x - nx * innerWeight
+    local iy = y - ny * innerWeight
+    local ox = x + nx * outerWeight
+    local oy = y + ny * outerWeight
+    local exx
+    local eyy
+    if clockwise then
+        exx = ny
+        eyy = -nx
+    else
+        exx = -ny
+        eyy = nx
+    end
+    local eix = ix + exx
+    local eiy = iy + eyy
+    local eox = ox + exx
+    local eoy = oy + eyy
+    __TS__ArrayPush(verts, eix, eiy)
+    __TS__ArrayPush(verts, eox, eoy)
+    return 2
+end
+--- Buffers vertices to draw an arc at the line joint or cap.
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param cx - X-coord of center
+-- @param cy - Y-coord of center
+-- @param sx - X-coord of arc start
+-- @param sy - Y-coord of arc start
+-- @param ex - X-coord of arc end
+-- @param ey - Y-coord of arc end
+-- @param verts - buffer of vertices
+-- @param clockwise - orientation of vertices
+-- @returns - no. of vertices pushed
+local function round(self, cx, cy, sx, sy, ex, ey, verts, clockwise)
+    local cx2p0x = sx - cx
+    local cy2p0y = sy - cy
+    local angle0 = math.atan2(cx2p0x, cy2p0y)
+    local angle1 = math.atan2(ex - cx, ey - cy)
+    if clockwise and angle0 < angle1 then
+        angle0 = angle0 + math.pi * 2
+    elseif not clockwise and angle0 > angle1 then
+        angle1 = angle1 + math.pi * 2
+    end
+    local startAngle = angle0
+    local angleDiff = angle1 - angle0
+    local absAngleDiff = math.abs(angleDiff)
+    local radius = math.sqrt(cx2p0x * cx2p0x + cy2p0y * cy2p0y)
+    local segCount = bit.arshift(
+        15 * absAngleDiff * math.sqrt(radius) / math.pi,
+        0
+    ) + 1
+    local angleInc = angleDiff / segCount
+    startAngle = startAngle + angleInc
+    if clockwise then
+        __TS__ArrayPush(verts, cx, cy)
+        __TS__ArrayPush(verts, sx, sy)
+        do
+            local i = 1
+            local angle = startAngle
+            while i < segCount do
+                __TS__ArrayPush(verts, cx, cy)
+                __TS__ArrayPush(
+                    verts,
+                    cx + math.sin(angle) * radius,
+                    cy + math.cos(angle) * radius
+                )
+                do
+                    i = i + 1
+                    angle = angle + angleInc
+                end
+            end
+        end
+        __TS__ArrayPush(verts, cx, cy)
+        __TS__ArrayPush(verts, ex, ey)
+    else
+        __TS__ArrayPush(verts, sx, sy)
+        __TS__ArrayPush(verts, cx, cy)
+        do
+            local i = 1
+            local angle = startAngle
+            while i < segCount do
+                __TS__ArrayPush(
+                    verts,
+                    cx + math.sin(angle) * radius,
+                    cy + math.cos(angle) * radius
+                )
+                __TS__ArrayPush(verts, cx, cy)
+                do
+                    i = i + 1
+                    angle = angle + angleInc
+                end
+            end
+        end
+        __TS__ArrayPush(verts, ex, ey)
+        __TS__ArrayPush(verts, cx, cy)
+    end
+    return segCount * 2
+end
+--- Builds a line to draw using the polygon method.
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object containing all the necessary properties
+-- @param graphicsGeometry - Geometry where to append output
+local function buildNonNativeLine(self, graphicsData, graphicsGeometry)
+    local shape = graphicsData.shape
+    local points = graphicsData.points or __TS__ArraySlice(shape.points)
+    local eps = graphicsGeometry.closePointEps
+    if #points == 0 then
+        return
+    end
+    local style = graphicsData.lineStyle
+    if not style then
+        return
+    end
+    local firstPoint = __TS__New(Point, points[1], points[2])
+    local lastPoint = __TS__New(Point, points[#points - 2 + 1], points[#points])
+    local closedShape = shape.type ~= SHAPES.POLY or shape.closeStroke
+    local closedPath = math.abs(firstPoint.x - lastPoint.x) < eps and math.abs(firstPoint.y - lastPoint.y) < eps
+    if closedShape then
+        points = __TS__ArraySlice(points)
+        if closedPath then
+            table.remove(points)
+            table.remove(points)
+            lastPoint:set(points[#points - 2 + 1], points[#points])
+        end
+        local midPointX = (firstPoint.x + lastPoint.x) * 0.5
+        local midPointY = (lastPoint.y + firstPoint.y) * 0.5
+        __TS__ArrayUnshift(points, midPointX, midPointY)
+        __TS__ArrayPush(points, midPointX, midPointY)
+    end
+    local verts = graphicsGeometry.points
+    local length = #points / 2
+    local indexCount = #points
+    local indexStart = #verts / 2
+    local width = style.width / 2
+    local widthSquared = width * width
+    local miterLimitSquared = style.miterLimit * style.miterLimit
+    local x0 = points[1]
+    local y0 = points[2]
+    local x1 = points[3]
+    local y1 = points[4]
+    local x2 = 0
+    local y2 = 0
+    local perpx = -(y0 - y1)
+    local perpy = x0 - x1
+    local perp1x = 0
+    local perp1y = 0
+    local dist = math.sqrt(perpx * perpx + perpy * perpy)
+    perpx = perpx / dist
+    perpy = perpy / dist
+    perpx = perpx * width
+    perpy = perpy * width
+    local ratio = style.alignment
+    local innerWeight = (1 - ratio) * 2
+    local outerWeight = ratio * 2
+    if not closedShape then
+        if style.cap == LINE_CAP.ROUND then
+            indexCount = indexCount + (round(
+                nil,
+                x0 - perpx * (innerWeight - outerWeight) * 0.5,
+                y0 - perpy * (innerWeight - outerWeight) * 0.5,
+                x0 - perpx * innerWeight,
+                y0 - perpy * innerWeight,
+                x0 + perpx * outerWeight,
+                y0 + perpy * outerWeight,
+                verts,
+                true
+            ) + 2)
+        elseif style.cap == LINE_CAP.SQUARE then
+            indexCount = indexCount + square(
+                nil,
+                x0,
+                y0,
+                perpx,
+                perpy,
+                innerWeight,
+                outerWeight,
+                true,
+                verts
+            )
+        end
+    end
+    __TS__ArrayPush(verts, x0 - perpx * innerWeight, y0 - perpy * innerWeight)
+    __TS__ArrayPush(verts, x0 + perpx * outerWeight, y0 + perpy * outerWeight)
+    do
+        local i = 1
+        while i < length - 1 do
+            do
+                x0 = points[(i - 1) * 2 + 1]
+                y0 = points[(i - 1) * 2 + 1 + 1]
+                x1 = points[i * 2 + 1]
+                y1 = points[i * 2 + 1 + 1]
+                x2 = points[(i + 1) * 2 + 1]
+                y2 = points[(i + 1) * 2 + 1 + 1]
+                perpx = -(y0 - y1)
+                perpy = x0 - x1
+                dist = math.sqrt(perpx * perpx + perpy * perpy)
+                perpx = perpx / dist
+                perpy = perpy / dist
+                perpx = perpx * width
+                perpy = perpy * width
+                perp1x = -(y1 - y2)
+                perp1y = x1 - x2
+                dist = math.sqrt(perp1x * perp1x + perp1y * perp1y)
+                perp1x = perp1x / dist
+                perp1y = perp1y / dist
+                perp1x = perp1x * width
+                perp1y = perp1y * width
+                local dx0 = x1 - x0
+                local dy0 = y0 - y1
+                local dx1 = x1 - x2
+                local dy1 = y2 - y1
+                local dot = dx0 * dx1 + dy0 * dy1
+                local cross = dy0 * dx1 - dy1 * dx0
+                local clockwise = cross < 0
+                if math.abs(cross) < 0.001 * math.abs(dot) then
+                    __TS__ArrayPush(verts, x1 - perpx * innerWeight, y1 - perpy * innerWeight)
+                    __TS__ArrayPush(verts, x1 + perpx * outerWeight, y1 + perpy * outerWeight)
+                    if dot >= 0 then
+                        if style.join == LINE_JOIN.ROUND then
+                            indexCount = indexCount + (round(
+                                nil,
+                                x1,
+                                y1,
+                                x1 - perpx * innerWeight,
+                                y1 - perpy * innerWeight,
+                                x1 - perp1x * innerWeight,
+                                y1 - perp1y * innerWeight,
+                                verts,
+                                false
+                            ) + 4)
+                        else
+                            indexCount = indexCount + 2
+                        end
+                        __TS__ArrayPush(verts, x1 - perp1x * outerWeight, y1 - perp1y * outerWeight)
+                        __TS__ArrayPush(verts, x1 + perp1x * innerWeight, y1 + perp1y * innerWeight)
+                    end
+                    goto __continue20
+                end
+                local c1 = (-perpx + x0) * (-perpy + y1) - (-perpx + x1) * (-perpy + y0)
+                local c2 = (-perp1x + x2) * (-perp1y + y1) - (-perp1x + x1) * (-perp1y + y2)
+                local px = (dx0 * c2 - dx1 * c1) / cross
+                local py = (dy1 * c1 - dy0 * c2) / cross
+                local pdist = (px - x1) * (px - x1) + (py - y1) * (py - y1)
+                local imx = x1 + (px - x1) * innerWeight
+                local imy = y1 + (py - y1) * innerWeight
+                local omx = x1 - (px - x1) * outerWeight
+                local omy = y1 - (py - y1) * outerWeight
+                local smallerInsideSegmentSq = math.min(dx0 * dx0 + dy0 * dy0, dx1 * dx1 + dy1 * dy1)
+                local insideWeight = clockwise and innerWeight or outerWeight
+                local smallerInsideDiagonalSq = smallerInsideSegmentSq + insideWeight * insideWeight * widthSquared
+                local insideMiterOk = pdist <= smallerInsideDiagonalSq
+                if insideMiterOk then
+                    if style.join == LINE_JOIN.BEVEL or pdist / widthSquared > miterLimitSquared then
+                        if clockwise then
+                            __TS__ArrayPush(verts, imx, imy)
+                            __TS__ArrayPush(verts, x1 + perpx * outerWeight, y1 + perpy * outerWeight)
+                            __TS__ArrayPush(verts, imx, imy)
+                            __TS__ArrayPush(verts, x1 + perp1x * outerWeight, y1 + perp1y * outerWeight)
+                        else
+                            __TS__ArrayPush(verts, x1 - perpx * innerWeight, y1 - perpy * innerWeight)
+                            __TS__ArrayPush(verts, omx, omy)
+                            __TS__ArrayPush(verts, x1 - perp1x * innerWeight, y1 - perp1y * innerWeight)
+                            __TS__ArrayPush(verts, omx, omy)
+                        end
+                        indexCount = indexCount + 2
+                    elseif style.join == LINE_JOIN.ROUND then
+                        if clockwise then
+                            __TS__ArrayPush(verts, imx, imy)
+                            __TS__ArrayPush(verts, x1 + perpx * outerWeight, y1 + perpy * outerWeight)
+                            indexCount = indexCount + (round(
+                                nil,
+                                x1,
+                                y1,
+                                x1 + perpx * outerWeight,
+                                y1 + perpy * outerWeight,
+                                x1 + perp1x * outerWeight,
+                                y1 + perp1y * outerWeight,
+                                verts,
+                                true
+                            ) + 4)
+                            __TS__ArrayPush(verts, imx, imy)
+                            __TS__ArrayPush(verts, x1 + perp1x * outerWeight, y1 + perp1y * outerWeight)
+                        else
+                            __TS__ArrayPush(verts, x1 - perpx * innerWeight, y1 - perpy * innerWeight)
+                            __TS__ArrayPush(verts, omx, omy)
+                            indexCount = indexCount + (round(
+                                nil,
+                                x1,
+                                y1,
+                                x1 - perpx * innerWeight,
+                                y1 - perpy * innerWeight,
+                                x1 - perp1x * innerWeight,
+                                y1 - perp1y * innerWeight,
+                                verts,
+                                false
+                            ) + 4)
+                            __TS__ArrayPush(verts, x1 - perp1x * innerWeight, y1 - perp1y * innerWeight)
+                            __TS__ArrayPush(verts, omx, omy)
+                        end
+                    else
+                        __TS__ArrayPush(verts, imx, imy)
+                        __TS__ArrayPush(verts, omx, omy)
+                    end
+                else
+                    __TS__ArrayPush(verts, x1 - perpx * innerWeight, y1 - perpy * innerWeight)
+                    __TS__ArrayPush(verts, x1 + perpx * outerWeight, y1 + perpy * outerWeight)
+                    if style.join == LINE_JOIN.ROUND then
+                        if clockwise then
+                            indexCount = indexCount + (round(
+                                nil,
+                                x1,
+                                y1,
+                                x1 + perpx * outerWeight,
+                                y1 + perpy * outerWeight,
+                                x1 + perp1x * outerWeight,
+                                y1 + perp1y * outerWeight,
+                                verts,
+                                true
+                            ) + 2)
+                        else
+                            indexCount = indexCount + (round(
+                                nil,
+                                x1,
+                                y1,
+                                x1 - perpx * innerWeight,
+                                y1 - perpy * innerWeight,
+                                x1 - perp1x * innerWeight,
+                                y1 - perp1y * innerWeight,
+                                verts,
+                                false
+                            ) + 2)
+                        end
+                    elseif style.join == LINE_JOIN.MITER and pdist / widthSquared <= miterLimitSquared then
+                        if clockwise then
+                            __TS__ArrayPush(verts, omx, omy)
+                            __TS__ArrayPush(verts, omx, omy)
+                        else
+                            __TS__ArrayPush(verts, imx, imy)
+                            __TS__ArrayPush(verts, imx, imy)
+                        end
+                        indexCount = indexCount + 2
+                    end
+                    __TS__ArrayPush(verts, x1 - perp1x * innerWeight, y1 - perp1y * innerWeight)
+                    __TS__ArrayPush(verts, x1 + perp1x * outerWeight, y1 + perp1y * outerWeight)
+                    indexCount = indexCount + 2
+                end
+            end
+            ::__continue20::
+            i = i + 1
+        end
+    end
+    x0 = points[(length - 2) * 2 + 1]
+    y0 = points[(length - 2) * 2 + 1 + 1]
+    x1 = points[(length - 1) * 2 + 1]
+    y1 = points[(length - 1) * 2 + 1 + 1]
+    perpx = -(y0 - y1)
+    perpy = x0 - x1
+    dist = math.sqrt(perpx * perpx + perpy * perpy)
+    perpx = perpx / dist
+    perpy = perpy / dist
+    perpx = perpx * width
+    perpy = perpy * width
+    __TS__ArrayPush(verts, x1 - perpx * innerWeight, y1 - perpy * innerWeight)
+    __TS__ArrayPush(verts, x1 + perpx * outerWeight, y1 + perpy * outerWeight)
+    if not closedShape then
+        if style.cap == LINE_CAP.ROUND then
+            indexCount = indexCount + (round(
+                nil,
+                x1 - perpx * (innerWeight - outerWeight) * 0.5,
+                y1 - perpy * (innerWeight - outerWeight) * 0.5,
+                x1 - perpx * innerWeight,
+                y1 - perpy * innerWeight,
+                x1 + perpx * outerWeight,
+                y1 + perpy * outerWeight,
+                verts,
+                false
+            ) + 2)
+        elseif style.cap == LINE_CAP.SQUARE then
+            indexCount = indexCount + square(
+                nil,
+                x1,
+                y1,
+                perpx,
+                perpy,
+                innerWeight,
+                outerWeight,
+                false,
+                verts
+            )
+        end
+    end
+    local indices = graphicsGeometry.indices
+    local eps2 = curves.epsilon * curves.epsilon
+    do
+        local i = indexStart
+        while i < indexCount + indexStart - 2 do
+            do
+                x0 = verts[i * 2 + 1]
+                y0 = verts[i * 2 + 1 + 1]
+                x1 = verts[(i + 1) * 2 + 1]
+                y1 = verts[(i + 1) * 2 + 1 + 1]
+                x2 = verts[(i + 2) * 2 + 1]
+                y2 = verts[(i + 2) * 2 + 1 + 1]
+                if math.abs(x0 * (y1 - y2) + x1 * (y2 - y0) + x2 * (y0 - y1)) < eps2 then
+                    goto __continue43
+                end
+                __TS__ArrayPush(indices, i, i + 1, i + 2)
+            end
+            ::__continue43::
+            i = i + 1
+        end
+    end
+end
+--- Builds a line to draw using the gl.drawArrays(gl.LINES) method
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object containing all the necessary properties
+-- @param graphicsGeometry - Geometry where to append output
+local function buildNativeLine(self, graphicsData, graphicsGeometry)
+    local i = 0
+    local shape = graphicsData.shape
+    local points = graphicsData.points or shape.points
+    local closedShape = shape.type ~= SHAPES.POLY or shape.closeStroke
+    if #points == 0 then
+        return
+    end
+    local verts = graphicsGeometry.points
+    local indices = graphicsGeometry.indices
+    local length = #points / 2
+    local startIndex = #verts / 2
+    local currentIndex = startIndex
+    __TS__ArrayPush(verts, points[1], points[2])
+    do
+        i = 1
+        while i < length do
+            __TS__ArrayPush(verts, points[i * 2 + 1], points[i * 2 + 1 + 1])
+            __TS__ArrayPush(indices, currentIndex, currentIndex + 1)
+            currentIndex = currentIndex + 1
+            i = i + 1
+        end
+    end
+    if closedShape then
+        __TS__ArrayPush(indices, currentIndex, startIndex)
+    end
+end
+--- Builds a line to draw
+-- 
+-- Ignored from docs since it is not directly exposed.
+-- 
+-- @ignore
+-- @private
+-- @param graphicsData - The graphics object containing all the necessary properties
+-- @param graphicsGeometry - Geometry where to append output
+function ____exports.buildLine(self, graphicsData, graphicsGeometry)
+    local ____opt_0 = graphicsData.lineStyle
+    if ____opt_0 and ____opt_0.native then
+        buildNativeLine(nil, graphicsData, graphicsGeometry)
+    else
+        buildNonNativeLine(nil, graphicsData, graphicsGeometry)
+    end
+end
+return ____exports
+ end,
+["graphics.utils.QuadraticUtils"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local ____exports = {}
+local ____const = require("graphics.const")
+local curves = ____const.curves
+--- Utilities for quadratic curves.
+-- 
+-- @private
+____exports.QuadraticUtils = __TS__Class()
+local QuadraticUtils = ____exports.QuadraticUtils
+QuadraticUtils.name = "QuadraticUtils"
+function QuadraticUtils.prototype.____constructor(self)
+end
+function QuadraticUtils.curveLength(self, fromX, fromY, cpX, cpY, toX, toY)
+    local ax = fromX - 2 * cpX + toX
+    local ay = fromY - 2 * cpY + toY
+    local bx = 2 * cpX - 2 * fromX
+    local by = 2 * cpY - 2 * fromY
+    local a = 4 * (ax * ax + ay * ay)
+    local b = 4 * (ax * bx + ay * by)
+    local c = bx * bx + by * by
+    local s = 2 * math.sqrt(a + b + c)
+    local a2 = math.sqrt(a)
+    local a32 = 2 * a * a2
+    local c2 = 2 * math.sqrt(c)
+    local ba = b / a2
+    return (a32 * s + a2 * b * (s - c2) + (4 * c * a - b * b) * math.log((2 * a2 + ba + s) / (ba + c2))) / (4 * a32)
+end
+function QuadraticUtils.curveTo(self, cpX, cpY, toX, toY, points)
+    local fromX = points[#points - 2 + 1]
+    local fromY = points[#points]
+    local n = curves:_segmentsCount(____exports.QuadraticUtils:curveLength(
+        fromX,
+        fromY,
+        cpX,
+        cpY,
+        toX,
+        toY
+    ))
+    local xa = 0
+    local ya = 0
+    do
+        local i = 1
+        while i <= n do
+            local j = i / n
+            xa = fromX + (cpX - fromX) * j
+            ya = fromY + (cpY - fromY) * j
+            __TS__ArrayPush(points, xa + (cpX + (toX - cpX) * j - xa) * j, ya + (cpY + (toY - cpY) * j - ya) * j)
+            i = i + 1
+        end
+    end
+end
+return ____exports
+ end,
+["graphics.utils.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____core = require("core.index")
+local SHAPES = ____core.SHAPES
+local ____buildCircle = require("graphics.utils.buildCircle")
+local buildCircle = ____buildCircle.buildCircle
+local ____buildPoly = require("graphics.utils.buildPoly")
+local buildPoly = ____buildPoly.buildPoly
+local ____buildRectangle = require("graphics.utils.buildRectangle")
+local buildRectangle = ____buildRectangle.buildRectangle
+local ____buildRoundedRectangle = require("graphics.utils.buildRoundedRectangle")
+local buildRoundedRectangle = ____buildRoundedRectangle.buildRoundedRectangle
+do
+    local ____export = require("graphics.utils.ArcUtils")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.BatchPart")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.BezierUtils")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.buildCircle")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.buildLine")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.buildPoly")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.buildRectangle")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.buildRoundedRectangle")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.utils.QuadraticUtils")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+--- Map of fill commands for each shape type.
+-- 
+-- @memberof PIXI.graphicsUtils
+-- @member {object} FILL_COMMANDS
+____exports.FILL_COMMANDS = {
+    [SHAPES.POLY] = buildPoly,
+    [SHAPES.CIRC] = buildCircle,
+    [SHAPES.ELIP] = buildCircle,
+    [SHAPES.RECT] = buildRectangle,
+    [SHAPES.RREC] = buildRoundedRectangle
+}
+--- Batch pool, stores unused batches for preventing allocations.
+-- 
+-- @memberof PIXI.graphicsUtils
+-- @member {Array<PIXI.graphicsUtils.BatchPart>} BATCH_POOL
+____exports.BATCH_POOL = {}
+--- Draw call pool, stores unused draw calls for preventing allocations.
+-- 
+-- @memberof PIXI.graphicsUtils
+-- @member {Array<PIXI.BatchDrawCall>} DRAW_CALL_POOL
+____exports.DRAW_CALL_POOL = {}
+return ____exports
+ end,
+["graphics.utils.PolygonUtils"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArrayPushArray = ____lualib.__TS__ArrayPushArray
+local ____exports = {}
+--- Utilities for polygon
+-- 
+-- @class
+-- @private
+____exports.PolygonUtils = __TS__Class()
+local PolygonUtils = ____exports.PolygonUtils
+PolygonUtils.name = "PolygonUtils"
+function PolygonUtils.prototype.____constructor(self)
+end
+function PolygonUtils.offsetPolygon(self, points, offset)
+    local offsetPoints = {}
+    local length = #points
+    offset = ____exports.PolygonUtils:isPolygonClockwise(points) and offset or -1 * offset
+    do
+        local j = 0
+        while j < length do
+            local i = j - 2
+            if i < 0 then
+                i = i + length
+            end
+            local k = (j + 2) % length
+            local v1x = points[j + 1] - points[i + 1]
+            local v1y = points[j + 1 + 1] - points[i + 1 + 1]
+            local len = math.sqrt(v1x * v1x + v1y * v1y)
+            v1x = v1x / len
+            v1y = v1y / len
+            v1x = v1x * offset
+            v1y = v1y * offset
+            local norm1x = -v1y
+            local norm1y = v1x
+            local pij1 = {points[i + 1] + norm1x, points[i + 1 + 1] + norm1y}
+            local pij2 = {points[j + 1] + norm1x, points[j + 1 + 1] + norm1y}
+            local v2x = points[k + 1] - points[j + 1]
+            local v2y = points[k + 1 + 1] - points[j + 1 + 1]
+            len = math.sqrt(v2x * v2x + v2y * v2y)
+            v2x = v2x / len
+            v2y = v2y / len
+            v2x = v2x * offset
+            v2y = v2y * offset
+            local norm2x = -v2y
+            local norm2y = v2x
+            local pjk1 = {points[j + 1] + norm2x, points[j + 1 + 1] + norm2y}
+            local pjk2 = {points[k + 1] + norm2x, points[k + 1 + 1] + norm2y}
+            local intersectPoint = ____exports.PolygonUtils:findIntersection(
+                pij1[1],
+                pij1[2],
+                pij2[1],
+                pij2[2],
+                pjk1[1],
+                pjk1[2],
+                pjk2[1],
+                pjk2[2]
+            )
+            if intersectPoint then
+                __TS__ArrayPushArray(offsetPoints, intersectPoint)
+            end
+            j = j + 2
+        end
+    end
+    return offsetPoints
+end
+function PolygonUtils.findIntersection(self, x1, y1, x2, y2, x3, y3, x4, y4)
+    local denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
+    local numeratorA = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)
+    local numeratorB = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)
+    if denominator == 0 then
+        if numeratorA == 0 and numeratorB == 0 then
+            return {(x1 + x2) / 2, (y1 + y2) / 2}
+        end
+        return nil
+    end
+    local uA = numeratorA / denominator
+    return {x1 + uA * (x2 - x1), y1 + uA * (y2 - y1)}
+end
+function PolygonUtils.isPolygonClockwise(self, polygon)
+    local sum = 0
+    do
+        local i = 0
+        local j = #polygon - 2
+        while i < #polygon do
+            sum = sum + (polygon[i + 1] - polygon[j + 1]) * (polygon[i + 1 + 1] + polygon[j + 1 + 1])
+            do
+                j = i
+                i = i + 2
+            end
+        end
+    end
+    return sum > 0
+end
+return ____exports
+ end,
+["graphics.GraphicsRenderer"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__NumberToString = ____lualib.__TS__NumberToString
+local ____exports = {}
+local systems = require("core.systems")
+local ____core = require("core.index")
+local Color = ____core.Color
+local Matrix = ____core.Matrix
+local SHAPES = ____core.SHAPES
+local ____PolygonUtils = require("graphics.utils.PolygonUtils")
+local PolygonUtils = ____PolygonUtils.PolygonUtils
+--- Renderer dedicated to drawing and batching graphics objects.
+-- 
+-- @class
+-- @protected
+-- @memberof PIXI
+____exports.CanvasGraphicsRenderer = __TS__Class()
+local CanvasGraphicsRenderer = ____exports.CanvasGraphicsRenderer
+CanvasGraphicsRenderer.name = "CanvasGraphicsRenderer"
+function CanvasGraphicsRenderer.prototype.____constructor(self, renderer)
+    self._tempMatrix = __TS__New(Matrix)
+    self.renderer = renderer
+end
+function CanvasGraphicsRenderer.prototype._calcCanvasStyle(self, style, tint)
+    local res
+    res = "#" .. string.sub(
+        "00000" .. __TS__NumberToString(
+            bit.bor(tint, 0),
+            16
+        ),
+        -6
+    )
+    return res
+end
+function CanvasGraphicsRenderer.prototype.render(self, graphics)
+    local renderer = self.renderer
+    local context = renderer.canvasContext.activeContext
+    local worldAlpha = graphics.worldAlpha
+    local transform = graphics.transform.worldTransform
+    renderer.canvasContext:setContextTransform(transform)
+    local graphicsData = graphics.geometry.graphicsData
+    local contextFillStyle
+    local contextStrokeStyle
+    local tint = Color.shared:setValue(graphics.tint):toArray()
+    do
+        local i = 0
+        while i < #graphicsData do
+            local data = graphicsData[i + 1]
+            local shape = data.shape
+            local fillStyle = data.fillStyle
+            local lineStyle = data.lineStyle
+            if data.matrix then
+                renderer.canvasContext:setContextTransform(transform:copyTo(self._tempMatrix):append(data.matrix))
+            end
+            if fillStyle and fillStyle.visible then
+                contextFillStyle = self:_calcCanvasStyle(
+                    fillStyle,
+                    Color.shared:setValue(fillStyle.color):multiply(tint):toNumber()
+                )
+            end
+            if lineStyle and lineStyle.visible then
+                contextStrokeStyle = self:_calcCanvasStyle(
+                    lineStyle,
+                    Color.shared:setValue(lineStyle.color):multiply(tint):toNumber()
+                )
+            end
+            if lineStyle ~= nil then
+                context.lineWidth = lineStyle.width
+                context.lineCap = lineStyle.cap
+                context.lineJoin = lineStyle.join
+                context.miterLimit = lineStyle.miterLimit
+            end
+            if data.type == SHAPES.POLY then
+                context:beginPath()
+                local tempShape = shape
+                local points = tempShape.points
+                local holes = data.holes
+                local outerArea
+                local innerArea
+                local px
+                local py
+                local holesDirection = {}
+                context:moveTo(points[1], points[2])
+                do
+                    local j = 2
+                    while j < #points do
+                        context:lineTo(points[j + 1], points[j + 1 + 1])
+                        j = j + 2
+                    end
+                end
+                if tempShape.closeStroke then
+                    context:closePath()
+                end
+                if #holes > 0 then
+                    holesDirection = {}
+                    outerArea = 0
+                    px = points[1]
+                    py = points[2]
+                    do
+                        local j = 2
+                        while j + 2 < #points do
+                            outerArea = outerArea + ((points[j + 1] - px) * (points[j + 3 + 1] - py) - (points[j + 2 + 1] - px) * (points[j + 1 + 1] - py))
+                            j = j + 2
+                        end
+                    end
+                    do
+                        local k = 0
+                        while k < #holes do
+                            do
+                                points = holes[k + 1].shape.points
+                                if not points then
+                                    goto __continue15
+                                end
+                                innerArea = 0
+                                px = points[1]
+                                py = points[2]
+                                do
+                                    local j = 2
+                                    while j + 2 < #points do
+                                        innerArea = innerArea + ((points[j + 1] - px) * (points[j + 3 + 1] - py) - (points[j + 2 + 1] - px) * (points[j + 1 + 1] - py))
+                                        j = j + 2
+                                    end
+                                end
+                                if innerArea * outerArea < 0 then
+                                    context:moveTo(points[1], points[2])
+                                    do
+                                        local j = 2
+                                        while j < #points do
+                                            context:lineTo(points[j + 1], points[j + 1 + 1])
+                                            j = j + 2
+                                        end
+                                    end
+                                else
+                                    context:moveTo(points[#points - 2 + 1], points[#points])
+                                    do
+                                        local j = #points - 4
+                                        while j >= 0 do
+                                            context:lineTo(points[j + 1], points[j + 1 + 1])
+                                            j = j - 2
+                                        end
+                                    end
+                                end
+                                if holes[k + 1].shape.closeStroke then
+                                    context:closePath()
+                                end
+                                holesDirection[k + 1] = innerArea * outerArea < 0
+                            end
+                            ::__continue15::
+                            k = k + 1
+                        end
+                    end
+                end
+                if fillStyle and fillStyle.visible then
+                    context.globalAlpha = fillStyle.alpha * worldAlpha
+                    context.fillStyle = contextFillStyle
+                    context:fill()
+                end
+                if lineStyle and lineStyle.visible then
+                    self:paintPolygonStroke(
+                        tempShape,
+                        lineStyle,
+                        contextStrokeStyle,
+                        holes,
+                        holesDirection,
+                        worldAlpha,
+                        context
+                    )
+                end
+            elseif data.type == SHAPES.RECT then
+                local tempShape = shape
+                if fillStyle and fillStyle.visible then
+                    context.globalAlpha = fillStyle.alpha * worldAlpha
+                    context.fillStyle = contextFillStyle
+                    context:fillRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height)
+                end
+                if lineStyle and lineStyle.visible then
+                    local alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment))
+                    local width = tempShape.width + 2 * alignmentOffset
+                    local height = tempShape.height + 2 * alignmentOffset
+                    context.globalAlpha = lineStyle.alpha * worldAlpha
+                    context.strokeStyle = contextStrokeStyle
+                    context:strokeRect(tempShape.x - alignmentOffset, tempShape.y - alignmentOffset, width, height)
+                end
+            elseif data.type == SHAPES.CIRC then
+                local tempShape = shape
+                context:beginPath()
+                context:arc(
+                    tempShape.x,
+                    tempShape.y,
+                    tempShape.radius,
+                    0,
+                    2 * math.pi
+                )
+                context:closePath()
+                if fillStyle and fillStyle.visible then
+                    context.globalAlpha = fillStyle.alpha * worldAlpha
+                    context.fillStyle = contextFillStyle
+                    context:fill()
+                end
+                if lineStyle and lineStyle.visible then
+                    if lineStyle.alignment ~= 0.5 then
+                        local alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment))
+                        context:beginPath()
+                        context:arc(
+                            tempShape.x,
+                            tempShape.y,
+                            tempShape.radius + alignmentOffset,
+                            0,
+                            2 * math.pi
+                        )
+                        context:closePath()
+                    end
+                    context.globalAlpha = lineStyle.alpha * worldAlpha
+                    context.strokeStyle = contextStrokeStyle
+                    context:stroke()
+                end
+            elseif data.type == SHAPES.ELIP then
+                local tempShape = shape
+                local drawShapeOverStroke = (lineStyle and lineStyle.alignment) == 1
+                if not drawShapeOverStroke then
+                    self:paintEllipse(
+                        tempShape,
+                        fillStyle,
+                        lineStyle,
+                        contextFillStyle,
+                        worldAlpha,
+                        context
+                    )
+                end
+                if lineStyle and lineStyle.visible then
+                    if lineStyle.alignment ~= 0.5 then
+                        local kappa = 0.5522848
+                        local alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment))
+                        local sW = (tempShape.width + alignmentOffset) * 2
+                        local sH = (tempShape.height + alignmentOffset) * 2
+                        local sX = tempShape.x - sW / 2
+                        local sY = tempShape.y - sH / 2
+                        local sOx = sW / 2 * kappa
+                        local sOy = sH / 2 * kappa
+                        local sXe = sX + sW
+                        local sYe = sY + sH
+                        local sXm = sX + sW / 2
+                        local sYm = sY + sH / 2
+                        context:beginPath()
+                        context:moveTo(sX, sYm)
+                        context:bezierCurveTo(
+                            sX,
+                            sYm - sOy,
+                            sXm - sOx,
+                            sY,
+                            sXm,
+                            sY
+                        )
+                        context:bezierCurveTo(
+                            sXm + sOx,
+                            sY,
+                            sXe,
+                            sYm - sOy,
+                            sXe,
+                            sYm
+                        )
+                        context:bezierCurveTo(
+                            sXe,
+                            sYm + sOy,
+                            sXm + sOx,
+                            sYe,
+                            sXm,
+                            sYe
+                        )
+                        context:bezierCurveTo(
+                            sXm - sOx,
+                            sYe,
+                            sX,
+                            sYm + sOy,
+                            sX,
+                            sYm
+                        )
+                        context:closePath()
+                    end
+                    context.globalAlpha = lineStyle.alpha * worldAlpha
+                    context.strokeStyle = contextStrokeStyle
+                    context:stroke()
+                end
+                if drawShapeOverStroke then
+                    self:paintEllipse(
+                        tempShape,
+                        fillStyle,
+                        lineStyle,
+                        contextFillStyle,
+                        worldAlpha,
+                        context
+                    )
+                end
+            elseif data.type == SHAPES.RREC then
+                local tempShape = shape
+                local drawShapeOverStroke = (lineStyle and lineStyle.alignment) == 1
+                if not drawShapeOverStroke then
+                    self:paintRoundedRectangle(
+                        tempShape,
+                        fillStyle,
+                        lineStyle,
+                        contextFillStyle,
+                        worldAlpha,
+                        context
+                    )
+                end
+                if lineStyle and lineStyle.visible then
+                    if lineStyle.alignment ~= 0.5 then
+                        local width = tempShape.width
+                        local height = tempShape.height
+                        local alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment))
+                        local sRx = tempShape.x - alignmentOffset
+                        local sRy = tempShape.y - alignmentOffset
+                        local sWidth = tempShape.width + 2 * alignmentOffset
+                        local sHeight = tempShape.height + 2 * alignmentOffset
+                        local radiusOffset = alignmentOffset * (lineStyle.alignment >= 1 and math.min(sWidth / width, sHeight / height) or math.min(width / sWidth, height / sHeight))
+                        local sRadius = tempShape.radius + radiusOffset
+                        local sMaxRadius = math.min(sWidth, sHeight) / 2
+                        sRadius = sRadius > sMaxRadius and sMaxRadius or sRadius
+                        context:beginPath()
+                        context:moveTo(sRx, sRy + sRadius)
+                        context:lineTo(sRx, sRy + sHeight - sRadius)
+                        context:quadraticCurveTo(sRx, sRy + sHeight, sRx + sRadius, sRy + sHeight)
+                        context:lineTo(sRx + sWidth - sRadius, sRy + sHeight)
+                        context:quadraticCurveTo(sRx + sWidth, sRy + sHeight, sRx + sWidth, sRy + sHeight - sRadius)
+                        context:lineTo(sRx + sWidth, sRy + sRadius)
+                        context:quadraticCurveTo(sRx + sWidth, sRy, sRx + sWidth - sRadius, sRy)
+                        context:lineTo(sRx + sRadius, sRy)
+                        context:quadraticCurveTo(sRx, sRy, sRx, sRy + sRadius)
+                        context:closePath()
+                    end
+                    context.globalAlpha = lineStyle.alpha * worldAlpha
+                    context.strokeStyle = contextStrokeStyle
+                    context:stroke()
+                end
+                if drawShapeOverStroke then
+                    self:paintRoundedRectangle(
+                        tempShape,
+                        fillStyle,
+                        lineStyle,
+                        contextFillStyle,
+                        worldAlpha,
+                        context
+                    )
+                end
+            end
+            i = i + 1
+        end
+    end
+end
+function CanvasGraphicsRenderer.prototype.paintPolygonStroke(self, shape, lineStyle, contextStrokeStyle, holes, holesDirection, worldAlpha, context)
+    if lineStyle.alignment ~= 0.5 then
+        local alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment))
+        local offsetPoints = PolygonUtils:offsetPolygon(shape.points, alignmentOffset)
+        local points
+        context:beginPath()
+        context:moveTo(offsetPoints[1], offsetPoints[2])
+        do
+            local j = 2
+            while j < #offsetPoints do
+                context:lineTo(offsetPoints[j + 1], offsetPoints[j + 1 + 1])
+                j = j + 2
+            end
+        end
+        if shape.closeStroke then
+            context:closePath()
+        end
+        do
+            local k = 0
+            while k < #holes do
+                points = holes[k + 1].shape.points
+                offsetPoints = PolygonUtils:offsetPolygon(points, alignmentOffset)
+                if holesDirection[k + 1] then
+                    context:moveTo(offsetPoints[1], offsetPoints[2])
+                    do
+                        local j = 2
+                        while j < #offsetPoints do
+                            context:lineTo(offsetPoints[j + 1], offsetPoints[j + 1 + 1])
+                            j = j + 2
+                        end
+                    end
+                else
+                    context:moveTo(offsetPoints[#offsetPoints - 2 + 1], offsetPoints[#offsetPoints])
+                    do
+                        local j = #offsetPoints - 4
+                        while j >= 0 do
+                            context:lineTo(offsetPoints[j + 1], offsetPoints[j + 1 + 1])
+                            j = j - 2
+                        end
+                    end
+                end
+                if holes[k + 1].shape.closeStroke then
+                    context:closePath()
+                end
+                k = k + 1
+            end
+        end
+    end
+    context.globalAlpha = lineStyle.alpha * worldAlpha
+    context.strokeStyle = contextStrokeStyle
+    context:stroke()
+end
+function CanvasGraphicsRenderer.prototype.paintEllipse(self, shape, fillStyle, lineStyle, contextFillStyle, worldAlpha, context)
+    local w = shape.width * 2
+    local h = shape.height * 2
+    local x = shape.x - w / 2
+    local y = shape.y - h / 2
+    local kappa = 0.5522848
+    local ox = w / 2 * kappa
+    local oy = h / 2 * kappa
+    local xe = x + w
+    local ye = y + h
+    local xm = x + w / 2
+    local ym = y + h / 2
+    if (lineStyle and lineStyle.alignment) == 0 then
+        context:save()
+    end
+    context:beginPath()
+    context:moveTo(x, ym)
+    context:bezierCurveTo(
+        x,
+        ym - oy,
+        xm - ox,
+        y,
+        xm,
+        y
+    )
+    context:bezierCurveTo(
+        xm + ox,
+        y,
+        xe,
+        ym - oy,
+        xe,
+        ym
+    )
+    context:bezierCurveTo(
+        xe,
+        ym + oy,
+        xm + ox,
+        ye,
+        xm,
+        ye
+    )
+    context:bezierCurveTo(
+        xm - ox,
+        ye,
+        x,
+        ym + oy,
+        x,
+        ym
+    )
+    context:closePath()
+    if (lineStyle and lineStyle.alignment) == 0 then
+        context:clip()
+    end
+    if fillStyle and fillStyle.visible then
+        context.globalAlpha = fillStyle.alpha * worldAlpha
+        context.fillStyle = contextFillStyle
+        context:fill()
+    end
+    if (lineStyle and lineStyle.alignment) == 0 then
+        context:restore()
+    end
+end
+function CanvasGraphicsRenderer.prototype.paintRoundedRectangle(self, shape, fillStyle, lineStyle, contextFillStyle, worldAlpha, context)
+    local rx = shape.x
+    local ry = shape.y
+    local width = shape.width
+    local height = shape.height
+    local radius = shape.radius
+    local maxRadius = math.min(width, height) / 2
+    radius = radius > maxRadius and maxRadius or radius
+    if (lineStyle and lineStyle.alignment) == 0 then
+        context:save()
+    end
+    context:beginPath()
+    context:moveTo(rx, ry + radius)
+    context:lineTo(rx, ry + height - radius)
+    context:quadraticCurveTo(rx, ry + height, rx + radius, ry + height)
+    context:lineTo(rx + width - radius, ry + height)
+    context:quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius)
+    context:lineTo(rx + width, ry + radius)
+    context:quadraticCurveTo(rx + width, ry, rx + width - radius, ry)
+    context:lineTo(rx + radius, ry)
+    context:quadraticCurveTo(rx, ry, rx, ry + radius)
+    context:closePath()
+    if (lineStyle and lineStyle.alignment) == 0 then
+        context:clip()
+    end
+    if fillStyle and fillStyle.visible then
+        context.globalAlpha = fillStyle.alpha * worldAlpha
+        context.fillStyle = contextFillStyle
+        context:fill()
+    end
+    if (lineStyle and lineStyle.alignment) == 0 then
+        context:restore()
+    end
+end
+function CanvasGraphicsRenderer.prototype.destroy(self)
+    self.renderer = nil
+    self._tempMatrix = nil
+end
+CanvasGraphicsRenderer.systemName = "graphics"
+systems:register("graphics", ____exports.CanvasGraphicsRenderer)
+return ____exports
+ end,
+["graphics.Graphics"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+local ____core = require("core.index")
+local Circle = ____core.Circle
+local Color = ____core.Color
+local Ellipse = ____core.Ellipse
+local Matrix = ____core.Matrix
+local PI_2 = ____core.PI_2
+local Point = ____core.Point
+local Polygon = ____core.Polygon
+local Rectangle = ____core.Rectangle
+local RoundedRectangle = ____core.RoundedRectangle
+local SHAPES = ____core.SHAPES
+local ____display = require("display.index")
+local Container = ____display.Container
+local ____const = require("graphics.const")
+local curves = ____const.curves
+local LINE_CAP = ____const.LINE_CAP
+local LINE_JOIN = ____const.LINE_JOIN
+local ____GraphicsGeometry = require("graphics.GraphicsGeometry")
+local GraphicsGeometry = ____GraphicsGeometry.GraphicsGeometry
+local ____FillStyle = require("graphics.styles.FillStyle")
+local FillStyle = ____FillStyle.FillStyle
+local ____LineStyle = require("graphics.styles.LineStyle")
+local LineStyle = ____LineStyle.LineStyle
+local ____utils = require("graphics.utils.index")
+local ArcUtils = ____utils.ArcUtils
+local BezierUtils = ____utils.BezierUtils
+local QuadraticUtils = ____utils.QuadraticUtils
+local canvasRenderer
+local tempMatrix = __TS__New(Matrix)
+local temp = __TS__New(Float32Array, 3)
+--- The Graphics class is primarily used to render primitive shapes such as lines, circles and
+-- rectangles to the display, and to color and fill them.  However, you can also use a Graphics
+-- object to build a list of primitives to use as a mask, or as a complex hitArea.
+-- 
+-- Please note that due to legacy naming conventions, the behavior of some functions in this class
+-- can be confusing.  Each call to `drawRect()`, `drawPolygon()`, etc. actually stores that primitive
+-- in the Geometry class's GraphicsGeometry object for later use in rendering or hit testing - the
+-- functions do not directly draw anything to the screen.  Similarly, the `clear()` function doesn't
+-- change the screen, it simply resets the list of primitives, which can be useful if you want to
+-- rebuild the contents of an existing Graphics object.
+-- 
+-- Once a GraphicsGeometry list is built, you can re-use it in other Geometry objects as
+-- an optimization, by passing it into a new Geometry object's constructor.  Because of this
+-- ability, it's important to call `destroy()` on Geometry objects once you are done with them, to
+-- properly dereference each GraphicsGeometry and prevent memory leaks.
+-- 
+-- @memberof PIXI
+____exports.Graphics = __TS__Class()
+local Graphics = ____exports.Graphics
+Graphics.name = "Graphics"
+__TS__ClassExtends(Graphics, Container)
+function Graphics.prototype.____constructor(self, geometry)
+    if geometry == nil then
+        geometry = nil
+    end
+    Container.prototype.____constructor(self)
+    self.pluginName = "batch"
+    self.currentPath = nil
+    self.batches = {}
+    self.batchTint = -1
+    self.batchDirty = -1
+    self.vertexData = nil
+    self._fillStyle = __TS__New(FillStyle)
+    self._lineStyle = __TS__New(LineStyle)
+    self._matrix = nil
+    self._holeMode = false
+    self._tint = 16777215
+    self.cachedGraphicsData = {}
+    self._geometry = geometry or __TS__New(GraphicsGeometry)
+    local ____self__geometry_0, ____refCount_1 = self._geometry, "refCount"
+    ____self__geometry_0[____refCount_1] = ____self__geometry_0[____refCount_1] + 1
+    self._transformID = -1
+    self.tint = 16777215
+end
+__TS__SetDescriptor(
+    Graphics.prototype,
+    "geometry",
+    {get = function(self)
+        return self._geometry
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Graphics.prototype,
+    "tint",
+    {
+        get = function(self)
+            return self._tint
+        end,
+        set = function(self, value)
+            self._tint = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Graphics.prototype,
+    "fill",
+    {get = function(self)
+        return self._fillStyle
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Graphics.prototype,
+    "line",
+    {get = function(self)
+        return self._lineStyle
+    end},
+    true
+)
+function Graphics.prototype.clone(self)
+    self:finishPoly()
+    return __TS__New(____exports.Graphics, self._geometry)
+end
+function Graphics.prototype.lineStyle(self, options, color, alpha, alignment, native)
+    if color == nil then
+        color = 0
+    end
+    if alignment == nil then
+        alignment = 0.5
+    end
+    if native == nil then
+        native = false
+    end
+    if type(options) == "number" then
+        options = {
+            width = options,
+            color = color,
+            alpha = alpha,
+            alignment = alignment,
+            native = native
+        }
+    end
+    return self:lineTextureStyle(options)
+end
+function Graphics.prototype.lineTextureStyle(self, options)
+    local defaultLineStyleOptions = {
+        width = 0,
+        color = 0,
+        matrix = nil,
+        alignment = 0.5,
+        native = false,
+        cap = LINE_CAP.BUTT,
+        join = LINE_JOIN.MITER,
+        miterLimit = 10
+    }
+    options = __TS__ObjectAssign(defaultLineStyleOptions, options)
+    self:normalizeColor(options)
+    if self.currentPath then
+        self:startPoly()
+    end
+    local visible = options.width and options.width > 0 and options.alpha and options.alpha > 0
+    if not visible then
+        self._lineStyle:reset()
+    else
+        if options.matrix then
+            options.matrix = options.matrix:clone()
+            options.matrix:invert()
+        end
+        __TS__ObjectAssign(self._lineStyle, {visible = visible}, options)
+    end
+    return self
+end
+function Graphics.prototype.startPoly(self)
+    if self.currentPath then
+        local points = self.currentPath.points
+        local len = #self.currentPath.points
+        if len > 2 then
+            self:drawShape(self.currentPath)
+            self.currentPath = __TS__New(Polygon)
+            self.currentPath.closeStroke = false
+            __TS__ArrayPush(self.currentPath.points, points[len - 2 + 1], points[len])
+        end
+    else
+        self.currentPath = __TS__New(Polygon)
+        self.currentPath.closeStroke = false
+    end
+end
+function Graphics.prototype.finishPoly(self)
+    if self.currentPath then
+        if #self.currentPath.points > 2 then
+            self:drawShape(self.currentPath)
+            self.currentPath = nil
+        else
+            __TS__ArraySetLength(self.currentPath.points, 0)
+        end
+    end
+end
+function Graphics.prototype.moveTo(self, x, y)
+    self:startPoly()
+    self.currentPath.points[1] = x
+    self.currentPath.points[2] = y
+    return self
+end
+function Graphics.prototype.lineTo(self, x, y)
+    if not self.currentPath then
+        self:moveTo(0, 0)
+    end
+    local points = self.currentPath.points
+    local fromX = points[#points - 2 + 1]
+    local fromY = points[#points]
+    if fromX ~= x or fromY ~= y then
+        __TS__ArrayPush(points, x, y)
+    end
+    return self
+end
+function Graphics.prototype._initCurve(self, x, y)
+    if x == nil then
+        x = 0
+    end
+    if y == nil then
+        y = 0
+    end
+    if self.currentPath then
+        if #self.currentPath.points == 0 then
+            self.currentPath.points = {x, y}
+        end
+    else
+        self:moveTo(x, y)
+    end
+end
+function Graphics.prototype.quadraticCurveTo(self, cpX, cpY, toX, toY)
+    self:_initCurve()
+    local points = self.currentPath.points
+    if #points == 0 then
+        self:moveTo(0, 0)
+    end
+    QuadraticUtils:curveTo(
+        cpX,
+        cpY,
+        toX,
+        toY,
+        points
+    )
+    return self
+end
+function Graphics.prototype.bezierCurveTo(self, cpX, cpY, cpX2, cpY2, toX, toY)
+    self:_initCurve()
+    BezierUtils:curveTo(
+        cpX,
+        cpY,
+        cpX2,
+        cpY2,
+        toX,
+        toY,
+        self.currentPath.points
+    )
+    return self
+end
+function Graphics.prototype.arcTo(self, x1, y1, x2, y2, radius)
+    self:_initCurve(x1, y1)
+    local points = self.currentPath.points
+    local result = ArcUtils:curveTo(
+        x1,
+        y1,
+        x2,
+        y2,
+        radius,
+        points
+    )
+    if result then
+        local cx = result.cx
+        local cy = result.cy
+        local radius = result.radius
+        local startAngle = result.startAngle
+        local endAngle = result.endAngle
+        local anticlockwise = result.anticlockwise
+        self:arc(
+            cx,
+            cy,
+            radius,
+            startAngle,
+            endAngle,
+            anticlockwise
+        )
+    end
+    return self
+end
+function Graphics.prototype.arc(self, cx, cy, radius, startAngle, endAngle, anticlockwise)
+    if anticlockwise == nil then
+        anticlockwise = false
+    end
+    if startAngle == endAngle then
+        return self
+    end
+    if not anticlockwise and endAngle <= startAngle then
+        endAngle = endAngle + PI_2
+    elseif anticlockwise and startAngle <= endAngle then
+        startAngle = startAngle + PI_2
+    end
+    local sweep = endAngle - startAngle
+    if sweep == 0 then
+        return self
+    end
+    local startX = cx + math.cos(startAngle) * radius
+    local startY = cy + math.sin(startAngle) * radius
+    local eps = self._geometry.closePointEps
+    local points = self.currentPath and self.currentPath.points or nil
+    if points then
+        local xDiff = math.abs(points[#points - 2 + 1] - startX)
+        local yDiff = math.abs(points[#points] - startY)
+        if xDiff < eps and yDiff < eps then
+        else
+            __TS__ArrayPush(points, startX, startY)
+        end
+    else
+        self:moveTo(startX, startY)
+        points = self.currentPath.points
+    end
+    ArcUtils:arc(
+        startX,
+        startY,
+        cx,
+        cy,
+        radius,
+        startAngle,
+        endAngle,
+        anticlockwise,
+        points
+    )
+    return self
+end
+function Graphics.prototype.beginFill(self, color, alpha)
+    if color == nil then
+        color = 0
+    end
+    return self:beginTextureFill({color = color, alpha = alpha})
+end
+function Graphics.prototype.normalizeColor(self, options)
+    local temp = Color.shared:setValue(options.color)
+    options.color = temp:toNumber()
+    if options.alpha == nil then
+        options.alpha = temp.alpha
+    end
+end
+function Graphics.prototype.beginTextureFill(self, options)
+    local defaultOptions = {color = 16777215, matrix = nil}
+    options = __TS__ObjectAssign(defaultOptions, options)
+    self:normalizeColor(options)
+    if self.currentPath then
+        self:startPoly()
+    end
+    local visible = options.alpha and options.alpha > 0
+    if not visible then
+        self._fillStyle:reset()
+    else
+        if options.matrix then
+            options.matrix = options.matrix:clone()
+            options.matrix:invert()
+        end
+        __TS__ObjectAssign(self._fillStyle, {visible = visible}, options)
+    end
+    return self
+end
+function Graphics.prototype.endFill(self)
+    self:finishPoly()
+    self._fillStyle:reset()
+    return self
+end
+function Graphics.prototype.drawRect(self, x, y, width, height)
+    return self:drawShape(__TS__New(
+        Rectangle,
+        x,
+        y,
+        width,
+        height
+    ))
+end
+function Graphics.prototype.drawRoundedRect(self, x, y, width, height, radius)
+    return self:drawShape(__TS__New(
+        RoundedRectangle,
+        x,
+        y,
+        width,
+        height,
+        radius
+    ))
+end
+function Graphics.prototype.drawCircle(self, x, y, radius)
+    return self:drawShape(__TS__New(Circle, x, y, radius))
+end
+function Graphics.prototype.drawEllipse(self, x, y, width, height)
+    return self:drawShape(__TS__New(
+        Ellipse,
+        x,
+        y,
+        width,
+        height
+    ))
+end
+function Graphics.prototype.drawPolygon(self, ...)
+    local path = {...}
+    local points
+    local closeStroke = true
+    local poly = path[1]
+    if poly.points ~= nil then
+        closeStroke = poly.closeStroke
+        points = poly.points
+    elseif __TS__ArrayIsArray(path[1]) then
+        points = path[1]
+    else
+        points = path
+    end
+    local shape = __TS__New(Polygon, points)
+    shape.closeStroke = closeStroke
+    self:drawShape(shape)
+    return self
+end
+function Graphics.prototype.drawShape(self, shape)
+    if not self._holeMode then
+        self._geometry:drawShape(
+            shape,
+            self._fillStyle:clone(),
+            self._lineStyle:clone(),
+            self._matrix
+        )
+    else
+        self._geometry:drawHole(shape, self._matrix)
+    end
+    return self
+end
+function Graphics.prototype.clear(self)
+    self._geometry:clear()
+    self._lineStyle:reset()
+    self._fillStyle:reset()
+    self._boundsID = self._boundsID + 1
+    self._matrix = nil
+    self._holeMode = false
+    self.currentPath = nil
+    return self
+end
+function Graphics.prototype.isFastRect(self)
+    local data = self._geometry.graphicsData
+    return #data == 1 and data[1].shape.type == SHAPES.RECT and not data[1].matrix and not #data[1].holes and not (data[1].lineStyle.visible and data[1].lineStyle.width)
+end
+function Graphics.prototype._render(self, _renderer)
+    error(
+        __TS__New(Error, "Graphics#_render is invalid"),
+        0
+    )
+end
+function Graphics.prototype.generateCanvasTexture(self, scaleMode, resolution)
+    if resolution == nil then
+        resolution = 1
+    end
+    error(
+        __TS__New(Error, "generateCanvasTexture unimplemented"),
+        0
+    )
+end
+function Graphics.prototype._renderCanvas(self, renderer)
+    self:finishPoly()
+    renderer:get("graphics"):render(self)
+end
+function Graphics.prototype._calculateBounds(self)
+    self:finishPoly()
+    local geometry = self._geometry
+    if not #geometry.graphicsData then
+        return
+    end
+    local ____geometry_bounds_2 = geometry.bounds
+    local minX = ____geometry_bounds_2.minX
+    local minY = ____geometry_bounds_2.minY
+    local maxX = ____geometry_bounds_2.maxX
+    local maxY = ____geometry_bounds_2.maxY
+    self._bounds:addFrame(
+        self.transform,
+        minX,
+        minY,
+        maxX,
+        maxY
+    )
+end
+function Graphics.prototype.containsPoint(self, point)
+    self.worldTransform:applyInverse(point, ____exports.Graphics._TEMP_POINT)
+    return self._geometry:containsPoint(____exports.Graphics._TEMP_POINT)
+end
+function Graphics.prototype.calculateTints(self)
+    if self.batchTint ~= self.tint then
+        self.batchTint = self.tint
+        local tintRGB = Color.shared:setValue(self.tint):toRgbArray(temp)
+        do
+            local i = 0
+            while i < #self.batches do
+                local batch = self.batches[i + 1]
+                batch._tintRGB = Color.shared:setValue(tintRGB):multiply(batch._batchRGB):toLittleEndianNumber()
+                i = i + 1
+            end
+        end
+    end
+end
+function Graphics.prototype.calculateVertices(self)
+    local wtID = self.transform._worldID
+    if self._transformID == wtID then
+        return
+    end
+    self._transformID = wtID
+    local wt = self.transform.worldTransform
+    local a = wt.a
+    local b = wt.b
+    local c = wt.c
+    local d = wt.d
+    local tx = wt.tx
+    local ty = wt.ty
+    local data = self._geometry.points
+    local vertexData = self.vertexData
+    if not vertexData then
+        return
+    end
+    local count = 0
+    do
+        local i = 0
+        while i < #data do
+            local x = data[i + 1]
+            local y = data[i + 1 + 1]
+            local ____count_3 = count
+            count = ____count_3 + 1
+            vertexData[____count_3] = a * x + c * y + tx
+            local ____count_4 = count
+            count = ____count_4 + 1
+            vertexData[____count_4] = d * y + b * x + ty
+            i = i + 2
+        end
+    end
+end
+function Graphics.prototype.closePath(self)
+    local currentPath = self.currentPath
+    if currentPath then
+        currentPath.closeStroke = true
+        self:finishPoly()
+    end
+    return self
+end
+function Graphics.prototype.setMatrix(self, matrix)
+    self._matrix = matrix
+    return self
+end
+function Graphics.prototype.beginHole(self)
+    self:finishPoly()
+    self._holeMode = true
+    return self
+end
+function Graphics.prototype.endHole(self)
+    self:finishPoly()
+    self._holeMode = false
+    return self
+end
+function Graphics.prototype.destroy(self, options)
+    local ____self__geometry_5, ____refCount_6 = self._geometry, "refCount"
+    ____self__geometry_5[____refCount_6] = ____self__geometry_5[____refCount_6] - 1
+    if self._geometry.refCount == 0 then
+        self._geometry:dispose()
+    end
+    self._matrix = nil
+    self.currentPath = nil
+    self._lineStyle:destroy()
+    self._lineStyle = nil
+    self._fillStyle:destroy()
+    self._fillStyle = nil
+    self._geometry = nil
+    self.vertexData = nil
+    __TS__ArraySetLength(self.batches, 0)
+    self.batches = nil
+    Container.prototype.destroy(self, options)
+end
+Graphics.curves = curves
+Graphics._TEMP_POINT = __TS__New(Point)
+return ____exports
+ end,
+["graphics.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____utils = require("graphics.utils.index")
+local ArcUtils = ____utils.ArcUtils
+local BATCH_POOL = ____utils.BATCH_POOL
+local BatchPart = ____utils.BatchPart
+local BezierUtils = ____utils.BezierUtils
+local buildCircle = ____utils.buildCircle
+local buildLine = ____utils.buildLine
+local buildPoly = ____utils.buildPoly
+local buildRectangle = ____utils.buildRectangle
+local buildRoundedRectangle = ____utils.buildRoundedRectangle
+local DRAW_CALL_POOL = ____utils.DRAW_CALL_POOL
+local FILL_COMMANDS = ____utils.FILL_COMMANDS
+local QuadraticUtils = ____utils.QuadraticUtils
+do
+    local ____export = require("graphics.const")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.Graphics")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.GraphicsData")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.GraphicsGeometry")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.GraphicsRenderer")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.styles.FillStyle")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.styles.LineStyle")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+____exports.graphicsUtils = {
+    buildPoly = buildPoly,
+    buildCircle = buildCircle,
+    buildRectangle = buildRectangle,
+    buildRoundedRectangle = buildRoundedRectangle,
+    buildLine = buildLine,
+    ArcUtils = ArcUtils,
+    BezierUtils = BezierUtils,
+    QuadraticUtils = QuadraticUtils,
+    BatchPart = BatchPart,
+    FILL_COMMANDS = FILL_COMMANDS,
+    BATCH_POOL = BATCH_POOL,
+    DRAW_CALL_POOL = DRAW_CALL_POOL
+}
+return ____exports
+ end,
 ["index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
 require("setup")
 require("typedarray.index")
+require("graphics.index")
 local h = require("kui.legacy")
 local ____core = require("core.index")
 local Renderer = ____core.Renderer
 local ____display = require("display.index")
 local Container = ____display.Container
 function ____exports.setup(self)
-    local renderer = __TS__New(Renderer, {width = 100, height = 100})
+    local renderer = __TS__New(Renderer, {width = 150, height = 80})
     local stage = __TS__New(Container)
     renderer:render(stage)
-    renderer.canvasContext.rootContext.surface:flush()
     h.setup()
     h.add_image(renderer.canvasContext.rootContext.surface, {buffer = 0, row = 0, col = 0})
 end
@@ -11532,6 +16908,194 @@ local function xyzPlugin(____, ColordClass, parsers)
     ____parsers_object_0[#____parsers_object_0 + 1] = {parseXyza, "xyz"}
 end
 ____exports.default = xyzPlugin
+return ____exports
+ end,
+["core.batch.canUploadSameBuffer"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Uploading the same buffer multiple times in a single frame can cause performance issues.
+-- Apparent on iOS so only check for that at the moment
+-- This check may become more complex if this issue pops up elsewhere.
+-- 
+-- @private
+-- @returns `true` if the same buffer may be uploaded more than once.
+function ____exports.canUploadSameBuffer(self)
+    return true
+end
+return ____exports
+ end,
+["core.batch.maxRecommendedTextures"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- The maximum recommended texture units to use.
+-- In theory the bigger the better, and for desktop we'll use as many as we can.
+-- But some mobile devices slow down if there is to many branches in the shader.
+-- So in practice there seems to be a sweet spot size that varies depending on the device.
+-- 
+-- In v4, all mobile devices were limited to 4 texture units because for this.
+-- In v5, we allow all texture units to be used on modern Apple or Android devices.
+-- 
+-- @private
+-- @param max
+-- @returns The maximum recommended texture units to use.
+function ____exports.maxRecommendedTextures(self, max)
+    return max
+end
+return ____exports
+ end,
+["core.geometry.GeometrySystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local ____exports = {}
+local systems = require("core.systems")
+--- System plugin to the renderer to manage geometry.
+-- 
+-- @memberof PIXI
+____exports.GeometrySystem = __TS__Class()
+local GeometrySystem = ____exports.GeometrySystem
+GeometrySystem.name = "GeometrySystem"
+function GeometrySystem.prototype.____constructor(self, renderer)
+    self.renderer = renderer
+    self._activeGeometry = nil
+    self.hasVao = true
+    self.hasInstance = true
+    self.canUseUInt32ElementIndex = false
+    self.managedGeometries = {}
+end
+function GeometrySystem.prototype.destroy(self)
+    self.renderer = nil
+end
+GeometrySystem.systemName = "geometry"
+systems:register(____exports.GeometrySystem.systemName, ____exports.GeometrySystem)
+return ____exports
+ end,
+["core.geometry.ViewableBuffer"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local ____exports = {}
+--- Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
+-- 
+-- @memberof PIXI
+____exports.ViewableBuffer = __TS__Class()
+local ViewableBuffer = ____exports.ViewableBuffer
+ViewableBuffer.name = "ViewableBuffer"
+function ViewableBuffer.prototype.____constructor(self, sizeOrBuffer)
+    self.size = 0
+    self._int8View = nil
+    self._uint8View = nil
+    self._int16View = nil
+    self._uint16View = nil
+    self._int32View = nil
+    if type(sizeOrBuffer) == "number" then
+        self.rawBinaryData = __TS__New(ArrayBuffer, sizeOrBuffer)
+    elseif __TS__InstanceOf(sizeOrBuffer, Uint8Array) then
+        self.rawBinaryData = sizeOrBuffer.buffer
+    else
+        self.rawBinaryData = sizeOrBuffer
+    end
+    self.uint32View = __TS__New(Uint32Array, self.rawBinaryData)
+    self.float32View = __TS__New(Float32Array, self.rawBinaryData)
+end
+__TS__SetDescriptor(
+    ViewableBuffer.prototype,
+    "int8View",
+    {get = function(self)
+        if not self._int8View then
+            self._int8View = __TS__New(Int8Array, self.rawBinaryData)
+        end
+        return self._int8View
+    end},
+    true
+)
+__TS__SetDescriptor(
+    ViewableBuffer.prototype,
+    "uint8View",
+    {get = function(self)
+        if not self._uint8View then
+            self._uint8View = __TS__New(Uint8Array, self.rawBinaryData)
+        end
+        return self._uint8View
+    end},
+    true
+)
+__TS__SetDescriptor(
+    ViewableBuffer.prototype,
+    "int16View",
+    {get = function(self)
+        if not self._int16View then
+            self._int16View = __TS__New(Int16Array, self.rawBinaryData)
+        end
+        return self._int16View
+    end},
+    true
+)
+__TS__SetDescriptor(
+    ViewableBuffer.prototype,
+    "uint16View",
+    {get = function(self)
+        if not self._uint16View then
+            self._uint16View = __TS__New(Uint16Array, self.rawBinaryData)
+        end
+        return self._uint16View
+    end},
+    true
+)
+__TS__SetDescriptor(
+    ViewableBuffer.prototype,
+    "int32View",
+    {get = function(self)
+        if not self._int32View then
+            self._int32View = __TS__New(Int32Array, self.rawBinaryData)
+        end
+        return self._int32View
+    end},
+    true
+)
+function ViewableBuffer.prototype.view(self, ____type)
+    return self[____type .. "View"]
+end
+function ViewableBuffer.prototype.destroy(self)
+    self.rawBinaryData = nil
+    self._int8View = nil
+    self._uint8View = nil
+    self._int16View = nil
+    self._uint16View = nil
+    self._int32View = nil
+    self.uint32View = nil
+    self.float32View = nil
+end
+function ViewableBuffer.sizeOf(self, ____type)
+    repeat
+        local ____switch19 = ____type
+        local ____cond19 = ____switch19 == "int8" or ____switch19 == "uint8"
+        if ____cond19 then
+            return 1
+        end
+        ____cond19 = ____cond19 or (____switch19 == "int16" or ____switch19 == "uint16")
+        if ____cond19 then
+            return 2
+        end
+        ____cond19 = ____cond19 or (____switch19 == "int32" or ____switch19 == "uint32" or ____switch19 == "float32")
+        if ____cond19 then
+            return 4
+        end
+        do
+            error(
+                __TS__New(Error, ____type .. " isn't a valid view type"),
+                0
+            )
+        end
+    until true
+end
 return ____exports
  end,
 }
