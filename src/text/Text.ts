@@ -147,7 +147,7 @@ export class Text extends Sprite
         this._font = '';
 
         this.text = text ?? '';
-        this.style = style!;
+        this.style = style ?? {};
 
         this.localStyleID = -1;
         this.dirty = false;
@@ -723,8 +723,6 @@ export class Text extends Sprite
 
     set style(style: TextStyle | Partial<ITextStyle>)
     {
-        style = style || {};
-
         if (style instanceof TextStyle)
         {
             this._style = style;

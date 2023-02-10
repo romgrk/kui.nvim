@@ -4,10 +4,12 @@ import {
     ObservablePoint,
     Point,
     Rectangle,
+    groupD8,
     settings,
     Texture,
     utils
 } from 'src/core';
+import { Matrix } from 'src/math'
 import { Bounds, Container } from 'src/display';
 
 import type { IBaseTextureOptions, IPointData, Renderer, TextureSource } from 'src/core';
@@ -15,6 +17,8 @@ import type { IDestroyOptions } from 'src/display';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
+
+const canvasRenderWorldTransform = new Matrix();
 
 export type SpriteSource = TextureSource | Texture;
 
@@ -31,7 +35,7 @@ export interface Sprite extends Container {}
  * const sprite = Sprite.from('assets/image.png');
  * ```
  *
- * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
+ * The more efficient way to create sprites is using a {_link PIXI.Spritesheet},
  * as swapping base textures when rendering to the screen is inefficient.
  *
  * ```js
@@ -105,7 +109,7 @@ export class Sprite extends Container
      * Note: Updating `texture.defaultAnchor` after
      * constructing a `Sprite` does _not_ update its anchor.
      *
-     * {@link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
+     * {_link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
      * @default `this.texture.defaultAnchor`
      */
     protected _anchor: ObservablePoint;
@@ -192,6 +196,164 @@ export class Sprite extends Container
         this.isSprite = true;
         this._roundPixels = settings.ROUND_PIXELS;
     }
+
+    /**
+    * Cached tinted texture.
+    * @memberof PIXI.Sprite#
+    * @member {PIXI.ICanvas | HTMLImageElement} _tintedCanvas
+    * @protected
+    */
+    _tintedCanvas = null;
+
+    /**
+    * Renders the object using the Canvas renderer
+    * @private
+    * @method _renderCanvas
+    * @memberof PIXI.Sprite#
+    * @param {PIXI.CanvasRenderer} renderer - The renderer
+    */
+    _renderCanvas(renderer: Renderer): void
+    {
+        const texture = this._texture;
+        const context = renderer.canvasContext.activeContext;
+        const activeResolution = renderer.canvasContext.activeResolution;
+
+        if (!texture.valid)
+        {
+            return;
+        }
+
+        const sourceWidth = texture._frame.width;
+        const sourceHeight = texture._frame.height;
+
+        let destWidth = texture._frame.width;
+        let destHeight = texture._frame.height;
+
+        if (texture.trim)
+        {
+            destWidth = texture.trim.width;
+            destHeight = texture.trim.height;
+        }
+
+        let wt = this.transform.worldTransform;
+        let dx = 0;
+        let dy = 0;
+
+        const source = texture.baseTexture.getDrawableSource();
+
+        if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.valid || !source)
+        {
+            return;
+        }
+
+        renderer.canvasContext.setBlendMode(this.blendMode, true);
+
+        context.globalAlpha = this.worldAlpha;
+
+        if (texture.trim)
+        {
+            dx = (texture.trim.width / 2) + texture.trim.x - (this.anchor.x * texture.orig.width);
+            dy = (texture.trim.height / 2) + texture.trim.y - (this.anchor.y * texture.orig.height);
+        }
+        else
+        {
+            dx = (0.5 - this.anchor.x) * texture.orig.width;
+            dy = (0.5 - this.anchor.y) * texture.orig.height;
+        }
+
+        if (texture.rotate !== 0)
+        {
+            wt.copyTo(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            groupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+            // the anchor has already been applied above, so lets set it to zero
+            dx = 0;
+            dy = 0;
+        }
+
+        dx -= destWidth / 2;
+        dy -= destHeight / 2;
+
+        renderer.canvasContext.setContextTransform(wt, this.roundPixels, 1);
+        // Allow for pixel rounding
+        if (this.roundPixels)
+        {
+            dx = dx | 0;
+            dy = dy | 0;
+        }
+
+        const resolution = texture.baseTexture.resolution;
+
+        const outerBlend = renderer.canvasContext._outerBlend;
+
+        if (outerBlend)
+        {
+            context.save();
+            context.beginPath();
+            context.rect(
+                dx * activeResolution,
+                dy * activeResolution,
+                destWidth * activeResolution,
+                destHeight * activeResolution
+            );
+            context.clip();
+        }
+
+        // if (this.tint !== 0xFFFFFF)
+        // {
+        //     if (this._cachedTint !== this.tint || this._tintedCanvas?.tintId !== this._texture._updateID)
+        //     {
+        //         this._cachedTint = this.tint;
+        //
+        //         // TODO clean up caching - how to clean up the caches?
+        //         this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
+        //     }
+        //
+        //     context.drawImage(
+        //         this._tintedCanvas,
+        //         0,
+        //         0,
+        //         Math.floor(sourceWidth * resolution),
+        //         Math.floor(sourceHeight * resolution),
+        //         Math.floor(dx * activeResolution),
+        //         Math.floor(dy * activeResolution),
+        //         Math.floor(destWidth * activeResolution),
+        //         Math.floor(destHeight * activeResolution)
+        //     );
+        // }
+        // else
+        // {
+        //     context.drawImage(
+        //         source,
+        //         texture._frame.x * resolution,
+        //         texture._frame.y * resolution,
+        //         Math.floor(sourceWidth * resolution),
+        //         Math.floor(sourceHeight * resolution),
+        //         Math.floor(dx * activeResolution),
+        //         Math.floor(dy * activeResolution),
+        //         Math.floor(destWidth * activeResolution),
+        //         Math.floor(destHeight * activeResolution)
+        //     );
+        // }
+        context.drawImage(
+            source,
+            texture._frame.x * resolution,
+            texture._frame.y * resolution,
+            Math.floor(sourceWidth * resolution),
+            Math.floor(sourceHeight * resolution),
+            Math.floor(dx * activeResolution),
+            Math.floor(dy * activeResolution),
+            Math.floor(destWidth * activeResolution),
+            Math.floor(destHeight * activeResolution)
+        );
+
+        if (outerBlend)
+        {
+            context.restore();
+        }
+        // just in case, leaking outer blend here will be catastrophic!
+        renderer.canvasContext.setBlendMode(BLEND_MODES.NORMAL);
+    };
 
     /** When the texture is updated, this event will fire to update the scale and frame. */
     protected _onTextureUpdate(): void
@@ -480,7 +642,7 @@ export class Sprite extends Container
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      * @param {string|PIXI.Texture|HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source
      *     - Source to create texture from
-     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} [options] - See {_link PIXI.BaseTexture}'s constructor for options.
      * @returns The newly created sprite
      */
     static from(source: SpriteSource, options?: IBaseTextureOptions): Sprite
@@ -498,7 +660,7 @@ export class Sprite extends Container
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      *
-     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}.
+     * To set the global default, change {_link PIXI.settings.ROUND_PIXELS}.
      * @default false
      */
     set roundPixels(value: boolean)
@@ -544,7 +706,7 @@ export class Sprite extends Container
     }
 
     /**
-     * The anchor sets the origin point of the sprite. The default value is taken from the {@link PIXI.Texture|Texture}
+     * The anchor sets the origin point of the sprite. The default value is taken from the {_link PIXI.Texture|Texture}
      * and passed to the constructor.
      *
      * The default is `(0,0)`, this means the sprite's origin is the top left.

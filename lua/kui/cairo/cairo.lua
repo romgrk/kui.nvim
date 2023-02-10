@@ -1458,7 +1458,7 @@ cr.elliptic_arc = elliptic_arc_func(cr.arc)
 cr.elliptic_arc_negative = elliptic_arc_func(cr.arc_negative)
 
 function cr:quad_curve_to(x1, y1, x2, y2)
-	local x0, y0 = self:current_point()
+	local x0, y0 = unpack(self:current_point())
 	self:curve_to((x0 + 2 * x1) / 3,
 					(y0 + 2 * y1) / 3,
 					(x2 + 2 * x1) / 3,
@@ -1467,7 +1467,7 @@ function cr:quad_curve_to(x1, y1, x2, y2)
 end
 
 function cr:rel_quad_curve_to(x1, y1, x2, y2)
-	local x0, y0 = self:current_point()
+	local x0, y0 = unpack(self:current_point())
 	self:quad_curve_to(x0+x1, y0+y1, x0+x2, y0+y2)
 end
 

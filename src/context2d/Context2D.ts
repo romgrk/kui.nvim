@@ -180,14 +180,36 @@ export class Context2D {
   // createPattern()
   // createRadialGradient()
   // drawFocusIfNeeded()
-  // drawImage()
+  drawImage(
+    image: Canvas,
+    sx: number,
+    sy: number,
+    sWidth: number,
+    sHeight: number,
+    dx: number,
+    dy: number,
+    dWidth: number,
+    dHeight: number
+  ) {
+    const ctx = this.context
+    const source = image.context.surface
+
+    ctx.save()
+    ctx.rectangle(dx, dy, dWidth, dHeight)
+    ctx.clip()
+    ctx.translate(dx, dy)
+    ctx.scale(dWidth / sWidth, dHeight / sHeight)
+    ctx.source(source, -sx, -sy)
+    ctx.paint()
+    ctx.restore()
+  }
   ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean) {
     if (!counterclockwise)
       this.context.elliptic_arc(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
     else
       this.context.elliptic_arc_negative(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
   }
-  fill() { this.context.fill() }
+  fill() { this._fill() }
   fillText(text: string, x: number, y: number) {
     this.context.move_to(x, y)
     this.context.text_path(text)
@@ -233,7 +255,9 @@ export class Context2D {
   lineTo(x: number, y: number) { this.context.line_to(x, y) }
   measureText(text: string): TextMetrics { return this.context.text_extents(text) }
   moveTo(x: number, y: number) { this.context.move_to(x, y) }
-  quadraticCurveTo(x1: number, y1: number, x2: number, y2: number) { this.context.quad_curve_to(x1, y1, x2, y2) }
+  quadraticCurveTo(x1: number, y1: number, x2: number, y2: number) {
+    this.context.quad_curve_to(x1, y1, x2, y2)
+  }
   // reset()
   // resetTransform()
   roundRect(x: number, y: number, width: number, height: number, radius: number) {
@@ -241,7 +265,7 @@ export class Context2D {
   }
   // scrollPathIntoView()
   // setLineDash()
-  stroke() { this.context.stroke() }
+  stroke() { this._stroke() }
   strokeText(text: string, x: number, y: number) {
     this.context.move_to(x, y)
     this.context.text_path(text)

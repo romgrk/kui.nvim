@@ -337,7 +337,7 @@ export class TextStyle implements ITextStyle
 
         deepCopyProperties(
             this,
-            Object.assign({}, style, TextStyle.defaultStyle),
+            Object.assign({}, TextStyle.defaultStyle, style),
             TextStyle.defaultStyle
         );
     }

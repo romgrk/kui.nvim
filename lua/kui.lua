@@ -7020,6 +7020,18 @@ end
 function Context2D.prototype.closePath(self)
     self.context:close_path()
 end
+function Context2D.prototype.drawImage(self, image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+    local ctx = self.context
+    local source = image.context.surface
+    ctx:save()
+    ctx:rectangle(dx, dy, dWidth, dHeight)
+    ctx:clip()
+    ctx:translate(dx, dy)
+    ctx:scale(dWidth / sWidth, dHeight / sHeight)
+    ctx:source(source, -sx, -sy)
+    ctx:paint()
+    ctx:restore()
+end
 function Context2D.prototype.ellipse(self, x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise)
     if not counterclockwise then
         self.context:elliptic_arc(
@@ -7044,7 +7056,7 @@ function Context2D.prototype.ellipse(self, x, y, radiusX, radiusY, rotation, sta
     end
 end
 function Context2D.prototype.fill(self)
-    self.context:fill()
+    self:_fill()
 end
 function Context2D.prototype.fillText(self, text, x, y)
     self.context:move_to(x, y)
@@ -7112,7 +7124,7 @@ function Context2D.prototype.roundRect(self, x, y, width, height, radius)
     )
 end
 function Context2D.prototype.stroke(self)
-    self.context:stroke()
+    self:_stroke()
 end
 function Context2D.prototype.strokeText(self, text, x, y)
     self.context:move_to(x, y)
@@ -10469,8 +10481,6 @@ function CanvasObjectRendererSystem.prototype.render(self, displayObject, option
     _context._activeBlendMode = BLEND_MODES.NORMAL
     _context._outerBlend = false
     context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL + 1]
-    context2D.strokeStyle = 16711680
-    context2D:strokeRect(0, 0, context2D.width, context2D.height)
     local tempContext = _context.activeContext
     _context.activeContext = context2D
     displayObject:renderCanvas(renderer)
@@ -17656,9 +17666,12 @@ local Color = ____core.Color
 local ObservablePoint = ____core.ObservablePoint
 local Point = ____core.Point
 local Rectangle = ____core.Rectangle
+local groupD8 = ____core.groupD8
 local settings = ____core.settings
 local Texture = ____core.Texture
 local utils = ____core.utils
+local ____math = require("math.index")
+local Matrix = ____math.Matrix
 local ____display = require("display.index")
 local Bounds = ____display.Bounds
 local Container = ____display.Container
@@ -17671,6 +17684,7 @@ local indices = __TS__New(Uint16Array, {
     2,
     3
 })
+local canvasRenderWorldTransform = __TS__New(Matrix)
 --- The Sprite object is the base for all textured objects that are rendered to the screen
 -- 
 -- A sprite can be created directly from an image like this:
@@ -17681,7 +17695,7 @@ local indices = __TS__New(Uint16Array, {
 -- const sprite = Sprite.from('assets/image.png');
 -- ```
 -- 
--- The more efficient way to create sprites is using a {@link PIXI.Spritesheet },
+-- The more efficient way to create sprites is using a {_link PIXI.Spritesheet},
 -- as swapping base textures when rendering to the screen is inefficient.
 -- 
 -- ```js
@@ -17698,6 +17712,7 @@ Sprite.name = "Sprite"
 __TS__ClassExtends(Sprite, Container)
 function Sprite.prototype.____constructor(self, texture)
     Container.prototype.____constructor(self)
+    self._tintedCanvas = nil
     self._anchor = __TS__New(
         ObservablePoint,
         self._onAnchorUpdate,
@@ -17828,6 +17843,75 @@ __TS__SetDescriptor(
     },
     true
 )
+function Sprite.prototype._renderCanvas(self, renderer)
+    local texture = self._texture
+    local context = renderer.canvasContext.activeContext
+    local activeResolution = renderer.canvasContext.activeResolution
+    if not texture.valid then
+        return
+    end
+    local sourceWidth = texture._frame.width
+    local sourceHeight = texture._frame.height
+    local destWidth = texture._frame.width
+    local destHeight = texture._frame.height
+    if texture.trim then
+        destWidth = texture.trim.width
+        destHeight = texture.trim.height
+    end
+    local wt = self.transform.worldTransform
+    local dx = 0
+    local dy = 0
+    local source = texture.baseTexture:getDrawableSource()
+    if texture.orig.width <= 0 or texture.orig.height <= 0 or not texture.valid or not source then
+        return
+    end
+    renderer.canvasContext:setBlendMode(self.blendMode, true)
+    context.globalAlpha = self.worldAlpha
+    if texture.trim then
+        dx = texture.trim.width / 2 + texture.trim.x - self.anchor.x * texture.orig.width
+        dy = texture.trim.height / 2 + texture.trim.y - self.anchor.y * texture.orig.height
+    else
+        dx = (0.5 - self.anchor.x) * texture.orig.width
+        dy = (0.5 - self.anchor.y) * texture.orig.height
+    end
+    if texture.rotate ~= 0 then
+        wt:copyTo(canvasRenderWorldTransform)
+        wt = canvasRenderWorldTransform
+        groupD8:matrixAppendRotationInv(wt, texture.rotate, dx, dy)
+        dx = 0
+        dy = 0
+    end
+    dx = dx - destWidth / 2
+    dy = dy - destHeight / 2
+    renderer.canvasContext:setContextTransform(wt, self.roundPixels, 1)
+    if self.roundPixels then
+        dx = bit.bor(dx, 0)
+        dy = bit.bor(dy, 0)
+    end
+    local resolution = texture.baseTexture.resolution
+    local outerBlend = renderer.canvasContext._outerBlend
+    if outerBlend then
+        context:save()
+        context:beginPath()
+        context:rect(dx * activeResolution, dy * activeResolution, destWidth * activeResolution, destHeight * activeResolution)
+        context:clip()
+    end
+    context:drawImage(
+        source,
+        texture._frame.x * resolution,
+        texture._frame.y * resolution,
+        math.floor(sourceWidth * resolution),
+        math.floor(sourceHeight * resolution),
+        math.floor(dx * activeResolution),
+        math.floor(dy * activeResolution),
+        math.floor(destWidth * activeResolution),
+        math.floor(destHeight * activeResolution)
+    )
+    if outerBlend then
+        context:restore()
+    end
+    renderer.canvasContext:setBlendMode(BLEND_MODES.NORMAL)
+end
 function Sprite.prototype._onTextureUpdate(self)
     self._textureID = -1
     self._textureTrimmedID = -1
@@ -18103,7 +18187,7 @@ function TextStyle.prototype.____constructor(self, style)
     deepCopyProperties(
         nil,
         self,
-        __TS__ObjectAssign({}, style, ____exports.TextStyle.defaultStyle),
+        __TS__ObjectAssign({}, ____exports.TextStyle.defaultStyle, style),
         ____exports.TextStyle.defaultStyle
     )
 end
@@ -19116,7 +19200,7 @@ function Text.prototype.____constructor(self, text, style)
     self._styleListener = nil
     self._font = ""
     self.text = text or ""
-    self.style = style
+    self.style = style or ({})
     self.localStyleID = -1
     self.dirty = false
 end
@@ -19162,7 +19246,6 @@ __TS__SetDescriptor(
             return self._style
         end,
         set = function(self, style)
-            style = style or ({})
             if __TS__InstanceOf(style, TextStyle) then
                 self._style = style
             else
@@ -19471,11 +19554,17 @@ function ____exports.setup(self)
     content.x = 10
     content.y = 10
     content:beginFill(5873407)
-    content:drawRect(0, 0, 50, 10)
+    content:drawRoundedRect(
+        0,
+        0,
+        50,
+        10,
+        5
+    )
     content:endFill()
-    local text = stage:addChild(__TS__New(Text, "Hello", {fill = 16777215}))
+    local text = stage:addChild(__TS__New(Text, "Hello world", {fontSize = 12, fill = 16777215}))
     text.x = 10
-    text.y = 10
+    text.y = 20
     renderer:render(stage)
     h.setup()
     h.add_image(renderer.canvasContext.rootContext.surface, {buffer = 0, row = 0, col = 0})

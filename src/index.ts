@@ -25,12 +25,15 @@ export function setup() {
   content.x = 10
   content.y = 10
   content.beginFill(0x599eff)
-  content.drawRect(0, 0, 50, 10)
+  content.drawRoundedRect(0, 0, 50, 10, 5)
   content.endFill()
 
-  const text = stage.addChild(new Text('Hello', { fill: 0xffffff }))
+  const text = stage.addChild(new Text('Hello world', {
+    fontSize: 12,
+    fill: 0xffffff,
+  }))
   text.x = 10
-  text.y = 10
+  text.y = 20
 
   renderer.render(stage)
 
