@@ -24,4 +24,6 @@ declare namespace vim {
      * @param {Object} t table
      */
     function tbl_map<T>(func: (tbl: object) => T, t: object): T[];
+
+    function split(input: string, separator: string): string[];
 }

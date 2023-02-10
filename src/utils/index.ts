@@ -94,5 +94,7 @@ export * from './data/uid';
 export * from './logging/deprecation';
 export * from './media/cache';
 export * from './media/BoundingBox';
+export * from './media/getCanvasBoundingBox';
+export * from './media/trimCanvas';
 export * from './network/decomposeDataUri';
 export * from './types';

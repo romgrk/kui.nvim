@@ -2529,6 +2529,12 @@ return {
 ["typedarray.index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__StringReplace = ____lualib.__TS__StringReplace
+local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
+local __TS__Number = ____lualib.__TS__Number
+local __TS__ArrayReverse = ____lualib.__TS__ArrayReverse
+local __TS__StringSubstring = ____lualib.__TS__StringSubstring
+local __TS__ParseInt = ____lualib.__TS__ParseInt
+local __TS__Class = ____lualib.__TS__Class
 local Error = ____lualib.Error
 local RangeError = ____lualib.RangeError
 local ReferenceError = ____lualib.ReferenceError
@@ -2536,139 +2542,84 @@ local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
 local __TS__New = ____lualib.__TS__New
-local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
-local __TS__Number = ____lualib.__TS__Number
-local __TS__ArrayReverse = ____lualib.__TS__ArrayReverse
-local __TS__StringSubstring = ____lualib.__TS__StringSubstring
-local __TS__ParseInt = ____lualib.__TS__ParseInt
-local __TS__Class = ____lualib.__TS__Class
 local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
 local __TS__ClassExtends = ____lualib.__TS__ClassExtends
 local __TS__InstanceOf = ____lualib.__TS__InstanceOf
-globalNamespace = _G
-MAX_ARRAY_LENGTH = 100000
-ECMAScript = (function(self)
-    local function toString(____, o)
-        return tostring(o)
+local ____exports = {}
+local globalNamespace = _G
+local MAX_ARRAY_LENGTH = 100000
+local function toString(____, o)
+    return tostring(o)
+end
+---
+-- @noSelf
+local function ECMA_Class(v)
+    return __TS__StringReplace(
+        __TS__StringReplace(
+            toString(nil, v),
+            "[object ",
+            ""
+        ),
+        "]",
+        ""
+    )
+end
+---
+-- @noSelf
+local function ECMA_ToInt32(v)
+    if v == nil then
+        v = 0
     end
-    local function hasProp(____, o, f)
-        return rawget(o, f) ~= nil
+    return bit.arshift(v, 0)
+end
+---
+-- @noSelf
+local function ECMA_ToUint32(v)
+    if v == nil then
+        v = 0
     end
-    return {
-        Class = function(self, v)
-            return __TS__StringReplace(
-                __TS__StringReplace(
-                    toString(nil, v),
-                    "[object ",
-                    ""
-                ),
-                "]",
-                ""
-            )
-        end,
-        HasProperty = function(self, o, p)
-            return o[p] ~= nil
-        end,
-        HasOwnProperty = function(self, o, p)
-            return hasProp(nil, o, p)
-        end,
-        IsCallable = function(self, o)
-            return type(o) == "function"
-        end,
-        ToInt32 = function(self, v)
-            return bit.arshift(v, 0)
-        end,
-        ToUint32 = function(self, v)
-            return bit.rshift(v, 0)
-        end
-    }
-end)(nil)
-LN2 = 0.6931471805599453
-function clamp(self, v, minimum, max)
+    return bit.rshift(v, 0)
+end
+local LN2 = 0.6931471805599453
+---
+-- @noSelf
+local function clamp(v, minimum, max)
     return v < minimum and minimum or (v > max and max or v)
 end
-getOwnPropNames = function(self, o)
-    if o ~= Object(nil, o) then
-        error(
-            __TS__New(TypeError, "Object.getOwnPropertyNames called on non-object"),
-            0
-        )
-    end
-    local props = {}
-    for p in pairs(o) do
-        if ECMAScript:HasOwnProperty(o, p) then
-            props[#props + 1] = p
-        end
-    end
-    return props
+local function defineProp(____, o, prop, descriptor)
+    return __TS__ObjectDefineProperty(o, prop, descriptor)
 end
-defineProp = function(____, o, prop, descriptor) return __TS__ObjectDefineProperty(o, prop, descriptor) end
-function makeArrayAccessors(self, obj)
-    if not defineProp then
-        return
-    end
-    if obj.length > MAX_ARRAY_LENGTH then
-        error(
-            __TS__New(RangeError, "Array too large for polyfill"),
-            0
-        )
-    end
-    local function makeArrayAccessor(self, index)
-        defineProp(
-            nil,
-            obj,
-            index,
-            {
-                get = function(self)
-                    return obj:_getter(index)
-                end,
-                set = function(self, v)
-                    obj:_setter(index, v)
-                end,
-                enumerable = true,
-                configurable = false
-            }
-        )
-    end
-    do
-        local i = 0
-        while i < obj.length do
-            makeArrayAccessor(nil, i)
-            i = i + 1
-        end
-    end
-end
-function as_signed(self, value, bits)
+local function as_signed(self, value, bits)
     local s = 32 - bits
     return bit.arshift(
         bit.lshift(value, s),
         s
     )
 end
-function as_unsigned(self, value, bits)
+local function as_unsigned(self, value, bits)
     local s = 32 - bits
     return bit.rshift(
         bit.lshift(value, s),
         s
     )
 end
-function packI8(self, n)
+local function packI8(self, n)
     return {bit.band(n, 255)}
 end
-function unpackI8(self, bytes)
+local function unpackI8(self, bytes)
     return as_signed(nil, bytes[1], 8)
 end
-function packU8(self, n)
+local function packU8(self, n)
     return {bit.band(n, 255)}
 end
-function unpackU8(self, bytes)
+local function unpackU8(self, bytes)
     return as_unsigned(nil, bytes[1], 8)
 end
-function packU8Clamped(self, n)
+local function packU8Clamped(self, n)
     n = math.floor(__TS__Number(n) + 0.5)
     return {n < 0 and 0 or (n > 255 and 255 or bit.band(n, 255))}
 end
-function packI16(self, n)
+local function packI16(self, n)
     return {
         bit.band(
             bit.arshift(n, 8),
@@ -2677,7 +2628,7 @@ function packI16(self, n)
         bit.band(n, 255)
     }
 end
-function unpackI16(self, bytes)
+local function unpackI16(self, bytes)
     return as_signed(
         nil,
         bit.bor(
@@ -2687,7 +2638,7 @@ function unpackI16(self, bytes)
         16
     )
 end
-function packU16(self, n)
+local function packU16(self, n)
     return {
         bit.band(
             bit.arshift(n, 8),
@@ -2696,7 +2647,7 @@ function packU16(self, n)
         bit.band(n, 255)
     }
 end
-function unpackU16(self, bytes)
+local function unpackU16(self, bytes)
     return as_unsigned(
         nil,
         bit.bor(
@@ -2706,7 +2657,7 @@ function unpackU16(self, bytes)
         16
     )
 end
-function packI32(self, n)
+local function packI32(self, n)
     return {
         bit.band(
             bit.arshift(n, 24),
@@ -2723,7 +2674,7 @@ function packI32(self, n)
         bit.band(n, 255)
     }
 end
-function unpackI32(self, bytes)
+local function unpackI32(self, bytes)
     return as_signed(
         nil,
         bit.bor(
@@ -2739,7 +2690,7 @@ function unpackI32(self, bytes)
         32
     )
 end
-function packU32(self, n)
+local function packU32(self, n)
     return {
         bit.band(
             bit.arshift(n, 24),
@@ -2756,7 +2707,7 @@ function packU32(self, n)
         bit.band(n, 255)
     }
 end
-function unpackU32(self, bytes)
+local function unpackU32(self, bytes)
     return as_unsigned(
         nil,
         bit.bor(
@@ -2772,15 +2723,14 @@ function unpackU32(self, bytes)
         32
     )
 end
-function packIEEE754(self, v, ebits, fbits)
+local function packIEEE754(self, v, ebits, fbits)
     local bias = bit.lshift(1, ebits - 1) - 1
     local s
     local e
     local f
     local i
-    local bits
-    local str
     local bytes
+    local str = ""
     local function roundToEven(self, n)
         local w = math.floor(n)
         local fl = n - w
@@ -2829,10 +2779,10 @@ function packIEEE754(self, v, ebits, fbits)
             f = roundToEven(nil, v / 2 ^ (1 - bias - fbits))
         end
     end
-    bits = {}
+    local bits = {}
     do
         i = fbits
-        while i do
+        while i > 0 do
             bits[#bits + 1] = f % 2 ~= 0 and 1 or 0
             f = math.floor(f / 2)
             i = i - 1
@@ -2840,7 +2790,7 @@ function packIEEE754(self, v, ebits, fbits)
     end
     do
         i = ebits
-        while i do
+        while i > 0 do
             bits[#bits + 1] = e % 2 ~= 0 and 1 or 0
             e = math.floor(e / 2)
             i = i - 1
@@ -2859,7 +2809,7 @@ function packIEEE754(self, v, ebits, fbits)
     end
     return bytes
 end
-function unpackIEEE754(self, bytes, ebits, fbits)
+local function unpackIEEE754(self, bytes, ebits, fbits)
     local bits = {}
     local i
     local j
@@ -2908,22 +2858,22 @@ function unpackIEEE754(self, bytes, ebits, fbits)
     end
     return s < 0 and -0 or 0
 end
-function unpackF64(self, b)
+local function unpackF64(self, b)
     return unpackIEEE754(nil, b, 11, 52)
 end
-function packF64(self, v)
+local function packF64(self, v)
     return packIEEE754(nil, v, 11, 52)
 end
-function unpackF32(self, b)
+local function unpackF32(self, b)
     return unpackIEEE754(nil, b, 8, 23)
 end
-function packF32(self, v)
+local function packF32(self, v)
     return packIEEE754(nil, v, 8, 23)
 end
-ArrayBufferClass = __TS__Class()
+local ArrayBufferClass = __TS__Class()
 ArrayBufferClass.name = "ArrayBufferClass"
 function ArrayBufferClass.prototype.____constructor(self, length)
-    length = ECMAScript:ToInt32(length)
+    length = ECMA_ToInt32(length)
     if length < 0 then
         error(
             __TS__New(RangeError, "ArrayBufferClass size is not a small enough positive integer"),
@@ -2942,14 +2892,14 @@ function ArrayBufferClass.prototype.____constructor(self, length)
     end
 end
 globalNamespace.ArrayBuffer = ArrayBufferClass
-ArrayBufferView = __TS__Class()
+local ArrayBufferView = __TS__Class()
 ArrayBufferView.name = "ArrayBufferView"
 function ArrayBufferView.prototype.____constructor(self, buffer, byteOffset, byteLength)
     self.buffer = buffer
     self.byteOffset = byteOffset
     self.byteLength = byteLength
 end
-function makeConstructor(self, bytesPerElement, pack, ____unpack)
+local function makeConstructor(self, bytesPerElement, pack, ____unpack)
     local TypedArrayClass = __TS__Class()
     TypedArrayClass.name = "TypedArrayClass"
     __TS__ClassExtends(TypedArrayClass, ArrayBufferView)
@@ -2976,7 +2926,7 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
                 ownLength
             )
             self.byteLength = byteLength
-            self.length = ECMAScript:ToInt32(buffer)
+            self.length = ECMA_ToInt32(buffer)
         elseif type(buffer) == "table" and buffer.constructor == TypedArrayClass then
             local length = buffer.length
             local byteLength = length * bytesPerElement
@@ -2993,9 +2943,9 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
                     i = i + 1
                 end
             end
-        elseif type(buffer) == "table" and not (__TS__InstanceOf(buffer, ArrayBuffer) or ECMAScript:Class(buffer) == "ArrayBuffer") then
+        elseif type(buffer) == "table" and not (__TS__InstanceOf(buffer, ArrayBuffer) or ECMA_Class(buffer) == "ArrayBuffer") then
             local sequence = buffer
-            local length = ECMAScript:ToUint32(sequence.length)
+            local length = ECMA_ToUint32(sequence.length)
             local byteLength = length * bytesPerElement
             local ownBuffer = __TS__New(ArrayBuffer, byteLength)
             ArrayBufferView.prototype.____constructor(self, ownBuffer, 0, byteLength)
@@ -3011,11 +2961,11 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
                     i = i + 1
                 end
             end
-        elseif type(buffer) == "table" and (__TS__InstanceOf(buffer, ArrayBuffer) or ECMAScript:Class(buffer) == "ArrayBuffer") then
+        elseif type(buffer) == "table" and (__TS__InstanceOf(buffer, ArrayBuffer) or ECMA_Class(buffer) == "ArrayBuffer") then
             ArrayBufferView.prototype.____constructor(
                 self,
                 buffer,
-                ECMAScript:ToUint32(byteOffset),
+                ECMA_ToUint32(byteOffset),
                 buffer.byteLength
             )
             if self.byteOffset > self.buffer.byteLength then
@@ -3040,7 +2990,7 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
                 end
                 self.length = self.byteLength / self.BYTES_PER_ELEMENT
             else
-                self.length = ECMAScript:ToUint32(length)
+                self.length = ECMA_ToUint32(length)
                 self.byteLength = self.length * self.BYTES_PER_ELEMENT
             end
             if self.byteOffset + self.byteLength > self.buffer.byteLength then
@@ -3056,46 +3006,54 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
             )
         end
         self.constructor = TypedArrayClass
-        makeArrayAccessors(nil, self)
+    end
+    function TypedArrayClass.prototype.__index(self, key)
+        if TypedArrayClass.prototype[key] ~= nil then
+            return TypedArrayClass.prototype[key]
+        end
+        return self:_getter(key)
+    end
+    function TypedArrayClass.prototype.__newindex(self, key, value)
+        if type(key) == "string" then
+            rawset(self, key, value)
+        else
+            self:_setter(key, value)
+        end
+        return value
     end
     function TypedArrayClass.prototype._getter(self, index)
-        if arguments.length < 1 then
-            error(
-                __TS__New(SyntaxError, "Not enough arguments"),
-                0
-            )
-        end
-        index = ECMAScript:ToUint32(index)
+        index = ECMA_ToUint32(index)
         if index >= self.length then
             return 0
         end
+        local buffer = self.buffer
         local bytes = {}
         do
             local i = 0
             local o = self.byteOffset + index * self.BYTES_PER_ELEMENT
             while i < self.BYTES_PER_ELEMENT do
-                bytes[#bytes + 1] = self.buffer._bytes[o + 1]
+                bytes[#bytes + 1] = buffer._bytes[o + 1]
                 do
                     i = i + 1
                     o = o + 1
                 end
             end
         end
-        return self:_unpack(bytes)
+        local _unpack = rawget(self, "_unpack")
+        return _unpack(nil, bytes)
     end
     function TypedArrayClass.prototype._setter(self, index, value)
-        index = ECMAScript:ToUint32(index)
-        if index < self.length then
-            local bytes = self:_pack(value)
-            local i
-            local o
+        index = ECMA_ToUint32(index)
+        local length = rawget(self, "length")
+        local _pack = rawget(self, "_pack")
+        if index < length then
+            local buffer = self.buffer
+            local bytes = _pack(nil, value)
+            local i = 0
+            local o = self.byteOffset + index * self.BYTES_PER_ELEMENT
             do
-                do
-                    i = 0
-                    o = self.byteOffset + index * self.BYTES_PER_ELEMENT
-                end
                 while i < self.BYTES_PER_ELEMENT do
-                    self.buffer._bytes[o + 1] = bytes[i + 1]
+                    buffer._bytes[o + 1] = bytes[i + 1]
                     do
                         i = i + 1
                         o = o + 1
@@ -3123,7 +3081,7 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
         local tmp
         if type(arguments[0]) == "table" and arguments[0].constructor == self.constructor then
             array = arguments[0]
-            offset = ECMAScript:ToUint32(arguments[1])
+            offset = ECMA_ToUint32(arguments[1])
             if offset + array.length > self.length then
                 error(
                     __TS__New(RangeError, "Offset plus length of array is out of range"),
@@ -3183,8 +3141,8 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
             end
         elseif type(arguments[0]) == "table" and type(arguments[0].length) ~= "nil" then
             sequence = arguments[0]
-            len = ECMAScript:ToUint32(sequence.length)
-            offset = ECMAScript:ToUint32(arguments[1])
+            len = ECMA_ToUint32(sequence.length)
+            offset = ECMA_ToUint32(arguments[1])
             if offset + len > self.length then
                 error(
                     __TS__New(RangeError, "Offset plus length of array is out of range"),
@@ -3210,8 +3168,8 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
         end
     end
     function TypedArrayClass.prototype.subarray(self, start, ____end)
-        start = ECMAScript:ToInt32(start)
-        ____end = ECMAScript:ToInt32(____end)
+        start = ECMA_ToInt32(start)
+        ____end = ECMA_ToInt32(____end)
         if arguments.length < 1 then
             start = 0
         end
@@ -3224,8 +3182,8 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
         if ____end < 0 then
             ____end = self.length + ____end
         end
-        start = clamp(nil, start, 0, self.length)
-        ____end = clamp(nil, ____end, 0, self.length)
+        start = clamp(start, 0, self.length)
+        ____end = clamp(____end, 0, self.length)
         local len = ____end - start
         if len < 0 then
             len = 0
@@ -3245,15 +3203,34 @@ function makeConstructor(self, bytesPerElement, pack, ____unpack)
     TypedArrayClass.BYTES_PER_ELEMENT = bytesPerElement
     return TypedArrayClass
 end
-globalNamespace.Int8Array = makeConstructor(nil, 1, packI8, unpackI8)
-globalNamespace.Uint8Array = makeConstructor(nil, 1, packU8, unpackU8)
-globalNamespace.Uint8ClampedArray = makeConstructor(nil, 1, packU8Clamped, unpackU8)
-globalNamespace.Int16Array = makeConstructor(nil, 2, packI16, unpackI16)
-globalNamespace.Uint16Array = makeConstructor(nil, 2, packU16, unpackU16)
-globalNamespace.Int32Array = makeConstructor(nil, 4, packI32, unpackI32)
-globalNamespace.Uint32Array = makeConstructor(nil, 4, packU32, unpackU32)
-globalNamespace.Float32Array = makeConstructor(nil, 4, packF32, unpackF32)
-globalNamespace.Float64Array = makeConstructor(nil, 8, packF64, unpackF64)
+local ____makeConstructor_result_0 = makeConstructor(nil, 1, packI8, unpackI8)
+globalNamespace.Int8Array = ____makeConstructor_result_0
+____exports.Int8Array = ____makeConstructor_result_0
+local ____makeConstructor_result_1 = makeConstructor(nil, 1, packU8, unpackU8)
+globalNamespace.Uint8Array = ____makeConstructor_result_1
+____exports.Uint8Array = ____makeConstructor_result_1
+local ____makeConstructor_result_2 = makeConstructor(nil, 1, packU8Clamped, unpackU8)
+globalNamespace.Uint8ClampedArray = ____makeConstructor_result_2
+____exports.Uint8ClampedArray = ____makeConstructor_result_2
+local ____makeConstructor_result_3 = makeConstructor(nil, 2, packI16, unpackI16)
+globalNamespace.Int16Array = ____makeConstructor_result_3
+____exports.Int16Array = ____makeConstructor_result_3
+local ____makeConstructor_result_4 = makeConstructor(nil, 2, packU16, unpackU16)
+globalNamespace.Uint16Array = ____makeConstructor_result_4
+____exports.Uint16Array = ____makeConstructor_result_4
+local ____makeConstructor_result_5 = makeConstructor(nil, 4, packI32, unpackI32)
+globalNamespace.Int32Array = ____makeConstructor_result_5
+____exports.Int32Array = ____makeConstructor_result_5
+local ____makeConstructor_result_6 = makeConstructor(nil, 4, packU32, unpackU32)
+globalNamespace.Uint32Array = ____makeConstructor_result_6
+____exports.Uint32Array = ____makeConstructor_result_6
+local ____makeConstructor_result_7 = makeConstructor(nil, 4, packF32, unpackF32)
+globalNamespace.Float32Array = ____makeConstructor_result_7
+____exports.Float32Array = ____makeConstructor_result_7
+local ____makeConstructor_result_8 = makeConstructor(nil, 8, packF64, unpackF64)
+globalNamespace.Float64Array = ____makeConstructor_result_8
+____exports.Float64Array = ____makeConstructor_result_8
+return ____exports
  end,
 ["colord.types"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
@@ -6818,16 +6795,42 @@ ____exports.Context2D = __TS__Class()
 local Context2D = ____exports.Context2D
 Context2D.name = "Context2D"
 function Context2D.prototype.____constructor(self, width, height)
-    self.width = width
-    self.height = height
     self.surface = cairo.image_surface("argb32", width, height)
     self.context = self.surface:context()
+    self._width = width
+    self._height = height
     self._globalCompositeOperation = "source-over"
     self._globalAlpha = 1
     self._fillColor = __TS__New(Color, 0)
     self._strokeColor = __TS__New(Color, 0)
     self._font = "10x sans-serif"
 end
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "width",
+    {
+        get = function(self)
+            return self._width
+        end,
+        set = function(self, width)
+            self:setDimensions(width, self._height)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "height",
+    {
+        get = function(self)
+            return self._height
+        end,
+        set = function(self, height)
+            self:setDimensions(self._width, height)
+        end
+    },
+    true
+)
 __TS__SetDescriptor(
     Context2D.prototype,
     "globalCompositeOperation",
@@ -6948,6 +6951,29 @@ __TS__SetDescriptor(
     },
     true
 )
+__TS__SetDescriptor(
+    Context2D.prototype,
+    "letterSpacing",
+    {
+        get = function(self)
+            return "0px"
+        end,
+        set = function(self, value)
+        end
+    },
+    true
+)
+function Context2D.prototype.setDimensions(self, width, height)
+    local surface = cairo.image_surface("argb32", width, height)
+    local context = surface:context()
+    self.surface:flush()
+    context:source(self.surface)
+    context:paint()
+    self.surface = surface
+    self.context = context
+    self._width = width
+    self._height = height
+end
 function Context2D.prototype._fill(self)
     self.context:rgba(self._fillColor.red, self._fillColor.green, self._fillColor.blue, self._fillColor.alpha * self._globalAlpha)
     self.context:fill()
@@ -7025,8 +7051,50 @@ function Context2D.prototype.fillText(self, text, x, y)
     self.context:text_path(text)
     self:_fill()
 end
+function Context2D.prototype.getImageData(self, x, y, width, height)
+    local isSameDimensions = x ~= 0 and y ~= 0 and width ~= self._width and height ~= self._height
+    if isSameDimensions then
+        local length = width * height * 4
+        local arrayLike = setmetatable(
+            self.surface:data(),
+            {__len = function() return length end}
+        )
+        return __TS__New(____exports.ImageData, width, height, arrayLike)
+    else
+        local surface = cairo.image_surface("argb32", width, height)
+        local context = surface:context()
+        context:source(self.surface, -x, -y)
+        context:paint()
+        local length = width * height * 4
+        local arrayLike = setmetatable(
+            surface:data(),
+            {__len = function() return length end}
+        )
+        return __TS__New(
+            ____exports.ImageData,
+            width,
+            height,
+            arrayLike,
+            {surface, context}
+        )
+    end
+end
+function Context2D.prototype.putImageData(self, image, dx, dy)
+    local surface = cairo.image_surface_from_data(
+        "argb32",
+        image.data,
+        image.width,
+        image.height,
+        4
+    )
+    self.context:source(surface, -dx, -dy)
+    self.context:paint()
+end
 function Context2D.prototype.lineTo(self, x, y)
     self.context:line_to(x, y)
+end
+function Context2D.prototype.measureText(self, text)
+    return self.context:text_extents(text)
 end
 function Context2D.prototype.moveTo(self, x, y)
     self.context:move_to(x, y)
@@ -7110,6 +7178,9 @@ function Context2D.prototype.getTransform(self)
         0
     )
 end
+function Context2D.prototype.getFontExtents(self)
+    return self.context:font_extents()
+end
 ____exports.Canvas = __TS__Class()
 local Canvas = ____exports.Canvas
 Canvas.name = "Canvas"
@@ -7142,8 +7213,20 @@ __TS__SetDescriptor(
     },
     true
 )
+function Canvas.prototype.setDimensions(self, width, height)
+    self.context:setDimensions(width, height)
+end
 function Canvas.prototype.getContext(self, _name)
     return self.context
+end
+____exports.ImageData = __TS__Class()
+local ImageData = ____exports.ImageData
+ImageData.name = "ImageData"
+function ImageData.prototype.____constructor(self, width, height, data, refs)
+    self.width = width
+    self.height = height
+    self.data = data
+    self._refs = refs
 end
 defaultFontName = "sans-serif"
 function ____exports.setDefaultFontName(self, n)
@@ -7183,8 +7266,11 @@ local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
 local ____context2d = require("context2d.index")
+local Context2D = ____context2d.Context2D
 local Canvas = ____context2d.Canvas
 ____exports.settings = {
+    RESOLUTION = 1,
+    ROUND_PIXELS = true,
     RENDER_OPTIONS = {
         view = nil,
         width = 800,
@@ -7198,9 +7284,12 @@ ____exports.settings = {
         preserveDrawingBuffer = false,
         hello = false
     },
-    ADAPTER = {createCanvas = function(____, width, height)
-        return __TS__New(Canvas, width, height)
-    end}
+    ADAPTER = {
+        getCanvasRenderingContext2D = function() return Context2D end,
+        createCanvas = function(____, width, height)
+            return __TS__New(Canvas, width, height)
+        end
+    }
 }
 ____exports.default = ____exports.settings
 return ____exports
@@ -7305,11 +7394,11 @@ function EventEmitter.prototype.emit(self, event, ...)
     local listeners = self._events[event]
     do
         local i = 0
-        while i < listeners.length do
-            if listeners[i].once then
-                self:removeListener(event, listeners[i].fn, nil, true)
+        while i < #listeners do
+            if listeners[i + 1].once then
+                self:removeListener(event, listeners[i + 1].fn, nil, true)
             end
-            listeners[i].fn(listeners[i].context, ...)
+            listeners[i + 1].fn(listeners[i + 1].context, ...)
             i = i + 1
         end
     end
@@ -8342,8 +8431,53 @@ end
 return ____exports
  end,
 ["utils.media.cache"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____lualib = require("lualib_bundle")
+local __TS__Delete = ____lualib.__TS__Delete
 local ____exports = {}
+---
+-- @todo Describe property usage
+-- @static
+-- @name TextureCache
+-- @memberof PIXI.utils
+-- @type {object}
+____exports.TextureCache = {}
+---
+-- @todo Describe property usage
+-- @static
+-- @name BaseTextureCache
+-- @memberof PIXI.utils
+-- @type {object}
+____exports.BaseTextureCache = {}
+--- Destroys all texture in the cache
+-- 
+-- @memberof PIXI.utils
+-- @function destroyTextureCache
+function ____exports.destroyTextureCache(self)
+    local key
+    for ____value in pairs(____exports.TextureCache) do
+        key = ____value
+        ____exports.TextureCache[key]:destroy()
+    end
+    for ____value in pairs(____exports.BaseTextureCache) do
+        key = ____value
+        ____exports.BaseTextureCache[key]:destroy()
+    end
+end
+--- Removes all textures from cache, but does not destroy them
+-- 
+-- @memberof PIXI.utils
+-- @function clearTextureCache
+function ____exports.clearTextureCache(self)
+    local key
+    for ____value in pairs(____exports.TextureCache) do
+        key = ____value
+        __TS__Delete(____exports.TextureCache, key)
+    end
+    for ____value in pairs(____exports.BaseTextureCache) do
+        key = ____value
+        __TS__Delete(____exports.BaseTextureCache, key)
+    end
+end
 return ____exports
  end,
 ["utils.media.BoundingBox"] = function(...) 
@@ -8391,6 +8525,152 @@ BoundingBox.EMPTY = __TS__New(
     0,
     0
 )
+return ____exports
+ end,
+["utils.media.getCanvasBoundingBox"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____BoundingBox = require("utils.media.BoundingBox")
+local BoundingBox = ____BoundingBox.BoundingBox
+local ALPHA_CHANNEL = 0
+local function checkRow(self, data, width, y)
+    do
+        local x = 0
+        local index = 4 * y * width
+        while x < width do
+            if data[index + ALPHA_CHANNEL] ~= 0 then
+                return false
+            end
+            do
+                x = x + 1
+                index = index + 4
+            end
+        end
+    end
+    return true
+end
+local function checkColumn(self, data, width, x, top, bottom)
+    local stride = 4 * width
+    do
+        local y = top
+        local index = top * stride + 4 * x
+        while y <= bottom do
+            if data[index + ALPHA_CHANNEL] ~= 0 then
+                return false
+            end
+            do
+                y = y + 1
+                index = index + stride
+            end
+        end
+    end
+    return true
+end
+--- Measuring the bounds of a canvas' visible (non-transparent) pixels.
+-- 
+-- @memberof PIXI.utils
+-- @param canvas - The canvas to measure.
+-- @returns The bounding box of the canvas' visible pixels.
+-- @since 7.1.0
+function ____exports.getCanvasBoundingBox(self, canvas)
+    local ____canvas_0 = canvas
+    local width = ____canvas_0.width
+    local height = ____canvas_0.height
+    local context = canvas:getContext("2d")
+    if context == nil then
+        error(
+            __TS__New(TypeError, "Failed to get canvas 2D context"),
+            0
+        )
+    end
+    local imageData = context:getImageData(0, 0, width, height)
+    local data = imageData.data
+    local left = 0
+    local top = 0
+    local right = width - 1
+    local bottom = height - 1
+    while top < height and checkRow(nil, data, width, top) do
+        top = top + 1
+    end
+    if top == height then
+        return BoundingBox.EMPTY
+    end
+    while checkRow(nil, data, width, bottom) do
+        bottom = bottom - 1
+    end
+    while checkColumn(
+        nil,
+        data,
+        width,
+        left,
+        top,
+        bottom
+    ) do
+        left = left + 1
+    end
+    while checkColumn(
+        nil,
+        data,
+        width,
+        right,
+        top,
+        bottom
+    ) do
+        right = right - 1
+    end
+    right = right + 1
+    bottom = bottom + 1
+    return __TS__New(
+        BoundingBox,
+        left,
+        top,
+        right,
+        bottom
+    )
+end
+return ____exports
+ end,
+["utils.media.trimCanvas"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____getCanvasBoundingBox = require("utils.media.getCanvasBoundingBox")
+local getCanvasBoundingBox = ____getCanvasBoundingBox.getCanvasBoundingBox
+--- Trim transparent borders from a canvas.
+-- 
+-- @memberof PIXI.utils
+-- @param canvas - The canvas to trim.
+-- @returns The trimmed canvas data.
+function ____exports.trimCanvas(self, canvas)
+    local boundingBox = getCanvasBoundingBox(nil, canvas)
+    local width = boundingBox.width
+    local height = boundingBox.height
+    local data = nil
+    if not boundingBox:isEmpty() then
+        local context = canvas:getContext("2d")
+        if context == nil then
+            error(
+                __TS__New(TypeError, "Failed to get canvas 2D context"),
+                0
+            )
+        end
+        data = context:getImageData(boundingBox.left, boundingBox.top, width, height)
+    end
+    return {width = width, height = height, data = data}
+end
 return ____exports
  end,
 ["utils.network.decomposeDataUri"] = function(...) 
@@ -8515,7 +8795,31 @@ do
     end
 end
 do
+    local ____export = require("utils.media.cache")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
     local ____export = require("utils.media.BoundingBox")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.media.getCanvasBoundingBox")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.media.trimCanvas")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
             ____exports[____exportKey] = ____exportValue
@@ -10237,6 +10541,7 @@ CanvasRenderer.name = "CanvasRenderer"
 __TS__ClassExtends(CanvasRenderer, SystemManager)
 function CanvasRenderer.prototype.____constructor(self, options)
     SystemManager.prototype.____constructor(self)
+    self.resolution = 1
     self.rendererLogId = "Canvas"
     self.canvasContext = nil
     self.objectRenderer = nil
@@ -11387,6 +11692,1381 @@ end
 systems:register("startup", ____exports.StartupSystem)
 return ____exports
  end,
+["core.textures.resources.Resource"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__Promise = ____lualib.__TS__Promise
+local ____exports = {}
+local ____runner = require("runner.index")
+local Runner = ____runner.Runner
+--- Base resource class for textures that manages validation and uploading, depending on its type.
+-- 
+-- Uploading of a base texture to the GPU is required.
+-- 
+-- @memberof PIXI
+____exports.Resource = __TS__Class()
+local Resource = ____exports.Resource
+Resource.name = "Resource"
+function Resource.prototype.____constructor(self, width, height)
+    if width == nil then
+        width = 0
+    end
+    if height == nil then
+        height = 0
+    end
+    self.src = "unset"
+    self._width = width
+    self._height = height
+    self.destroyed = false
+    self.internal = false
+    self.onResize = __TS__New(Runner, "setRealSize")
+    self.onUpdate = __TS__New(Runner, "update")
+    self.onError = __TS__New(Runner, "onError")
+end
+__TS__SetDescriptor(
+    Resource.prototype,
+    "valid",
+    {get = function(self)
+        return not not self._width and not not self._height
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Resource.prototype,
+    "width",
+    {get = function(self)
+        return self._width
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Resource.prototype,
+    "height",
+    {get = function(self)
+        return self._height
+    end},
+    true
+)
+function Resource.prototype.bind(self, baseTexture)
+    self.onResize:add(baseTexture)
+    self.onUpdate:add(baseTexture)
+    self.onError:add(baseTexture)
+    if self._width > 0 or self._height > 0 then
+        self.onResize:emit(self._width, self._height)
+    end
+end
+function Resource.prototype.unbind(self, baseTexture)
+    self.onResize:remove(baseTexture)
+    self.onUpdate:remove(baseTexture)
+    self.onError:remove(baseTexture)
+end
+function Resource.prototype.resize(self, width, height)
+    if width ~= self._width or height ~= self._height then
+        self._width = width
+        self._height = height
+        self.onResize:emit(width, height)
+    end
+end
+function Resource.prototype.update(self)
+    if not self.destroyed then
+        self.onUpdate:emit()
+    end
+end
+function Resource.prototype.load(self)
+    return __TS__Promise.resolve(self)
+end
+function Resource.prototype.style(self, _renderer, _baseTexture)
+    return false
+end
+function Resource.prototype.dispose(self)
+end
+function Resource.prototype.destroy(self)
+    if not self.destroyed then
+        self.destroyed = true
+        self:dispose()
+        self.onError:removeAll()
+        self.onError = nil
+        self.onResize:removeAll()
+        self.onResize = nil
+        self.onUpdate:removeAll()
+        self.onUpdate = nil
+    end
+end
+function Resource.test(self, _source, _extension)
+    return false
+end
+return ____exports
+ end,
+["core.textures.resources.BufferResource"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local ____exports = {}
+local ____Resource = require("core.textures.resources.Resource")
+local Resource = ____Resource.Resource
+--- Buffer resource with data of typed array.
+-- 
+-- @memberof PIXI
+____exports.BufferResource = __TS__Class()
+local BufferResource = ____exports.BufferResource
+BufferResource.name = "BufferResource"
+__TS__ClassExtends(BufferResource, Resource)
+function BufferResource.prototype.____constructor(self, source, options)
+    local ____temp_0 = options or ({})
+    local width = ____temp_0.width
+    local height = ____temp_0.height
+    if not width or not height then
+        error(
+            __TS__New(Error, "BufferResource width or height invalid"),
+            0
+        )
+    end
+    Resource.prototype.____constructor(self, width, height)
+    self.data = source
+end
+function BufferResource.prototype.dispose(self)
+    self.data = nil
+end
+function BufferResource.test(self, source)
+    return __TS__InstanceOf(source, Float32Array) or __TS__InstanceOf(source, Uint8Array) or __TS__InstanceOf(source, Uint32Array)
+end
+return ____exports
+ end,
+["core.textures.resources.autoDetectResource"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+--- Collection of installed resource types, class must extend {@link PIXI.Resource }.
+-- 
+-- @example class CustomResource extends PIXI.Resource {
+--     // MUST have source, options constructor signature
+--     // for auto-detected resources to be created.
+--     constructor(source, options) {
+--         super();
+--     }
+--     upload(renderer, baseTexture, glTexture) {
+--         // Upload with GL
+--         return true;
+--     }
+--     // Used to auto-detect resource
+--     static test(source, extension) {
+--         return extension === 'xyz' || source instanceof SomeClass;
+--     }
+-- }
+-- // Install the new resource type
+-- PIXI.INSTALLED.push(CustomResource);
+-- @memberof PIXI
+-- @type {Array<PIXI.IResourcePlugin>}
+-- @static
+-- @readonly
+____exports.INSTALLED = {}
+--- Create a resource element from a single source element. This
+-- auto-detects which type of resource to create. All resources that
+-- are auto-detectable must have a static `test` method and a constructor
+-- with the arguments `(source, options?)`. Currently, the supported
+-- resources for auto-detection include:
+--  - {@link PIXI.ImageResource }
+--  - {@link PIXI.CanvasResource }
+--  - {@link PIXI.VideoResource }
+--  - {@link PIXI.SVGResource }
+--  - {@link PIXI.BufferResource }
+-- 
+-- @static
+-- @memberof PIXI
+-- @function autoDetectResource
+-- @param source - Resource source, this can be the URL to the resource,
+-- a typed-array (for BufferResource), HTMLVideoElement, SVG data-uri
+-- or any other resource that can be auto-detected. If not resource is
+-- detected, it's assumed to be an ImageResource.
+-- @param options - Pass-through options to use for Resource
+-- @returns The created resource.
+function ____exports.autoDetectResource(self, source, options)
+    if source == nil then
+        error(
+            __TS__New(Error, "autoDetectResource: invalid source type"),
+            0
+        )
+    end
+    do
+        local i = #____exports.INSTALLED - 1
+        while i >= 0 do
+            local ResourcePlugin = ____exports.INSTALLED[i + 1]
+            if ResourcePlugin.test and ResourcePlugin:test(source) then
+                return __TS__New(ResourcePlugin, source, options)
+            end
+            i = i - 1
+        end
+    end
+    error(
+        __TS__New(Error, "Unrecognized source type to auto-detect Resource"),
+        0
+    )
+end
+return ____exports
+ end,
+["core.textures.BaseTexture"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__Delete = ____lualib.__TS__Delete
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local ____exports = {}
+local ____constants = require("constants.index")
+local ALPHA_MODES = ____constants.ALPHA_MODES
+local FORMATS = ____constants.FORMATS
+local MIPMAP_MODES = ____constants.MIPMAP_MODES
+local SCALE_MODES = ____constants.SCALE_MODES
+local TARGETS = ____constants.TARGETS
+local TYPES = ____constants.TYPES
+local WRAP_MODES = ____constants.WRAP_MODES
+local ____settings = require("settings")
+local settings = ____settings.settings
+local ____utils = require("utils.index")
+local BaseTextureCache = ____utils.BaseTextureCache
+local EventEmitter = ____utils.EventEmitter
+local isPow2 = ____utils.isPow2
+local TextureCache = ____utils.TextureCache
+local uid = ____utils.uid
+local ____BufferResource = require("core.textures.resources.BufferResource")
+local BufferResource = ____BufferResource.BufferResource
+local ____Resource = require("core.textures.resources.Resource")
+local Resource = ____Resource.Resource
+local ____autoDetectResource = require("core.textures.resources.autoDetectResource")
+local autoDetectResource = ____autoDetectResource.autoDetectResource
+local defaultBufferOptions = {scaleMode = SCALE_MODES.NEAREST, format = FORMATS.RGBA, alphaMode = ALPHA_MODES.NPM}
+--- A Texture stores the information that represents an image.
+-- All textures have a base texture, which contains information about the source.
+-- Therefore you can have many textures all using a single BaseTexture
+-- 
+-- @memberof PIXI
+-- @typeParam R - The BaseTexture's Resource type.
+-- @typeParam RO - The options for constructing resource.
+____exports.BaseTexture = __TS__Class()
+local BaseTexture = ____exports.BaseTexture
+BaseTexture.name = "BaseTexture"
+__TS__ClassExtends(BaseTexture, EventEmitter)
+function BaseTexture.prototype.____constructor(self, resource, options)
+    if resource == nil then
+        resource = nil
+    end
+    if options == nil then
+        options = nil
+    end
+    EventEmitter.prototype.____constructor(self)
+    self._canvasRenderTarget = nil
+    options = __TS__ObjectAssign({}, ____exports.BaseTexture.defaultOptions, options)
+    local ____options_0 = options
+    local alphaMode = ____options_0.alphaMode
+    local mipmap = ____options_0.mipmap
+    if mipmap == nil then
+        mipmap = nil
+    end
+    local anisotropicLevel = ____options_0.anisotropicLevel
+    local scaleMode = ____options_0.scaleMode
+    if scaleMode == nil then
+        scaleMode = nil
+    end
+    local width = ____options_0.width
+    if width == nil then
+        width = 0
+    end
+    local height = ____options_0.height
+    if height == nil then
+        height = 0
+    end
+    local wrapMode = ____options_0.wrapMode
+    if wrapMode == nil then
+        wrapMode = nil
+    end
+    local format = ____options_0.format
+    local ____type = ____options_0.type
+    local target = ____options_0.target
+    local resolution = ____options_0.resolution
+    local resourceOptions = ____options_0.resourceOptions
+    if resource and not __TS__InstanceOf(resource, Resource) then
+        resource = autoDetectResource(nil, resource, resourceOptions)
+        resource.internal = true
+    end
+    self.resolution = resolution or settings.RESOLUTION
+    self.width = math.floor((width or 0) * self.resolution + 0.5) / self.resolution
+    self.height = math.floor((height or 0) * self.resolution + 0.5) / self.resolution
+    self.anisotropicLevel = anisotropicLevel
+    self.format = format
+    self.type = ____type
+    self.target = target
+    self.alphaMode = alphaMode
+    self.uid = uid(nil)
+    self.touched = 0
+    self.isPowerOfTwo = false
+    self:_refreshPOT()
+    self.dirtyId = 0
+    self.dirtyStyleId = 0
+    self.cacheId = nil
+    self.valid = width > 0 and height > 0
+    self.textureCacheIds = {}
+    self.destroyed = false
+    self.resource = nil
+    self._batchEnabled = 0
+    self._batchLocation = 0
+    self._mipmap = mipmap
+    self._wrapMode = wrapMode
+    self._scaleMode = scaleMode
+    self:setResource(resource)
+end
+__TS__SetDescriptor(
+    BaseTexture.prototype,
+    "realWidth",
+    {get = function(self)
+        return math.floor(self.width * self.resolution + 0.5)
+    end},
+    true
+)
+__TS__SetDescriptor(
+    BaseTexture.prototype,
+    "realHeight",
+    {get = function(self)
+        return math.floor(self.height * self.resolution + 0.5)
+    end},
+    true
+)
+__TS__SetDescriptor(
+    BaseTexture.prototype,
+    "mipmap",
+    {
+        get = function(self)
+            return self._mipmap
+        end,
+        set = function(self, value)
+            if self._mipmap ~= value then
+                self._mipmap = value
+                self.dirtyStyleId = self.dirtyStyleId + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    BaseTexture.prototype,
+    "scaleMode",
+    {
+        get = function(self)
+            return self._scaleMode
+        end,
+        set = function(self, value)
+            if self._scaleMode ~= value then
+                self._scaleMode = value
+                self.dirtyStyleId = self.dirtyStyleId + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    BaseTexture.prototype,
+    "wrapMode",
+    {
+        get = function(self)
+            return self._wrapMode
+        end,
+        set = function(self, value)
+            if self._wrapMode ~= value then
+                self._wrapMode = value
+                self.dirtyStyleId = self.dirtyStyleId + 1
+            end
+        end
+    },
+    true
+)
+function BaseTexture.prototype.getDrawableSource(self)
+    local resource = self.resource
+    local ____resource_1
+    if resource then
+        ____resource_1 = resource.bitmap or resource.source
+    else
+        ____resource_1 = nil
+    end
+    return ____resource_1
+end
+function BaseTexture.prototype.setStyle(self, scaleMode, mipmap)
+    local dirty
+    if scaleMode ~= nil and scaleMode ~= self.scaleMode then
+        self.scaleMode = scaleMode
+        dirty = true
+    end
+    if mipmap ~= nil and mipmap ~= self.mipmap then
+        self.mipmap = mipmap
+        dirty = true
+    end
+    if dirty then
+        self.dirtyStyleId = self.dirtyStyleId + 1
+    end
+    return self
+end
+function BaseTexture.prototype.setSize(self, desiredWidth, desiredHeight, resolution)
+    resolution = resolution or self.resolution
+    return self:setRealSize(desiredWidth * resolution, desiredHeight * resolution, resolution)
+end
+function BaseTexture.prototype.setRealSize(self, realWidth, realHeight, resolution)
+    self.resolution = resolution or self.resolution
+    self.width = math.floor(realWidth + 0.5) / self.resolution
+    self.height = math.floor(realHeight + 0.5) / self.resolution
+    self:_refreshPOT()
+    self:update()
+    return self
+end
+function BaseTexture.prototype._refreshPOT(self)
+    self.isPowerOfTwo = isPow2(nil, self.realWidth) and isPow2(nil, self.realHeight)
+end
+function BaseTexture.prototype.setResolution(self, resolution)
+    local oldResolution = self.resolution
+    if oldResolution == resolution then
+        return self
+    end
+    self.resolution = resolution
+    if self.valid then
+        self.width = math.floor(self.width * oldResolution + 0.5) / resolution
+        self.height = math.floor(self.height * oldResolution + 0.5) / resolution
+        self:emit("update", self)
+    end
+    self:_refreshPOT()
+    return self
+end
+function BaseTexture.prototype.setResource(self, resource)
+    if self.resource == resource then
+        return self
+    end
+    if self.resource ~= nil then
+        error(
+            __TS__New(Error, "Resource can be set only once"),
+            0
+        )
+    end
+    resource:bind(self)
+    self.resource = resource
+    return self
+end
+function BaseTexture.prototype.update(self)
+    if not self.valid then
+        if self.width > 0 and self.height > 0 then
+            self.valid = true
+            self:emit("loaded", self)
+            self:emit("update", self)
+        end
+    else
+        self.dirtyId = self.dirtyId + 1
+        self.dirtyStyleId = self.dirtyStyleId + 1
+        self:emit("update", self)
+    end
+end
+function BaseTexture.prototype.onError(self, event)
+    self:emit("error", self, event)
+end
+function BaseTexture.prototype.destroy(self)
+    if self.resource ~= nil then
+        self.resource:unbind(self)
+        if self.resource.internal then
+            self.resource:destroy()
+        end
+        self.resource = nil
+    end
+    if self.cacheId ~= nil then
+        __TS__Delete(BaseTextureCache, self.cacheId)
+        __TS__Delete(TextureCache, self.cacheId)
+        self.cacheId = nil
+    end
+    self:dispose()
+    ____exports.BaseTexture:removeFromCache(self)
+    self.textureCacheIds = nil
+    self.destroyed = true
+end
+function BaseTexture.prototype.dispose(self)
+    self:emit("dispose", self)
+end
+function BaseTexture.prototype.castToBaseTexture(self)
+    return self
+end
+function BaseTexture.from(self, source, options)
+    local isFrame = type(source) == "string"
+    local cacheId = nil
+    if isFrame then
+        cacheId = source
+    else
+        if not source._pixiId then
+            local prefix = options and options.pixiIdPrefix or "pixiid"
+            source._pixiId = (prefix .. "_") .. tostring(uid(nil))
+        end
+        cacheId = source._pixiId
+    end
+    local baseTexture = BaseTextureCache[cacheId]
+    if isFrame and not baseTexture then
+        error(
+            __TS__New(
+                Error,
+                ("The cacheId \"" .. tostring(cacheId)) .. "\" does not exist in BaseTextureCache."
+            ),
+            0
+        )
+    end
+    if not baseTexture then
+        baseTexture = __TS__New(____exports.BaseTexture, source, options)
+        baseTexture.cacheId = cacheId
+        ____exports.BaseTexture:addToCache(baseTexture, cacheId)
+    end
+    return baseTexture
+end
+function BaseTexture.fromBuffer(self, buffer, width, height, options)
+    buffer = buffer or __TS__New(Float32Array, width * height * 4)
+    local resource = __TS__New(BufferResource, buffer, {width = width, height = height})
+    local ____type = __TS__InstanceOf(buffer, Float32Array) and TYPES.FLOAT or TYPES.UNSIGNED_BYTE
+    return __TS__New(
+        ____exports.BaseTexture,
+        resource,
+        __TS__ObjectAssign({}, defaultBufferOptions, options or ({width = width, height = height, type = ____type}))
+    )
+end
+function BaseTexture.addToCache(self, baseTexture, id)
+    if id ~= "" then
+        if not __TS__ArrayIncludes(baseTexture.textureCacheIds, id) then
+            local ____baseTexture_textureCacheIds_4 = baseTexture.textureCacheIds
+            ____baseTexture_textureCacheIds_4[#____baseTexture_textureCacheIds_4 + 1] = id
+        end
+        if BaseTextureCache[id] and BaseTextureCache[id] ~= baseTexture then
+            print(("BaseTexture added to the cache with an id [" .. id) .. "] that already had an entry")
+        end
+        BaseTextureCache[id] = baseTexture
+    end
+end
+function BaseTexture.removeFromCache(self, baseTexture)
+    if type(baseTexture) == "string" then
+        local baseTextureFromCache = BaseTextureCache[baseTexture]
+        if baseTextureFromCache ~= nil then
+            local index = __TS__ArrayIndexOf(baseTextureFromCache.textureCacheIds, baseTexture)
+            if index > -1 then
+                __TS__ArraySplice(baseTextureFromCache.textureCacheIds, index, 1)
+            end
+            __TS__Delete(BaseTextureCache, baseTexture)
+            return baseTextureFromCache
+        end
+    elseif (baseTexture and baseTexture.textureCacheIds) ~= nil then
+        do
+            local i = 0
+            while i < #baseTexture.textureCacheIds do
+                __TS__Delete(BaseTextureCache, baseTexture.textureCacheIds[i + 1])
+                i = i + 1
+            end
+        end
+        __TS__ArraySetLength(baseTexture.textureCacheIds, 0)
+        return baseTexture
+    end
+    return nil
+end
+BaseTexture.defaultOptions = {
+    mipmap = MIPMAP_MODES.POW2,
+    anisotropicLevel = 0,
+    scaleMode = SCALE_MODES.LINEAR,
+    wrapMode = WRAP_MODES.CLAMP,
+    alphaMode = ALPHA_MODES.UNPACK,
+    target = TARGETS.TEXTURE_2D,
+    format = FORMATS.RGBA,
+    type = TYPES.UNSIGNED_BYTE
+}
+BaseTexture._globalBatch = 0
+return ____exports
+ end,
+["core.textures.TextureUvs"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____math = require("math.index")
+local groupD8 = ____math.groupD8
+--- Stores a texture's frame in UV coordinates, in
+-- which everything lies in the rectangle `[(0,0), (1,0),
+-- (1,1), (0,1)]`.
+-- 
+-- | Corner       | Coordinates |
+-- |--------------|-------------|
+-- | Top-Left     | `(x0,y0)`   |
+-- | Top-Right    | `(x1,y1)`   |
+-- | Bottom-Right | `(x2,y2)`   |
+-- | Bottom-Left  | `(x3,y3)`   |
+-- 
+-- @protected
+-- @memberof PIXI
+____exports.TextureUvs = __TS__Class()
+local TextureUvs = ____exports.TextureUvs
+TextureUvs.name = "TextureUvs"
+function TextureUvs.prototype.____constructor(self)
+    self.x0 = 0
+    self.y0 = 0
+    self.x1 = 1
+    self.y1 = 0
+    self.x2 = 1
+    self.y2 = 1
+    self.x3 = 0
+    self.y3 = 1
+    self.uvsFloat32 = __TS__New(Float32Array, 8)
+end
+function TextureUvs.prototype.set(self, frame, baseFrame, rotate)
+    local tw = baseFrame.width
+    local th = baseFrame.height
+    if rotate ~= 0 then
+        local w2 = frame.width / 2 / tw
+        local h2 = frame.height / 2 / th
+        local cX = frame.x / tw + w2
+        local cY = frame.y / th + h2
+        rotate = groupD8:add(rotate, groupD8.NW)
+        self.x0 = cX + w2 * groupD8:uX(rotate)
+        self.y0 = cY + h2 * groupD8:uY(rotate)
+        rotate = groupD8:add(rotate, 2)
+        self.x1 = cX + w2 * groupD8:uX(rotate)
+        self.y1 = cY + h2 * groupD8:uY(rotate)
+        rotate = groupD8:add(rotate, 2)
+        self.x2 = cX + w2 * groupD8:uX(rotate)
+        self.y2 = cY + h2 * groupD8:uY(rotate)
+        rotate = groupD8:add(rotate, 2)
+        self.x3 = cX + w2 * groupD8:uX(rotate)
+        self.y3 = cY + h2 * groupD8:uY(rotate)
+    else
+        self.x0 = frame.x / tw
+        self.y0 = frame.y / th
+        self.x1 = (frame.x + frame.width) / tw
+        self.y1 = frame.y / th
+        self.x2 = (frame.x + frame.width) / tw
+        self.y2 = (frame.y + frame.height) / th
+        self.x3 = frame.x / tw
+        self.y3 = (frame.y + frame.height) / th
+    end
+    self.uvsFloat32[0] = self.x0
+    self.uvsFloat32[1] = self.y0
+    self.uvsFloat32[2] = self.x1
+    self.uvsFloat32[3] = self.y1
+    self.uvsFloat32[4] = self.x2
+    self.uvsFloat32[5] = self.y2
+    self.uvsFloat32[6] = self.x3
+    self.uvsFloat32[7] = self.y3
+end
+function TextureUvs.prototype.__tostring(self)
+    return ((("[src/core:TextureUvs " .. ((("x0=" .. tostring(self.x0)) .. " y0=") .. tostring(self.y0)) .. " ") .. ((((("x1=" .. tostring(self.x1)) .. " y1=") .. tostring(self.y1)) .. " x2=") .. tostring(self.x2)) .. " ") .. (((("y2=" .. tostring(self.y2)) .. " x3=") .. tostring(self.x3)) .. " y3=") .. tostring(self.y3)) .. "]"
+end
+return ____exports
+ end,
+["core.textures.resources.BaseImageResource"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local ____exports = {}
+local ____Resource = require("core.textures.resources.Resource")
+local Resource = ____Resource.Resource
+--- Base for all the image/canvas resources.
+-- 
+-- @memberof PIXI
+____exports.BaseImageResource = __TS__Class()
+local BaseImageResource = ____exports.BaseImageResource
+BaseImageResource.name = "BaseImageResource"
+__TS__ClassExtends(BaseImageResource, Resource)
+function BaseImageResource.prototype.____constructor(self, source)
+    local sourceAny = source
+    local width = sourceAny.naturalWidth or sourceAny.videoWidth or sourceAny.width
+    local height = sourceAny.naturalHeight or sourceAny.videoHeight or sourceAny.height
+    Resource.prototype.____constructor(self, width, height)
+    self.source = source
+    self.noSubImage = false
+end
+function BaseImageResource.prototype.update(self)
+    if self.destroyed then
+        return
+    end
+    local source = self.source
+    local width = source.naturalWidth or source.videoWidth or source.width
+    local height = source.naturalHeight or source.videoHeight or source.height
+    self:resize(width, height)
+    Resource.prototype.update(self)
+end
+function BaseImageResource.prototype.dispose(self)
+    self.source = nil
+end
+return ____exports
+ end,
+["core.textures.resources.CanvasResource"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local ____exports = {}
+local ____BaseImageResource = require("core.textures.resources.BaseImageResource")
+local BaseImageResource = ____BaseImageResource.BaseImageResource
+local ____context2d = require("context2d.index")
+local Canvas = ____context2d.Canvas
+--- Resource type for HTMLCanvasElement and OffscreenCanvas.
+-- 
+-- @memberof PIXI
+____exports.CanvasResource = __TS__Class()
+local CanvasResource = ____exports.CanvasResource
+CanvasResource.name = "CanvasResource"
+__TS__ClassExtends(CanvasResource, BaseImageResource)
+function CanvasResource.prototype.____constructor(self, source)
+    BaseImageResource.prototype.____constructor(self, source)
+end
+function CanvasResource.test(self, source)
+    if __TS__InstanceOf(source, Canvas) then
+        return true
+    end
+    return false
+end
+return ____exports
+ end,
+["core.textures.TextureMatrix"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local ____exports = {}
+local ____math = require("math.index")
+local Matrix = ____math.Matrix
+local tempMat = __TS__New(Matrix)
+--- Class controls uv mapping from Texture normal space to BaseTexture normal space.
+-- 
+-- Takes `trim` and `rotate` into account. May contain clamp settings for Meshes and TilingSprite.
+-- 
+-- Can be used in Texture `uvMatrix` field, or separately, you can use different clamp settings on the same texture.
+-- If you want to add support for texture region of certain feature or filter, that's what you're looking for.
+-- 
+-- Takes track of Texture changes through `_lastTextureID` private field.
+-- Use `update()` method call to track it from outside.
+-- 
+-- @see PIXI.Texture *
+-- @see PIXI.Mesh *
+-- @see PIXI.TilingSprite *
+-- @memberof PIXI
+____exports.TextureMatrix = __TS__Class()
+local TextureMatrix = ____exports.TextureMatrix
+TextureMatrix.name = "TextureMatrix"
+function TextureMatrix.prototype.____constructor(self, texture, clampMargin)
+    self._texture = texture
+    self.mapCoord = __TS__New(Matrix)
+    self.uClampFrame = __TS__New(Float32Array, 4)
+    self.uClampOffset = __TS__New(Float32Array, 2)
+    self._textureID = -1
+    self._updateID = 0
+    self.clampOffset = 0
+    self.clampMargin = type(clampMargin) == "nil" and 0.5 or clampMargin
+    self.isSimple = false
+end
+__TS__SetDescriptor(
+    TextureMatrix.prototype,
+    "texture",
+    {
+        get = function(self)
+            return self._texture
+        end,
+        set = function(self, value)
+            self._texture = value
+            self._textureID = -1
+        end
+    },
+    true
+)
+function TextureMatrix.prototype.multiplyUvs(self, uvs, out)
+    if out == nil then
+        out = uvs
+    end
+    local mat = self.mapCoord
+    do
+        local i = 0
+        while i < uvs.length do
+            local x = uvs[i]
+            local y = uvs[i + 1]
+            out[i] = x * mat.a + y * mat.c + mat.tx
+            out[i + 1] = x * mat.b + y * mat.d + mat.ty
+            i = i + 2
+        end
+    end
+    return out
+end
+function TextureMatrix.prototype.update(self, forceUpdate)
+    local tex = self._texture
+    if not tex or not tex.valid then
+        return false
+    end
+    if not forceUpdate and self._textureID == tex._updateID then
+        return false
+    end
+    self._textureID = tex._updateID
+    self._updateID = self._updateID + 1
+    local uvs = tex._uvs
+    self.mapCoord:set(
+        uvs.x1 - uvs.x0,
+        uvs.y1 - uvs.y0,
+        uvs.x3 - uvs.x0,
+        uvs.y3 - uvs.y0,
+        uvs.x0,
+        uvs.y0
+    )
+    local orig = tex.orig
+    local trim = tex.trim
+    if trim then
+        tempMat:set(
+            orig.width / trim.width,
+            0,
+            0,
+            orig.height / trim.height,
+            -trim.x / trim.width,
+            -trim.y / trim.height
+        )
+        self.mapCoord:append(tempMat)
+    end
+    local texBase = tex.baseTexture
+    local frame = self.uClampFrame
+    local margin = self.clampMargin / texBase.resolution
+    local offset = self.clampOffset
+    frame[0] = (tex._frame.x + margin + offset) / texBase.width
+    frame[1] = (tex._frame.y + margin + offset) / texBase.height
+    frame[2] = (tex._frame.x + tex._frame.width - margin + offset) / texBase.width
+    frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height
+    self.uClampOffset[0] = offset / texBase.realWidth
+    self.uClampOffset[1] = offset / texBase.realHeight
+    self.isSimple = tex._frame.width == texBase.width and tex._frame.height == texBase.height and tex.rotate == 0
+    return true
+end
+return ____exports
+ end,
+["core.textures.Texture"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__Number = ____lualib.__TS__Number
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local __TS__Promise = ____lualib.__TS__Promise
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local __TS__Delete = ____lualib.__TS__Delete
+local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
+local ____exports = {}
+local ____math = require("math.index")
+local Point = ____math.Point
+local Rectangle = ____math.Rectangle
+local ____settings = require("settings")
+local settings = ____settings.settings
+local ____utils = require("utils.index")
+local EventEmitter = ____utils.EventEmitter
+local TextureCache = ____utils.TextureCache
+local uid = ____utils.uid
+local ____BaseTexture = require("core.textures.BaseTexture")
+local BaseTexture = ____BaseTexture.BaseTexture
+local ____TextureUvs = require("core.textures.TextureUvs")
+local TextureUvs = ____TextureUvs.TextureUvs
+local DEFAULT_UVS = __TS__New(TextureUvs)
+--- Used to remove listeners from WHITE and EMPTY Textures
+-- 
+-- @ignore
+local function removeAllHandlers(self, tex)
+    tex.destroy = function(self)
+    end
+    tex.on = function(self)
+    end
+    tex.once = function(self)
+    end
+    tex.emit = function(self)
+    end
+end
+--- A texture stores the information that represents an image or part of an image.
+-- 
+-- It cannot be added to the display list directly; instead use it as the texture for a Sprite.
+-- If no frame is provided for a texture, then the whole image is used.
+-- 
+-- You can directly create a texture from an image and then reuse it multiple times like this :
+-- 
+-- ```js
+-- import { Sprite, Texture } from 'pixi.js';
+-- 
+-- const texture = Texture.from('assets/image.png');
+-- const sprite1 = new Sprite(texture);
+-- const sprite2 = new Sprite(texture);
+-- ```
+-- 
+-- If you didnt pass the texture frame to constructor, it enables `noFrame` mode:
+-- it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
+-- 
+-- Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
+-- You can check for this by checking the sprite's _textureID property.
+-- 
+-- ```js
+-- import { Sprite, Texture } from 'pixi.js';
+-- 
+-- const texture = Texture.from('assets/image.svg');
+-- const sprite1 = new Sprite(texture);
+-- // sprite1._textureID should not be undefined if the texture has finished processing the SVG file
+-- ```
+-- 
+-- You can use a ticker or rAF to ensure your sprites load the finished textures after processing.
+-- See issue [#3085]{_link https://github.com/pixijs/pixijs/issues/3085}.
+-- 
+-- @memberof PIXI
+-- @typeParam R - The BaseTexture's Resource type.
+____exports.Texture = __TS__Class()
+local Texture = ____exports.Texture
+Texture.name = "Texture"
+__TS__ClassExtends(Texture, EventEmitter)
+function Texture.prototype.____constructor(self, baseTexture, frame, orig, trim, rotate, anchor)
+    EventEmitter.prototype.____constructor(self)
+    self.noFrame = false
+    if not frame then
+        self.noFrame = true
+        frame = __TS__New(
+            Rectangle,
+            0,
+            0,
+            1,
+            1
+        )
+    end
+    if __TS__InstanceOf(baseTexture, ____exports.Texture) then
+        baseTexture = baseTexture.baseTexture
+    end
+    self.baseTexture = baseTexture
+    self._frame = frame
+    self.trim = trim or nil
+    self.valid = false
+    self._uvs = DEFAULT_UVS
+    self.uvMatrix = nil
+    self.orig = orig or frame
+    self._rotate = __TS__Number(rotate or 0)
+    if rotate == true then
+        self._rotate = 2
+    elseif self._rotate % 2 ~= 0 then
+        error(
+            __TS__New(Error, "attempt to use diamond-shaped UVs. If you are sure, set rotation manually"),
+            0
+        )
+    end
+    self.defaultAnchor = anchor and __TS__New(Point, anchor.x, anchor.y) or __TS__New(Point, 0, 0)
+    self._updateID = 0
+    self.textureCacheIds = {}
+    if not baseTexture.valid then
+        baseTexture:once("loaded", self.onBaseTextureUpdated, self)
+    elseif self.noFrame then
+        if baseTexture.valid then
+            self:onBaseTextureUpdated(baseTexture)
+        end
+    else
+        self.frame = frame
+    end
+    if self.noFrame then
+        baseTexture:on("update", self.onBaseTextureUpdated, self)
+    end
+end
+__TS__SetDescriptor(
+    Texture.prototype,
+    "resolution",
+    {get = function(self)
+        return self.baseTexture.resolution
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Texture.prototype,
+    "frame",
+    {
+        get = function(self)
+            return self._frame
+        end,
+        set = function(self, frame)
+            self._frame = frame
+            self.noFrame = false
+            local ____frame_0 = frame
+            local x = ____frame_0.x
+            local y = ____frame_0.y
+            local width = ____frame_0.width
+            local height = ____frame_0.height
+            local xNotFit = x + width > self.baseTexture.width
+            local yNotFit = y + height > self.baseTexture.height
+            if xNotFit or yNotFit then
+                local relationship = xNotFit and yNotFit and "and" or "or"
+                local errorX = (((((("X: " .. tostring(x)) .. " + ") .. tostring(width)) .. " = ") .. tostring(x + width)) .. " > ") .. tostring(self.baseTexture.width)
+                local errorY = (((((("Y: " .. tostring(y)) .. " + ") .. tostring(height)) .. " = ") .. tostring(y + height)) .. " > ") .. tostring(self.baseTexture.height)
+                error(
+                    __TS__New(Error, "Texture Error: frame does not fit inside the base Texture dimensions: " .. (((errorX .. " ") .. relationship) .. " ") .. errorY),
+                    0
+                )
+            end
+            self.valid = Boolean(nil, width and height and self.baseTexture.valid)
+            if not self.trim and not self.rotate then
+                self.orig = frame
+            end
+            if self.valid then
+                self:updateUvs()
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Texture.prototype,
+    "rotate",
+    {
+        get = function(self)
+            return self._rotate
+        end,
+        set = function(self, rotate)
+            self._rotate = rotate
+            if self.valid then
+                self:updateUvs()
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Texture.prototype,
+    "width",
+    {get = function(self)
+        return self.orig.width
+    end},
+    true
+)
+__TS__SetDescriptor(
+    Texture.prototype,
+    "height",
+    {get = function(self)
+        return self.orig.height
+    end},
+    true
+)
+__TS__ObjectDefineProperty(
+    Texture,
+    "EMPTY",
+    {get = function(self)
+        if not ____exports.Texture._EMPTY then
+            ____exports.Texture._EMPTY = __TS__New(
+                ____exports.Texture,
+                __TS__New(BaseTexture)
+            )
+            removeAllHandlers(nil, ____exports.Texture._EMPTY)
+            removeAllHandlers(nil, ____exports.Texture._EMPTY.baseTexture)
+        end
+        return ____exports.Texture._EMPTY
+    end}
+)
+__TS__ObjectDefineProperty(
+    Texture,
+    "WHITE",
+    {get = function(self)
+        if not ____exports.Texture._WHITE then
+            local canvas = settings.ADAPTER:createCanvas(16, 16)
+            local context = canvas:getContext("2d")
+            canvas.width = 16
+            canvas.height = 16
+            context.fillStyle = "white"
+            context:fillRect(0, 0, 16, 16)
+            ____exports.Texture._WHITE = __TS__New(
+                ____exports.Texture,
+                BaseTexture:from(canvas)
+            )
+            removeAllHandlers(nil, ____exports.Texture._WHITE)
+            removeAllHandlers(nil, ____exports.Texture._WHITE.baseTexture)
+        end
+        return ____exports.Texture._WHITE
+    end}
+)
+function Texture.prototype.update(self)
+    local ____opt_1 = self.baseTexture
+    if (____opt_1 and ____opt_1.resource) ~= nil then
+        self.baseTexture.resource:update()
+    end
+end
+function Texture.prototype.onBaseTextureUpdated(self, baseTexture)
+    if self.noFrame then
+        if not self.baseTexture.valid then
+            return
+        end
+        self._frame.width = baseTexture.width
+        self._frame.height = baseTexture.height
+        self.valid = true
+        self:updateUvs()
+    else
+        self.frame = self._frame
+    end
+    self:emit("update", self)
+end
+function Texture.prototype.destroy(self, destroyBase)
+    if self.baseTexture ~= nil then
+        self.baseTexture:off("loaded", self.onBaseTextureUpdated, self)
+        self.baseTexture:off("update", self.onBaseTextureUpdated, self)
+        self.baseTexture = nil
+    end
+    self._frame = nil
+    self._uvs = nil
+    self.trim = nil
+    self.orig = nil
+    self.valid = false
+    ____exports.Texture:removeFromCache(self)
+    self.textureCacheIds = nil
+end
+function Texture.prototype.clone(self)
+    local clonedFrame = self._frame:clone()
+    local clonedOrig = self._frame == self.orig and clonedFrame or self.orig:clone()
+    local ____exports_Texture_7 = ____exports.Texture
+    local ____self_baseTexture_5 = self.baseTexture
+    local ____temp_6 = not self.noFrame and clonedFrame or nil
+    local ____opt_3 = self.trim
+    local clonedTexture = __TS__New(
+        ____exports_Texture_7,
+        ____self_baseTexture_5,
+        ____temp_6,
+        clonedOrig,
+        ____opt_3 and ____opt_3:clone(),
+        self.rotate,
+        self.defaultAnchor
+    )
+    if self.noFrame then
+        clonedTexture._frame = clonedFrame
+    end
+    return clonedTexture
+end
+function Texture.prototype.updateUvs(self)
+    if self._uvs == DEFAULT_UVS then
+        self._uvs = __TS__New(TextureUvs)
+    end
+    self._uvs:set(self._frame, self.baseTexture, self.rotate)
+    self._updateID = self._updateID + 1
+end
+function Texture.from(self, source, options)
+    if options == nil then
+        options = {}
+    end
+    local isFrame = type(source) == "string"
+    local cacheId = nil
+    if isFrame then
+        cacheId = source
+    elseif __TS__InstanceOf(source, BaseTexture) then
+        if not source.cacheId then
+            local prefix = options and options.pixiIdPrefix or "pixiid"
+            source.cacheId = (prefix .. "-") .. tostring(uid(nil))
+            BaseTexture:addToCache(source, source.cacheId)
+        end
+        cacheId = source.cacheId
+    else
+        if not source._pixiId then
+            local prefix = options and options.pixiIdPrefix or "pixiid"
+            source._pixiId = (prefix .. "_") .. tostring(uid(nil))
+        end
+        cacheId = source._pixiId
+    end
+    local texture = TextureCache[cacheId]
+    if isFrame and not texture then
+        error(
+            __TS__New(
+                Error,
+                ("The cacheId \"" .. tostring(cacheId)) .. "\" does not exist in TextureCache."
+            ),
+            0
+        )
+    end
+    if not texture and not __TS__InstanceOf(source, BaseTexture) then
+        if not options.resolution then
+            options.resolution = 1
+        end
+        texture = __TS__New(
+            ____exports.Texture,
+            __TS__New(BaseTexture, source, options)
+        )
+        texture.baseTexture.cacheId = cacheId
+        BaseTexture:addToCache(texture.baseTexture, cacheId)
+        ____exports.Texture:addToCache(texture, cacheId)
+    elseif not texture and __TS__InstanceOf(source, BaseTexture) then
+        texture = __TS__New(____exports.Texture, source)
+        ____exports.Texture:addToCache(texture, cacheId)
+    end
+    return texture
+end
+function Texture.fromURL(self, url, options)
+    local resourceOptions = __TS__ObjectAssign({autoLoad = false}, options and options.resourceOptions)
+    local texture = ____exports.Texture:from(
+        url,
+        __TS__ObjectAssign({resourceOptions = resourceOptions}, options)
+    )
+    local resource = texture.baseTexture.resource
+    if texture.baseTexture.valid then
+        return __TS__Promise.resolve(texture)
+    end
+    local ____self_14 = resource:load()
+    return ____self_14["then"](
+        ____self_14,
+        function() return __TS__Promise.resolve(texture) end
+    )
+end
+function Texture.fromBuffer(self, buffer, width, height, options)
+    return __TS__New(
+        ____exports.Texture,
+        BaseTexture:fromBuffer(buffer, width, height, options)
+    )
+end
+function Texture.fromLoader(self, source, imageUrl, name, options)
+    local baseTexture = __TS__New(
+        BaseTexture,
+        source,
+        __TS__ObjectAssign({scaleMode = BaseTexture.defaultOptions.scaleMode, resolution = 1}, options)
+    )
+    local texture = __TS__New(____exports.Texture, baseTexture)
+    if not name then
+        name = imageUrl
+    end
+    BaseTexture:addToCache(texture.baseTexture, name)
+    ____exports.Texture:addToCache(texture, name)
+    if name ~= imageUrl then
+        BaseTexture:addToCache(texture.baseTexture, imageUrl)
+        ____exports.Texture:addToCache(texture, imageUrl)
+    end
+    if texture.baseTexture.valid then
+        return __TS__Promise.resolve(texture)
+    end
+    return __TS__New(
+        __TS__Promise,
+        function(____, resolve)
+            texture.baseTexture:once(
+                "loaded",
+                function() return resolve(nil, texture) end
+            )
+        end
+    )
+end
+function Texture.addToCache(self, texture, id)
+    if id ~= nil and id ~= "" then
+        if not __TS__ArrayIncludes(texture.textureCacheIds, id) then
+            local ____texture_textureCacheIds_15 = texture.textureCacheIds
+            ____texture_textureCacheIds_15[#____texture_textureCacheIds_15 + 1] = id
+        end
+        if TextureCache[id] and TextureCache[id] ~= texture then
+            print(("Texture added to the cache with an id [" .. id) .. "] that already had an entry")
+        end
+        TextureCache[id] = texture
+    end
+end
+function Texture.removeFromCache(self, texture)
+    if type(texture) == "string" then
+        local textureFromCache = TextureCache[texture]
+        if textureFromCache ~= nil then
+            local index = __TS__ArrayIndexOf(textureFromCache.textureCacheIds, texture)
+            if index > -1 then
+                __TS__ArraySplice(textureFromCache.textureCacheIds, index, 1)
+            end
+            __TS__Delete(TextureCache, texture)
+            return textureFromCache
+        end
+    elseif (texture and texture.textureCacheIds) ~= nil then
+        do
+            local i = 0
+            while i < #texture.textureCacheIds do
+                if TextureCache[texture.textureCacheIds[i + 1]] == texture then
+                    __TS__Delete(TextureCache, texture.textureCacheIds[i + 1])
+                end
+                i = i + 1
+            end
+        end
+        __TS__ArraySetLength(texture.textureCacheIds, 0)
+        return texture
+    end
+    return nil
+end
+function Texture.prototype.castToBaseTexture(self)
+    return self.baseTexture
+end
+return ____exports
+ end,
+["core.textures.resources.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
+local ____exports = {}
+local ____autoDetectResource = require("core.textures.resources.autoDetectResource")
+local INSTALLED = ____autoDetectResource.INSTALLED
+local ____BufferResource = require("core.textures.resources.BufferResource")
+local BufferResource = ____BufferResource.BufferResource
+local ____CanvasResource = require("core.textures.resources.CanvasResource")
+local CanvasResource = ____CanvasResource.CanvasResource
+do
+    local ____export = require("core.textures.resources.BaseImageResource")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.textures.resources.Resource")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+__TS__ArrayPush(INSTALLED, BufferResource, CanvasResource)
+do
+    local ____export = require("core.textures.resources.autoDetectResource")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.textures.resources.BufferResource")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.textures.resources.CanvasResource")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
 ["core.index"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
@@ -11508,6 +13188,30 @@ do
     end
 end
 ____exports.systems = require("core.systems")
+do
+    local ____export = require("core.textures.BaseTexture")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.textures.Texture")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("core.textures.resources.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
 do
     local ____export = require("core.view.ViewSystem")
     for ____exportKey, ____exportValue in pairs(____export) do
@@ -15920,6 +17624,1830 @@ ____exports.graphicsUtils = {
 }
 return ____exports
  end,
+["text.const"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Constants that define the type of gradient on text.
+-- 
+-- @static
+-- @name TEXT_GRADIENT
+-- @memberof PIXI
+-- @type {object}
+-- @property {number} LINEAR_VERTICAL Vertical gradient
+-- @property {number} LINEAR_HORIZONTAL Linear gradient
+____exports.TEXT_GRADIENT = TEXT_GRADIENT or ({})
+____exports.TEXT_GRADIENT.LINEAR_VERTICAL = 0
+____exports.TEXT_GRADIENT[____exports.TEXT_GRADIENT.LINEAR_VERTICAL] = "LINEAR_VERTICAL"
+____exports.TEXT_GRADIENT.LINEAR_HORIZONTAL = 1
+____exports.TEXT_GRADIENT[____exports.TEXT_GRADIENT.LINEAR_HORIZONTAL] = "LINEAR_HORIZONTAL"
+return ____exports
+ end,
+["sprite.Sprite"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local ____exports = {}
+local ____core = require("core.index")
+local BLEND_MODES = ____core.BLEND_MODES
+local Color = ____core.Color
+local ObservablePoint = ____core.ObservablePoint
+local Point = ____core.Point
+local Rectangle = ____core.Rectangle
+local settings = ____core.settings
+local Texture = ____core.Texture
+local utils = ____core.utils
+local ____display = require("display.index")
+local Bounds = ____display.Bounds
+local Container = ____display.Container
+local tempPoint = __TS__New(Point)
+local indices = __TS__New(Uint16Array, {
+    0,
+    1,
+    2,
+    0,
+    2,
+    3
+})
+--- The Sprite object is the base for all textured objects that are rendered to the screen
+-- 
+-- A sprite can be created directly from an image like this:
+-- 
+-- ```js
+-- import { Sprite } from 'pixi.js';
+-- 
+-- const sprite = Sprite.from('assets/image.png');
+-- ```
+-- 
+-- The more efficient way to create sprites is using a {@link PIXI.Spritesheet },
+-- as swapping base textures when rendering to the screen is inefficient.
+-- 
+-- ```js
+-- import { Assets, Sprite } from 'pixi.js';
+-- 
+-- const sheet = await Assets.load('assets/spritesheet.json');
+-- const sprite = new Sprite(sheet.textures['image.png']);
+-- ```
+-- 
+-- @memberof PIXI
+____exports.Sprite = __TS__Class()
+local Sprite = ____exports.Sprite
+Sprite.name = "Sprite"
+__TS__ClassExtends(Sprite, Container)
+function Sprite.prototype.____constructor(self, texture)
+    Container.prototype.____constructor(self)
+    self._anchor = __TS__New(
+        ObservablePoint,
+        self._onAnchorUpdate,
+        self,
+        texture and texture.defaultAnchor.x or 0,
+        texture and texture.defaultAnchor.y or 0
+    )
+    self._texture = nil
+    self._width = 0
+    self._height = 0
+    self._tint = nil
+    self._tintRGB = nil
+    self.tint = 16777215
+    self.blendMode = BLEND_MODES.NORMAL
+    self._cachedTint = 16777215
+    self.uvs = nil
+    self.texture = texture or Texture.EMPTY
+    self.vertexData = __TS__New(Float32Array, 8)
+    self.vertexTrimmedData = nil
+    self._transformID = -1
+    self._textureID = -1
+    self._transformTrimmedID = -1
+    self._textureTrimmedID = -1
+    self.indices = indices
+    self.pluginName = "batch"
+    self.isSprite = true
+    self._roundPixels = settings.ROUND_PIXELS
+end
+__TS__SetDescriptor(
+    Sprite.prototype,
+    "roundPixels",
+    {
+        get = function(self)
+            return self._roundPixels
+        end,
+        set = function(self, value)
+            if self._roundPixels ~= value then
+                self._transformID = -1
+            end
+            self._roundPixels = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Sprite.prototype,
+    "width",
+    {
+        get = function(self)
+            return math.abs(self.scale.x) * self._texture.orig.width
+        end,
+        set = function(self, value)
+            local s = utils:sign(self.scale.x) or 1
+            self.scale.x = s * value / self._texture.orig.width
+            self._width = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Sprite.prototype,
+    "height",
+    {
+        get = function(self)
+            return math.abs(self.scale.y) * self._texture.orig.height
+        end,
+        set = function(self, value)
+            local s = utils:sign(self.scale.y) or 1
+            self.scale.y = s * value / self._texture.orig.height
+            self._height = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Sprite.prototype,
+    "anchor",
+    {
+        get = function(self)
+            return self._anchor
+        end,
+        set = function(self, value)
+            self._anchor:copyFrom(value)
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Sprite.prototype,
+    "tint",
+    {
+        get = function(self)
+            return self._tint
+        end,
+        set = function(self, value)
+            self._tint = value
+            self._tintRGB = Color.shared:setValue(value):toLittleEndianNumber()
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Sprite.prototype,
+    "texture",
+    {
+        get = function(self)
+            return self._texture
+        end,
+        set = function(self, value)
+            if self._texture == value then
+                return
+            end
+            if self._texture ~= nil then
+                self._texture:off("update", self._onTextureUpdate, self)
+            end
+            self._texture = value or Texture.EMPTY
+            self._cachedTint = 16777215
+            self._textureID = -1
+            self._textureTrimmedID = -1
+            if value ~= nil then
+                if value.baseTexture.valid then
+                    self:_onTextureUpdate()
+                else
+                    value:once("update", self._onTextureUpdate, self)
+                end
+            end
+        end
+    },
+    true
+)
+function Sprite.prototype._onTextureUpdate(self)
+    self._textureID = -1
+    self._textureTrimmedID = -1
+    self._cachedTint = 16777215
+    if self._width > 0 then
+        self.scale.x = utils:sign(self.scale.x) * self._width / self._texture.orig.width
+    end
+    if self._height > 0 then
+        self.scale.y = utils:sign(self.scale.y) * self._height / self._texture.orig.height
+    end
+end
+function Sprite.prototype._onAnchorUpdate(self)
+    self._transformID = -1
+    self._transformTrimmedID = -1
+end
+function Sprite.prototype.calculateVertices(self)
+    local texture = self._texture
+    if self._transformID == self.transform._worldID and self._textureID == texture._updateID then
+        return
+    end
+    if self._textureID ~= texture._updateID then
+        self.uvs = self._texture._uvs.uvsFloat32
+    end
+    self._transformID = self.transform._worldID
+    self._textureID = texture._updateID
+    local wt = self.transform.worldTransform
+    local a = wt.a
+    local b = wt.b
+    local c = wt.c
+    local d = wt.d
+    local tx = wt.tx
+    local ty = wt.ty
+    local vertexData = self.vertexData
+    local trim = texture.trim
+    local orig = texture.orig
+    local anchor = self._anchor
+    local w0 = 0
+    local w1 = 0
+    local h0 = 0
+    local h1 = 0
+    if trim then
+        w1 = trim.x - anchor._x * orig.width
+        w0 = w1 + trim.width
+        h1 = trim.y - anchor._y * orig.height
+        h0 = h1 + trim.height
+    else
+        w1 = -anchor._x * orig.width
+        w0 = w1 + orig.width
+        h1 = -anchor._y * orig.height
+        h0 = h1 + orig.height
+    end
+    vertexData[0] = a * w1 + c * h1 + tx
+    vertexData[1] = d * h1 + b * w1 + ty
+    vertexData[2] = a * w0 + c * h1 + tx
+    vertexData[3] = d * h1 + b * w0 + ty
+    vertexData[4] = a * w0 + c * h0 + tx
+    vertexData[5] = d * h0 + b * w0 + ty
+    vertexData[6] = a * w1 + c * h0 + tx
+    vertexData[7] = d * h0 + b * w1 + ty
+    if self._roundPixels then
+        local resolution = settings.RESOLUTION
+        do
+            local i = 0
+            while i < vertexData.length do
+                vertexData[i] = math.floor(vertexData[i] * resolution + 0.5) / resolution
+                i = i + 1
+            end
+        end
+    end
+end
+function Sprite.prototype.calculateTrimmedVertices(self)
+    if not self.vertexTrimmedData then
+        self.vertexTrimmedData = __TS__New(Float32Array, 8)
+    elseif self._transformTrimmedID == self.transform._worldID and self._textureTrimmedID == self._texture._updateID then
+        return
+    end
+    self._transformTrimmedID = self.transform._worldID
+    self._textureTrimmedID = self._texture._updateID
+    local texture = self._texture
+    local vertexData = self.vertexTrimmedData
+    local orig = texture.orig
+    local anchor = self._anchor
+    local wt = self.transform.worldTransform
+    local a = wt.a
+    local b = wt.b
+    local c = wt.c
+    local d = wt.d
+    local tx = wt.tx
+    local ty = wt.ty
+    local w1 = -anchor._x * orig.width
+    local w0 = w1 + orig.width
+    local h1 = -anchor._y * orig.height
+    local h0 = h1 + orig.height
+    vertexData[0] = a * w1 + c * h1 + tx
+    vertexData[1] = d * h1 + b * w1 + ty
+    vertexData[2] = a * w0 + c * h1 + tx
+    vertexData[3] = d * h1 + b * w0 + ty
+    vertexData[4] = a * w0 + c * h0 + tx
+    vertexData[5] = d * h0 + b * w0 + ty
+    vertexData[6] = a * w1 + c * h0 + tx
+    vertexData[7] = d * h0 + b * w1 + ty
+end
+function Sprite.prototype._calculateBounds(self)
+    local trim = self._texture.trim
+    local orig = self._texture.orig
+    if not trim or trim.width == orig.width and trim.height == orig.height then
+        self:calculateVertices()
+        self._bounds:addQuad(self.vertexData)
+    else
+        self:calculateTrimmedVertices()
+        self._bounds:addQuad(self.vertexTrimmedData)
+    end
+end
+function Sprite.prototype.getLocalBounds(self, rect)
+    if #self.children == 0 then
+        if not self._localBounds then
+            self._localBounds = __TS__New(Bounds)
+        end
+        self._localBounds.minX = self._texture.orig.width * -self._anchor._x
+        self._localBounds.minY = self._texture.orig.height * -self._anchor._y
+        self._localBounds.maxX = self._texture.orig.width * (1 - self._anchor._x)
+        self._localBounds.maxY = self._texture.orig.height * (1 - self._anchor._y)
+        if not rect then
+            if not self._localBoundsRect then
+                self._localBoundsRect = __TS__New(Rectangle)
+            end
+            rect = self._localBoundsRect
+        end
+        return self._localBounds:getRectangle(rect)
+    end
+    return Container.prototype.getLocalBounds(self, rect)
+end
+function Sprite.prototype.containsPoint(self, point)
+    self.worldTransform:applyInverse(point, tempPoint)
+    local width = self._texture.orig.width
+    local height = self._texture.orig.height
+    local x1 = -width * self.anchor.x
+    local y1 = 0
+    if tempPoint.x >= x1 and tempPoint.x < x1 + width then
+        y1 = -height * self.anchor.y
+        if tempPoint.y >= y1 and tempPoint.y < y1 + height then
+            return true
+        end
+    end
+    return false
+end
+function Sprite.prototype.destroy(self, options)
+    Container.prototype.destroy(self, options)
+    self._texture:off("update", self._onTextureUpdate, self)
+    self._anchor = nil
+    local ____temp_2
+    if type(options) == "boolean" then
+        ____temp_2 = options
+    else
+        ____temp_2 = options and options.texture
+    end
+    local destroyTexture = ____temp_2
+    if destroyTexture then
+        local ____temp_5
+        if type(options) == "boolean" then
+            ____temp_5 = options
+        else
+            ____temp_5 = options and options.baseTexture
+        end
+        local destroyBaseTexture = ____temp_5
+        self._texture:destroy(not not destroyBaseTexture)
+    end
+    self._texture = nil
+end
+function Sprite.from(self, source, options)
+    local texture = __TS__InstanceOf(source, Texture) and source or Texture:from(source, options)
+    return __TS__New(____exports.Sprite, texture)
+end
+return ____exports
+ end,
+["sprite.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("sprite.Sprite")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
+["text.TextStyle"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__New = ____lualib.__TS__New
+local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__StringTrim = ____lualib.__TS__StringTrim
+local __TS__StringStartsWith = ____lualib.__TS__StringStartsWith
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local ____exports = {}
+local getColor, areArraysEqual, deepCopyProperties
+local ____const = require("text.const")
+local TEXT_GRADIENT = ____const.TEXT_GRADIENT
+local ____core = require("core.index")
+local Color = ____core.Color
+function getColor(self, color)
+    local temp = Color.shared
+    if not __TS__ArrayIsArray(color) then
+        return temp:setValue(color):toHex()
+    else
+        return __TS__ArrayMap(
+            color,
+            function(____, c) return temp:setValue(c):toHex() end
+        )
+    end
+end
+function areArraysEqual(self, array1, array2)
+    if not __TS__ArrayIsArray(array1) or not __TS__ArrayIsArray(array2) then
+        return false
+    end
+    if #array1 ~= #array2 then
+        return false
+    end
+    do
+        local i = 0
+        while i < #array1 do
+            if array1[i + 1] ~= array2[i + 1] then
+                return false
+            end
+            i = i + 1
+        end
+    end
+    return true
+end
+function deepCopyProperties(self, target, source, propertyObj)
+    for prop in pairs(propertyObj) do
+        local value = source[prop]
+        if __TS__ArrayIsArray(value) then
+            target[prop] = __TS__ArraySlice(value)
+        else
+            target[prop] = value
+        end
+    end
+end
+local genericFontFamilies = {
+    "serif",
+    "sans-serif",
+    "monospace",
+    "cursive",
+    "fantasy",
+    "system-ui"
+}
+--- A TextStyle Object contains information to decorate a Text objects.
+-- 
+-- An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
+-- 
+-- A tool can be used to generate a text style [here](https://pixijs.io/pixi-text-style).
+-- 
+-- @memberof PIXI
+-- @example import { TextStyle } from 'pixi.js';
+-- const style = new TextStyle({
+--   fontFamily: ['Helvetica', 'Arial', 'sans-serif'],
+--   fontSize: 36,
+-- });
+____exports.TextStyle = __TS__Class()
+local TextStyle = ____exports.TextStyle
+TextStyle.name = "TextStyle"
+function TextStyle.prototype.____constructor(self, style)
+    self.styleID = 0
+    self:reset()
+    deepCopyProperties(
+        nil,
+        self,
+        __TS__ObjectAssign({}, style, ____exports.TextStyle.defaultStyle),
+        ____exports.TextStyle.defaultStyle
+    )
+end
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "align",
+    {
+        get = function(self)
+            return self._align
+        end,
+        set = function(self, align)
+            if self._align ~= align then
+                self._align = align
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "breakWords",
+    {
+        get = function(self)
+            return self._breakWords
+        end,
+        set = function(self, breakWords)
+            if self._breakWords ~= breakWords then
+                self._breakWords = breakWords
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "dropShadow",
+    {
+        get = function(self)
+            return self._dropShadow
+        end,
+        set = function(self, dropShadow)
+            if self._dropShadow ~= dropShadow then
+                self._dropShadow = dropShadow
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "dropShadowAlpha",
+    {
+        get = function(self)
+            return self._dropShadowAlpha
+        end,
+        set = function(self, dropShadowAlpha)
+            if self._dropShadowAlpha ~= dropShadowAlpha then
+                self._dropShadowAlpha = dropShadowAlpha
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "dropShadowAngle",
+    {
+        get = function(self)
+            return self._dropShadowAngle
+        end,
+        set = function(self, dropShadowAngle)
+            if self._dropShadowAngle ~= dropShadowAngle then
+                self._dropShadowAngle = dropShadowAngle
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "dropShadowBlur",
+    {
+        get = function(self)
+            return self._dropShadowBlur
+        end,
+        set = function(self, dropShadowBlur)
+            if self._dropShadowBlur ~= dropShadowBlur then
+                self._dropShadowBlur = dropShadowBlur
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "dropShadowColor",
+    {
+        get = function(self)
+            return self._dropShadowColor
+        end,
+        set = function(self, dropShadowColor)
+            local outputColor = getColor(nil, dropShadowColor)
+            if self._dropShadowColor ~= outputColor then
+                self._dropShadowColor = outputColor
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "dropShadowDistance",
+    {
+        get = function(self)
+            return self._dropShadowDistance
+        end,
+        set = function(self, dropShadowDistance)
+            if self._dropShadowDistance ~= dropShadowDistance then
+                self._dropShadowDistance = dropShadowDistance
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fill",
+    {
+        get = function(self)
+            return self._fill
+        end,
+        set = function(self, fill)
+            local outputColor = getColor(nil, fill)
+            if self._fill ~= outputColor then
+                self._fill = outputColor
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fillGradientType",
+    {
+        get = function(self)
+            return self._fillGradientType
+        end,
+        set = function(self, fillGradientType)
+            if self._fillGradientType ~= fillGradientType then
+                self._fillGradientType = fillGradientType
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fillGradientStops",
+    {
+        get = function(self)
+            return self._fillGradientStops
+        end,
+        set = function(self, fillGradientStops)
+            if not areArraysEqual(nil, self._fillGradientStops, fillGradientStops) then
+                self._fillGradientStops = fillGradientStops
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fontFamily",
+    {
+        get = function(self)
+            return self._fontFamily
+        end,
+        set = function(self, fontFamily)
+            if self.fontFamily ~= fontFamily then
+                self._fontFamily = fontFamily
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fontSize",
+    {
+        get = function(self)
+            return self._fontSize
+        end,
+        set = function(self, fontSize)
+            if self._fontSize ~= fontSize then
+                self._fontSize = fontSize
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fontStyle",
+    {
+        get = function(self)
+            return self._fontStyle
+        end,
+        set = function(self, fontStyle)
+            if self._fontStyle ~= fontStyle then
+                self._fontStyle = fontStyle
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fontVariant",
+    {
+        get = function(self)
+            return self._fontVariant
+        end,
+        set = function(self, fontVariant)
+            if self._fontVariant ~= fontVariant then
+                self._fontVariant = fontVariant
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "fontWeight",
+    {
+        get = function(self)
+            return self._fontWeight
+        end,
+        set = function(self, fontWeight)
+            if self._fontWeight ~= fontWeight then
+                self._fontWeight = fontWeight
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "letterSpacing",
+    {
+        get = function(self)
+            return self._letterSpacing
+        end,
+        set = function(self, letterSpacing)
+            if self._letterSpacing ~= letterSpacing then
+                self._letterSpacing = letterSpacing
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "lineHeight",
+    {
+        get = function(self)
+            return self._lineHeight
+        end,
+        set = function(self, lineHeight)
+            if self._lineHeight ~= lineHeight then
+                self._lineHeight = lineHeight
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "leading",
+    {
+        get = function(self)
+            return self._leading
+        end,
+        set = function(self, leading)
+            if self._leading ~= leading then
+                self._leading = leading
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "lineJoin",
+    {
+        get = function(self)
+            return self._lineJoin
+        end,
+        set = function(self, lineJoin)
+            if self._lineJoin ~= lineJoin then
+                self._lineJoin = lineJoin
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "miterLimit",
+    {
+        get = function(self)
+            return self._miterLimit
+        end,
+        set = function(self, miterLimit)
+            if self._miterLimit ~= miterLimit then
+                self._miterLimit = miterLimit
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "padding",
+    {
+        get = function(self)
+            return self._padding
+        end,
+        set = function(self, padding)
+            if self._padding ~= padding then
+                self._padding = padding
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "stroke",
+    {
+        get = function(self)
+            return self._stroke
+        end,
+        set = function(self, stroke)
+            local outputColor = getColor(nil, stroke)
+            if self._stroke ~= outputColor then
+                self._stroke = outputColor
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "strokeThickness",
+    {
+        get = function(self)
+            return self._strokeThickness
+        end,
+        set = function(self, strokeThickness)
+            if self._strokeThickness ~= strokeThickness then
+                self._strokeThickness = strokeThickness
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "textBaseline",
+    {
+        get = function(self)
+            return self._textBaseline
+        end,
+        set = function(self, textBaseline)
+            if self._textBaseline ~= textBaseline then
+                self._textBaseline = textBaseline
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "trim",
+    {
+        get = function(self)
+            return self._trim
+        end,
+        set = function(self, trim)
+            if self._trim ~= trim then
+                self._trim = trim
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "whiteSpace",
+    {
+        get = function(self)
+            return self._whiteSpace
+        end,
+        set = function(self, whiteSpace)
+            if self._whiteSpace ~= whiteSpace then
+                self._whiteSpace = whiteSpace
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "wordWrap",
+    {
+        get = function(self)
+            return self._wordWrap
+        end,
+        set = function(self, wordWrap)
+            if self._wordWrap ~= wordWrap then
+                self._wordWrap = wordWrap
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    TextStyle.prototype,
+    "wordWrapWidth",
+    {
+        get = function(self)
+            return self._wordWrapWidth
+        end,
+        set = function(self, wordWrapWidth)
+            if self._wordWrapWidth ~= wordWrapWidth then
+                self._wordWrapWidth = wordWrapWidth
+                self.styleID = self.styleID + 1
+            end
+        end
+    },
+    true
+)
+function TextStyle.prototype.clone(self)
+    local clonedProperties = {}
+    deepCopyProperties(nil, clonedProperties, self, ____exports.TextStyle.defaultStyle)
+    return __TS__New(____exports.TextStyle, clonedProperties)
+end
+function TextStyle.prototype.reset(self)
+    deepCopyProperties(nil, self, ____exports.TextStyle.defaultStyle, ____exports.TextStyle.defaultStyle)
+end
+function TextStyle.prototype.toFontString(self)
+    local fontSizeString = type(self.fontSize) == "number" and tostring(self.fontSize) .. "px" or self.fontSize
+    local fontFamilies = self.fontFamily
+    if not __TS__ArrayIsArray(self.fontFamily) then
+        fontFamilies = __TS__StringSplit(self.fontFamily, ",")
+    end
+    do
+        local i = #fontFamilies - 1
+        while i >= 0 do
+            local fontFamily = __TS__StringTrim(fontFamilies[i + 1])
+            if not __TS__StringStartsWith(fontFamily, "\"") and not __TS__StringStartsWith(fontFamily, "'") and not __TS__ArrayIncludes(genericFontFamilies, fontFamily) then
+                fontFamily = ("\"" .. fontFamily) .. "\""
+            end
+            fontFamilies[i + 1] = fontFamily
+            i = i - 1
+        end
+    end
+    return (((((((self.fontStyle .. " ") .. self.fontVariant) .. " ") .. self.fontWeight) .. " ") .. fontSizeString) .. " ") .. table.concat(fontFamilies, ",")
+end
+TextStyle.defaultStyle = {
+    align = "left",
+    breakWords = false,
+    dropShadow = false,
+    dropShadowAlpha = 1,
+    dropShadowAngle = math.pi / 6,
+    dropShadowBlur = 0,
+    dropShadowColor = "black",
+    dropShadowDistance = 5,
+    fill = "black",
+    fillGradientType = TEXT_GRADIENT.LINEAR_VERTICAL,
+    fillGradientStops = {},
+    fontFamily = "Arial",
+    fontSize = 26,
+    fontStyle = "normal",
+    fontVariant = "normal",
+    fontWeight = "normal",
+    leading = 0,
+    letterSpacing = 0,
+    lineHeight = 0,
+    lineJoin = "miter",
+    miterLimit = 10,
+    padding = 0,
+    stroke = "black",
+    strokeThickness = 0,
+    textBaseline = "alphabetic",
+    trim = false,
+    whiteSpace = "pre",
+    wordWrap = false,
+    wordWrapWidth = 100
+}
+return ____exports
+ end,
+["text.TextMetrics"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
+local __TS__New = ____lualib.__TS__New
+local __TS__Spread = ____lualib.__TS__Spread
+local __TS__StringAccess = ____lualib.__TS__StringAccess
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local __TS__Delete = ____lualib.__TS__Delete
+local ____exports = {}
+local ____core = require("core.index")
+local settings = ____core.settings
+local ____context2d = require("context2d.index")
+local Canvas = ____context2d.Canvas
+--- The TextMetrics object represents the measurement of a block of text with a specified style.
+-- 
+-- @example import { TextMetrics, TextStyle } from 'pixi.js';
+-- 
+-- const style = new TextStyle({
+--     fontFamily: 'Arial',
+--     fontSize: 24,
+--     fill: 0xff1010,
+--     align: 'center',
+-- });
+-- const textMetrics = TextMetrics.measureText('Your text', style);
+-- @memberof PIXI
+____exports.TextMetrics = __TS__Class()
+local TextMetrics = ____exports.TextMetrics
+TextMetrics.name = "TextMetrics"
+function TextMetrics.prototype.____constructor(self, text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties)
+    self.text = text
+    self.style = style
+    self.width = width
+    self.height = height
+    self.lines = lines
+    self.lineWidths = lineWidths
+    self.lineHeight = lineHeight
+    self.maxLineWidth = maxLineWidth
+    self.fontProperties = fontProperties
+end
+__TS__ObjectDefineProperty(
+    TextMetrics,
+    "experimentalLetterSpacingSupported",
+    {get = function(self)
+        local result = ____exports.TextMetrics._experimentalLetterSpacingSupported
+        if result == nil then
+            local proto = settings.ADAPTER:getCanvasRenderingContext2D().prototype
+            local ____exports_TextMetrics_1 = ____exports.TextMetrics
+            local ____temp_0 = proto.letterSpacing ~= nil or proto.textLetterSpacing ~= nil
+            if ____temp_0 == nil then
+                ____temp_0 = false
+            end
+            ____exports_TextMetrics_1._experimentalLetterSpacingSupported = ____temp_0
+            result = ____temp_0
+        end
+        return result
+    end}
+)
+__TS__ObjectDefineProperty(
+    TextMetrics,
+    "_canvas",
+    {get = function(self)
+        if not ____exports.TextMetrics.__canvas then
+            ____exports.TextMetrics.__canvas = __TS__New(Canvas, 10, 10)
+        end
+        return ____exports.TextMetrics.__canvas
+    end}
+)
+__TS__ObjectDefineProperty(
+    TextMetrics,
+    "_context",
+    {get = function(self)
+        if not ____exports.TextMetrics.__context then
+            ____exports.TextMetrics.__context = ____exports.TextMetrics._canvas:getContext("2d")
+        end
+        return ____exports.TextMetrics.__context
+    end}
+)
+function TextMetrics.measureText(self, text, style, wordWrap, canvas)
+    if canvas == nil then
+        canvas = ____exports.TextMetrics._canvas
+    end
+    local ____temp_2
+    if wordWrap == nil or wordWrap == nil then
+        ____temp_2 = style.wordWrap
+    else
+        ____temp_2 = wordWrap
+    end
+    wordWrap = ____temp_2
+    local font = style:toFontString()
+    local fontProperties = ____exports.TextMetrics:measureFont(font)
+    if fontProperties.fontSize == 0 then
+        fontProperties.fontSize = style.fontSize
+        fontProperties.ascent = style.fontSize
+    end
+    local context = canvas:getContext("2d")
+    context.font = font
+    local outputText = wordWrap and ____exports.TextMetrics:wordWrap(text, style, canvas) or text
+    local lines = vim.split(outputText, "\n")
+    local lineWidths = {}
+    local maxLineWidth = 0
+    do
+        local i = 0
+        while i < #lines do
+            local lineWidth = ____exports.TextMetrics:_measureText(lines[i + 1], style.letterSpacing, context)
+            lineWidths[i + 1] = lineWidth
+            maxLineWidth = math.max(maxLineWidth, lineWidth)
+            i = i + 1
+        end
+    end
+    local width = maxLineWidth + style.strokeThickness
+    if style.dropShadow then
+        width = width + style.dropShadowDistance
+    end
+    local lineHeight = style.lineHeight or fontProperties.fontSize + style.strokeThickness
+    local height = math.max(lineHeight, fontProperties.fontSize + style.strokeThickness * 2) + (#lines - 1) * (lineHeight + style.leading)
+    if style.dropShadow then
+        height = height + style.dropShadowDistance
+    end
+    return __TS__New(
+        ____exports.TextMetrics,
+        text,
+        style,
+        width,
+        height,
+        lines,
+        lineWidths,
+        lineHeight + style.leading,
+        maxLineWidth,
+        fontProperties
+    )
+end
+function TextMetrics._measureText(self, text, letterSpacing, context)
+    local useExperimentalLetterSpacing = false
+    if ____exports.TextMetrics.experimentalLetterSpacingSupported then
+        if ____exports.TextMetrics.experimentalLetterSpacing then
+            context.letterSpacing = tostring(letterSpacing) .. "px"
+            useExperimentalLetterSpacing = true
+        else
+            context.letterSpacing = "0px"
+        end
+    end
+    local width = context:measureText(text).width
+    if width > 0 then
+        if useExperimentalLetterSpacing then
+            width = width - letterSpacing
+        else
+            width = width + (#____exports.TextMetrics:graphemeSegmenter(text) - 1) * letterSpacing
+        end
+    end
+    return width
+end
+function TextMetrics.wordWrap(self, text, style, canvas)
+    if canvas == nil then
+        canvas = ____exports.TextMetrics._canvas
+    end
+    local context = canvas:getContext("2d")
+    local width = 0
+    local line = ""
+    local lines = ""
+    local cache = {}
+    local ____style_3 = style
+    local letterSpacing = ____style_3.letterSpacing
+    local whiteSpace = ____style_3.whiteSpace
+    local collapseSpaces = ____exports.TextMetrics:collapseSpaces(whiteSpace)
+    local collapseNewlines = ____exports.TextMetrics:collapseNewlines(whiteSpace)
+    local canPrependSpaces = not collapseSpaces
+    local wordWrapWidth = style.wordWrapWidth + letterSpacing
+    local tokens = ____exports.TextMetrics:tokenize(text)
+    do
+        local i = 0
+        while i < #tokens do
+            do
+                local token = tokens[i + 1]
+                if ____exports.TextMetrics:isNewline(token) then
+                    if not collapseNewlines then
+                        lines = lines .. ____exports.TextMetrics:addLine(line)
+                        canPrependSpaces = not collapseSpaces
+                        line = ""
+                        width = 0
+                        goto __continue24
+                    end
+                    token = " "
+                end
+                if collapseSpaces then
+                    local currIsBreakingSpace = ____exports.TextMetrics:isBreakingSpace(token)
+                    local lastIsBreakingSpace = ____exports.TextMetrics:isBreakingSpace(__TS__StringAccess(line, #line - 1))
+                    if currIsBreakingSpace and lastIsBreakingSpace then
+                        goto __continue24
+                    end
+                end
+                local tokenWidth = ____exports.TextMetrics:getFromCache(token, letterSpacing, cache, context)
+                if tokenWidth > wordWrapWidth then
+                    if line ~= "" then
+                        lines = lines .. ____exports.TextMetrics:addLine(line)
+                        line = ""
+                        width = 0
+                    end
+                    if ____exports.TextMetrics:canBreakWords(token, style.breakWords) then
+                        local characters = ____exports.TextMetrics:wordWrapSplit(token)
+                        do
+                            local j = 0
+                            while j < #characters do
+                                local char = characters[j + 1]
+                                local lastChar = char
+                                local k = 1
+                                while characters[j + k + 1] do
+                                    local nextChar = characters[j + k + 1]
+                                    if not ____exports.TextMetrics:canBreakChars(
+                                        lastChar,
+                                        nextChar,
+                                        token,
+                                        j,
+                                        style.breakWords
+                                    ) then
+                                        char = char .. nextChar
+                                    else
+                                        break
+                                    end
+                                    lastChar = nextChar
+                                    k = k + 1
+                                end
+                                j = j + (k - 1)
+                                local characterWidth = ____exports.TextMetrics:getFromCache(char, letterSpacing, cache, context)
+                                if characterWidth + width > wordWrapWidth then
+                                    lines = lines .. ____exports.TextMetrics:addLine(line)
+                                    canPrependSpaces = false
+                                    line = ""
+                                    width = 0
+                                end
+                                line = line .. char
+                                width = width + characterWidth
+                                j = j + 1
+                            end
+                        end
+                    else
+                        if #line > 0 then
+                            lines = lines .. ____exports.TextMetrics:addLine(line)
+                            line = ""
+                            width = 0
+                        end
+                        local isLastToken = i == #tokens - 1
+                        lines = lines .. ____exports.TextMetrics:addLine(token, not isLastToken)
+                        canPrependSpaces = false
+                        line = ""
+                        width = 0
+                    end
+                else
+                    if tokenWidth + width > wordWrapWidth then
+                        canPrependSpaces = false
+                        lines = lines .. ____exports.TextMetrics:addLine(line)
+                        line = ""
+                        width = 0
+                    end
+                    if #line > 0 or not ____exports.TextMetrics:isBreakingSpace(token) or canPrependSpaces then
+                        line = line .. token
+                        width = width + tokenWidth
+                    end
+                end
+            end
+            ::__continue24::
+            i = i + 1
+        end
+    end
+    lines = lines .. ____exports.TextMetrics:addLine(line, false)
+    return lines
+end
+function TextMetrics.addLine(self, line, newLine)
+    if newLine == nil then
+        newLine = true
+    end
+    line = ____exports.TextMetrics:trimRight(line)
+    line = newLine and line .. "\n" or line
+    return line
+end
+function TextMetrics.getFromCache(self, key, letterSpacing, cache, context)
+    local width = cache[key]
+    if type(width) ~= "number" then
+        width = ____exports.TextMetrics:_measureText(key, letterSpacing, context) + letterSpacing
+        cache[key] = width
+    end
+    return width
+end
+function TextMetrics.collapseSpaces(self, whiteSpace)
+    return whiteSpace == "normal" or whiteSpace == "pre-line"
+end
+function TextMetrics.collapseNewlines(self, whiteSpace)
+    return whiteSpace == "normal"
+end
+function TextMetrics.trimRight(self, text)
+    if type(text) ~= "string" then
+        return ""
+    end
+    do
+        local i = #text - 1
+        while i >= 0 do
+            local char = __TS__StringAccess(text, i)
+            if not ____exports.TextMetrics:isBreakingSpace(char) then
+                break
+            end
+            text = string.sub(text, 1, -2)
+            i = i - 1
+        end
+    end
+    return text
+end
+function TextMetrics.isNewline(self, char)
+    if type(char) ~= "string" then
+        return false
+    end
+    return __TS__ArrayIncludes(
+        ____exports.TextMetrics._newlines,
+        string.byte(char, 1) or 0 / 0
+    )
+end
+function TextMetrics.isBreakingSpace(self, char, _nextChar)
+    if type(char) ~= "string" then
+        return false
+    end
+    return __TS__ArrayIncludes(
+        ____exports.TextMetrics._breakingSpaces,
+        string.byte(char, 1) or 0 / 0
+    )
+end
+function TextMetrics.tokenize(self, text)
+    local tokens = {}
+    local token = ""
+    if type(text) ~= "string" then
+        return tokens
+    end
+    do
+        local i = 0
+        while i < #text do
+            do
+                local char = __TS__StringAccess(text, i)
+                local nextChar = __TS__StringAccess(text, i + 1)
+                if ____exports.TextMetrics:isBreakingSpace(char, nextChar) or ____exports.TextMetrics:isNewline(char) then
+                    if token ~= "" then
+                        tokens[#tokens + 1] = token
+                        token = ""
+                    end
+                    tokens[#tokens + 1] = char
+                    goto __continue57
+                end
+                token = token .. char
+            end
+            ::__continue57::
+            i = i + 1
+        end
+    end
+    if token ~= "" then
+        tokens[#tokens + 1] = token
+    end
+    return tokens
+end
+function TextMetrics.canBreakWords(self, _token, breakWords)
+    return breakWords
+end
+function TextMetrics.canBreakChars(self, _char, _nextChar, _token, _index, _breakWords)
+    return true
+end
+function TextMetrics.wordWrapSplit(self, token)
+    return ____exports.TextMetrics:graphemeSegmenter(token)
+end
+function TextMetrics.measureFont(self, font)
+    if ____exports.TextMetrics._fonts[font] then
+        return ____exports.TextMetrics._fonts[font]
+    end
+    local context = ____exports.TextMetrics._context
+    context.font = font
+    local extents = context:getFontExtents()
+    local properties = {ascent = extents.ascent, descent = extents.descent, fontSize = extents.ascent + extents.descent}
+    ____exports.TextMetrics._fonts[font] = properties
+    return properties
+end
+function TextMetrics.clearMetrics(self, font)
+    if font then
+        __TS__Delete(____exports.TextMetrics._fonts, font)
+    else
+        ____exports.TextMetrics._fonts = {}
+    end
+end
+TextMetrics.METRICS_STRING = "|ÉqÅ"
+TextMetrics.BASELINE_SYMBOL = "M"
+TextMetrics.BASELINE_MULTIPLIER = 1.4
+TextMetrics.HEIGHT_MULTIPLIER = 2
+TextMetrics.graphemeSegmenter = (function()
+    return function(____, s) return {__TS__Spread(s)} end
+end)(nil)
+TextMetrics.experimentalLetterSpacing = false
+TextMetrics._fonts = {}
+TextMetrics._newlines = {10, 13}
+TextMetrics._breakingSpaces = {
+    9,
+    32,
+    8192,
+    8193,
+    8194,
+    8195,
+    8196,
+    8197,
+    8198,
+    8200,
+    8201,
+    8202,
+    8287,
+    12288
+}
+return ____exports
+ end,
+["text.Text"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__InstanceOf = ____lualib.__TS__InstanceOf
+local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local ____exports = {}
+local ____core = require("core.index")
+local Rectangle = ____core.Rectangle
+local settings = ____core.settings
+local Texture = ____core.Texture
+local utils = ____core.utils
+local ____sprite = require("sprite.index")
+local Sprite = ____sprite.Sprite
+local ____TextMetrics = require("text.TextMetrics")
+local TextMetrics = ____TextMetrics.TextMetrics
+local ____TextStyle = require("text.TextStyle")
+local TextStyle = ____TextStyle.TextStyle
+local defaultDestroyOptions = {texture = true, children = false, baseTexture = true}
+--- A Text Object will create a line or multiple lines of text.
+-- 
+-- The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
+-- 
+-- The primary advantage of this class over BitmapText is that you have great control over the style of the text,
+-- which you can change at runtime.
+-- 
+-- The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
+-- When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
+-- 
+-- To split a line you can use '\n' in your text string, or, on the `style` object,
+-- change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
+-- 
+-- A Text can be created directly from a string and a style object,
+-- which can be generated [here](https://pixijs.io/pixi-text-style).
+-- 
+-- @example import { Text } from 'pixi.js';
+-- 
+-- const text = new Text('This is a PixiJS text', {
+--     fontFamily: 'Arial',
+--     fontSize: 24,
+--     fill: 0xff1010,
+--     align: 'center',
+-- });
+-- @memberof PIXI
+____exports.Text = __TS__Class()
+local Text = ____exports.Text
+Text.name = "Text"
+__TS__ClassExtends(Text, Sprite)
+function Text.prototype.____constructor(self, text, style)
+    local canvas = settings.ADAPTER:createCanvas(3, 3)
+    local texture = Texture:from(canvas)
+    texture.orig = __TS__New(Rectangle)
+    texture.trim = __TS__New(Rectangle)
+    Sprite.prototype.____constructor(self, texture)
+    self.canvas = canvas
+    self.context = canvas:getContext("2d")
+    self._resolution = ____exports.Text.defaultResolution or settings.RESOLUTION
+    self._autoResolution = ____exports.Text.defaultAutoResolution
+    self._text = nil
+    self._style = nil
+    self._styleListener = nil
+    self._font = ""
+    self.text = text or ""
+    self.style = style
+    self.localStyleID = -1
+    self.dirty = false
+end
+__TS__SetDescriptor(
+    Text.prototype,
+    "width",
+    {
+        get = function(self)
+            self:updateText(true)
+            return math.abs(self.scale.x) * self._texture.orig.width
+        end,
+        set = function(self, value)
+            self:updateText(true)
+            local s = utils:sign(self.scale.x) or 1
+            self.scale.x = s * value / self._texture.orig.width
+            self._width = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Text.prototype,
+    "height",
+    {
+        get = function(self)
+            self:updateText(true)
+            return math.abs(self.scale.y) * self._texture.orig.height
+        end,
+        set = function(self, value)
+            self:updateText(true)
+            local s = utils:sign(self.scale.y) or 1
+            self.scale.y = s * value / self._texture.orig.height
+            self._height = value
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Text.prototype,
+    "style",
+    {
+        get = function(self)
+            return self._style
+        end,
+        set = function(self, style)
+            style = style or ({})
+            if __TS__InstanceOf(style, TextStyle) then
+                self._style = style
+            else
+                self._style = __TS__New(TextStyle, style)
+            end
+            self.localStyleID = -1
+            self.dirty = true
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Text.prototype,
+    "text",
+    {
+        get = function(self)
+            return self._text
+        end,
+        set = function(self, text)
+            text = (text == nil or text == nil) and "" or text
+            text = type(text) == "number" and tostring(text) or text
+            if self._text == text then
+                return
+            end
+            self._text = text
+            self.dirty = true
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Text.prototype,
+    "resolution",
+    {
+        get = function(self)
+            return self._resolution
+        end,
+        set = function(self, value)
+            self._autoResolution = false
+            if self._resolution == value then
+                return
+            end
+            self._resolution = value
+            self.dirty = true
+        end
+    },
+    true
+)
+function Text.prototype.updateText(self, respectDirty)
+    local style = self._style
+    if self.localStyleID ~= style.styleID then
+        self.dirty = true
+        self.localStyleID = style.styleID
+    end
+    if not self.dirty and respectDirty then
+        return
+    end
+    self._font = self._style:toFontString()
+    local context = self.context
+    local measured = TextMetrics:measureText(self._text or " ", self._style, self._style.wordWrap, self.canvas)
+    local width = measured.width
+    local height = measured.height
+    local lines = measured.lines
+    local lineHeight = measured.lineHeight
+    local lineWidths = measured.lineWidths
+    local maxLineWidth = measured.maxLineWidth
+    local fontProperties = measured.fontProperties
+    self.canvas:setDimensions(
+        math.ceil(math.ceil(math.max(1, width) + style.padding * 2) * self._resolution),
+        math.ceil(math.ceil(math.max(1, height) + style.padding * 2) * self._resolution)
+    )
+    context:scale(self._resolution, self._resolution)
+    context:clearRect(0, 0, self.canvas.width, self.canvas.height)
+    context.font = self._font
+    context.lineWidth = style.strokeThickness
+    context.lineJoin = style.lineJoin
+    context.miterLimit = style.miterLimit
+    local linePositionX
+    local linePositionY
+    local passesCount = style.dropShadow and 2 or 1
+    do
+        local i = 0
+        while i < passesCount do
+            local isShadowPass = style.dropShadow and i == 0
+            local dsOffsetText = isShadowPass and math.ceil(math.max(1, height) + style.padding * 2) or 0
+            if false then
+            else
+                context.fillStyle = self:_generateFillStyle(style, lines, measured)
+                context.strokeStyle = style.stroke
+            end
+            local linePositionYShift = (lineHeight - fontProperties.fontSize) / 2
+            if lineHeight - fontProperties.fontSize < 0 then
+                linePositionYShift = 0
+            end
+            do
+                local i = 0
+                while i < #lines do
+                    linePositionX = style.strokeThickness / 2
+                    linePositionY = style.strokeThickness / 2 + i * lineHeight + fontProperties.ascent + linePositionYShift
+                    if style.align == "right" then
+                        linePositionX = linePositionX + (maxLineWidth - lineWidths[i + 1])
+                    elseif style.align == "center" then
+                        linePositionX = linePositionX + (maxLineWidth - lineWidths[i + 1]) / 2
+                    end
+                    if style.stroke ~= "" and style.stroke ~= 0 and style.strokeThickness ~= 0 then
+                        self:drawLetterSpacing(lines[i + 1], linePositionX + style.padding, linePositionY + style.padding - dsOffsetText, true)
+                    end
+                    if style.fill ~= "" and style.fill ~= nil then
+                        self:drawLetterSpacing(lines[i + 1], linePositionX + style.padding, linePositionY + style.padding - dsOffsetText)
+                    end
+                    i = i + 1
+                end
+            end
+            i = i + 1
+        end
+    end
+    self:updateTexture()
+end
+function Text.prototype.drawLetterSpacing(self, text, x, y, isStroke)
+    if isStroke == nil then
+        isStroke = false
+    end
+    local style = self._style
+    local letterSpacing = style.letterSpacing
+    local useExperimentalLetterSpacing = false
+    if TextMetrics.experimentalLetterSpacingSupported then
+        self.context.letterSpacing = "0px"
+    end
+    if letterSpacing == 0 or useExperimentalLetterSpacing then
+        if isStroke then
+            self.context:strokeText(text, x, y)
+        else
+            self.context:fillText(text, x, y)
+        end
+        return
+    end
+    local currentPosition = x
+    local stringArray = TextMetrics:graphemeSegmenter(text)
+    local previousWidth = self.context:measureText(text).width
+    local currentWidth = 0
+    do
+        local i = 0
+        while i < #stringArray do
+            local currentChar = stringArray[i + 1]
+            if isStroke then
+                self.context:strokeText(currentChar, currentPosition, y)
+            else
+                self.context:fillText(currentChar, currentPosition, y)
+            end
+            local textStr = ""
+            do
+                local j = i + 1
+                while j < #stringArray do
+                    textStr = textStr .. stringArray[j + 1]
+                    j = j + 1
+                end
+            end
+            currentWidth = self.context:measureText(textStr).width
+            currentPosition = currentPosition + (previousWidth - currentWidth + letterSpacing)
+            previousWidth = currentWidth
+            i = i + 1
+        end
+    end
+end
+function Text.prototype.updateTexture(self)
+    local canvas = self.canvas
+    if self._style.trim then
+        local trimmed = utils:trimCanvas(canvas)
+        if trimmed.data then
+            canvas.width = trimmed.width
+            canvas.height = trimmed.height
+            self.context:putImageData(trimmed.data, 0, 0)
+        end
+    end
+    local texture = self._texture
+    local style = self._style
+    local padding = style.trim and 0 or style.padding
+    local baseTexture = texture.baseTexture
+    if texture.trim then
+        local ____texture_trim_1 = texture.trim
+        local ____temp_0 = canvas.width / self._resolution
+        texture._frame.width = ____temp_0
+        ____texture_trim_1.width = ____temp_0
+        local ____texture_trim_3 = texture.trim
+        local ____temp_2 = canvas.height / self._resolution
+        texture._frame.height = ____temp_2
+        ____texture_trim_3.height = ____temp_2
+        texture.trim.x = -padding
+        texture.trim.y = -padding
+    end
+    texture.orig.width = texture._frame.width - padding * 2
+    texture.orig.height = texture._frame.height - padding * 2
+    self:_onTextureUpdate()
+    baseTexture:setRealSize(canvas.width, canvas.height, self._resolution)
+    self.dirty = false
+end
+function Text.prototype._renderCanvas(self, renderer)
+    if self._autoResolution and self._resolution ~= renderer.resolution then
+        self._resolution = renderer.resolution
+        self.dirty = true
+    end
+    self:updateText(true)
+    Sprite.prototype._renderCanvas(self, renderer)
+end
+function Text.prototype.updateTransform(self)
+    self:updateText(true)
+    Sprite.prototype.updateTransform(self)
+end
+function Text.prototype.getBounds(self, skipUpdate, rect)
+    self:updateText(true)
+    if self._textureID == -1 then
+        skipUpdate = false
+    end
+    return Sprite.prototype.getBounds(self, skipUpdate, rect)
+end
+function Text.prototype.getLocalBounds(self, rect)
+    self:updateText(true)
+    return Sprite.prototype.getLocalBounds(self, rect)
+end
+function Text.prototype._calculateBounds(self)
+    self:calculateVertices()
+    self._bounds:addQuad(self.vertexData)
+end
+function Text.prototype._generateFillStyle(self, style, lines, metrics)
+    local fillStyle = style.fill
+    if not __TS__ArrayIsArray(fillStyle) then
+        return fillStyle
+    elseif #fillStyle == 1 then
+        return fillStyle[1]
+    end
+    error(
+        __TS__New(Error, "Gradient style unimplemented"),
+        0
+    )
+end
+function Text.prototype.destroy(self, options)
+    if type(options) == "boolean" then
+        options = {children = options}
+    end
+    options = __TS__ObjectAssign({}, defaultDestroyOptions, options)
+    Sprite.prototype.destroy(self, options)
+    self.context = nil
+    self.canvas = nil
+    self._style = nil
+end
+Text.defaultAutoResolution = true
+return ____exports
+ end,
+["text.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("text.const")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("text.Text")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("text.TextMetrics")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("text.TextStyle")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
 ["index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
@@ -15934,16 +19462,20 @@ local ____display = require("display.index")
 local Container = ____display.Container
 local ____graphics = require("graphics.index")
 local Graphics = ____graphics.Graphics
+local ____text = require("text.index")
+local Text = ____text.Text
 function ____exports.setup(self)
     local renderer = __TS__New(Renderer, {width = 150, height = 80})
     local stage = __TS__New(Container)
-    local content = __TS__New(Graphics)
+    local content = stage:addChild(__TS__New(Graphics))
     content.x = 10
     content.y = 10
     content:beginFill(5873407)
     content:drawRect(0, 0, 50, 10)
     content:endFill()
-    stage:addChild(content)
+    local text = stage:addChild(__TS__New(Text, "Hello", {fill = 16777215}))
+    text.x = 10
+    text.y = 10
     renderer:render(stage)
     h.setup()
     h.add_image(renderer.canvasContext.rootContext.surface, {buffer = 0, row = 0, col = 0})

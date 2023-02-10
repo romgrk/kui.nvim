@@ -39,39 +39,27 @@ const globalNamespace = (_G as any)
 // create, and consume so much memory, that the browser appears frozen.
 const MAX_ARRAY_LENGTH = 1e5;
 
-// Approximations of internal ECMAScript conversion functions
-const ECMAScript = (function () {
-  // Stash a copy in case other scripts modify these
-  const toString = (o: Object) => o.toString()
-  const hasProp = (o: Object, f: string | number) => o.hasOwnProperty(f)
 
-  return {
-    // Class returns internal [[Class]] property, used to avoid cross-frame instanceof issues:
-    Class: function (v: any) { return toString(v).replace('[object ', '').replace(']', ''); },
-    HasProperty: function (o: any, p: string | number) { return p in o; },
-    HasOwnProperty: function (o: any, p: string | number) { return hasProp(o, p); },
-    IsCallable: function (o: any) { return typeof o === 'function'; },
-    ToInt32: function (v: number) { return v >> 0; },
-    ToUint32: function (v: number) { return v >>> 0; }
-  };
-}());
+// Stash a copy in case other scripts modify these
+const toString = (o: Object) => o.toString()
+// const hasProp = (o: Object, f: string | number) => o.hasOwnProperty(f)
+
+// Approximations of internal ECMAScript conversion functions
+// Class returns internal [[Class]] property, used to avoid cross-frame instanceof issues:
+/** @noSelf */
+const ECMA_Class = (v: any) => { return toString(v).replace('[object ', '').replace(']', ''); }
+// const ECMA_HasProperty = (o: any, p: string | number) => { return p in o; }
+// const ECMA_HasOwnProperty = (o: any, p: string | number) => { return hasProp(o, p); }
+// const ECMA_IsCallable = (o: any) => { return typeof o === 'function'; }
+/** @noSelf */
+const ECMA_ToInt32 = (v: number = 0) => { return v >> 0; }
+/** @noSelf */
+const ECMA_ToUint32 = (v: number = 0) => { return v >>> 0; }
 
 const LN2 = Math.LN2;
 
+/** @noSelf */
 function clamp(v: number, minimum: number, max: number) { return v < minimum ? minimum : v > max ? max : v; }
-
-const getOwnPropNames = function(o: Object) {
-  if (o !== Object(o)) {
-    throw new TypeError('Object.getOwnPropertyNames called on non-object');
-  }
-  const props = []
-  for (let p in o) {
-    if (ECMAScript.HasOwnProperty(o, p)) {
-      props.push(p);
-    }
-  }
-  return props;
-};
 
 // emulate ES5 getter/setter API using legacy APIs
 // http://blogs.msdn.com/b/ie/archive/2010/09/07/transitioning-existing-code-to-the-es5-getter-setter-apis.aspx
@@ -82,24 +70,24 @@ const defineProp = (o: Object, prop: any, descriptor: any) =>
 
 // ES5: Make obj[index] an alias for obj._getter(index)/obj._setter(index, value)
 // for index in 0 ... obj.length
-function makeArrayAccessors(obj: Record<string, any>) {
-  if (!defineProp) { return; }
-
-  if (obj.length > MAX_ARRAY_LENGTH) { throw new RangeError('Array too large for polyfill'); }
-
-  function makeArrayAccessor(index: number) {
-    defineProp(obj, index, {
-      get: function () { return obj._getter(index); },
-      set: function (v: number) { obj._setter(index, v); },
-      enumerable: true,
-      configurable: false
-    });
-  }
-
-  for (let i = 0; i < obj.length; i += 1) {
-    makeArrayAccessor(i);
-  }
-}
+// function makeArrayAccessors(obj: Record<string, any>) {
+//   if (!defineProp) { return; }
+//
+//   if (obj.length > MAX_ARRAY_LENGTH) { throw new RangeError('Array too large for polyfill'); }
+//
+//   function makeArrayAccessor(index: number) {
+//     defineProp(obj, index, {
+//       get: function () { return obj._getter(index); },
+//       set: function (v: number) { obj._setter(index, v); },
+//       enumerable: true,
+//       configurable: false
+//     });
+//   }
+//
+//   for (let i = 0; i < obj.length; i += 1) {
+//     makeArrayAccessor(i);
+//   }
+// }
 
 // Internal conversion functions:
 //    pack<Type>()   - take a number (interpreted as Type), output a byte array
@@ -142,8 +130,8 @@ function unpackU32(bytes: number[]) { return as_unsigned(bytes[0] << 24 | bytes[
 function packIEEE754(v: number, ebits: number, fbits: number) {
 
   let bias = (1 << (ebits - 1)) - 1;
-  let s, e, f,
-    i, bits, str, bytes;
+  let s, e, f, i, bytes;
+  let str = ''
 
   function roundToEven(n: number) {
     let w = Math.floor(n);
@@ -190,9 +178,11 @@ function packIEEE754(v: number, ebits: number, fbits: number) {
   }
 
   // Pack sign, exponent, fraction
-  bits = [];
-  for (i = fbits; i; i -= 1) { bits.push((f % 2) !== 0 ? 1 : 0); f = Math.floor(f / 2); }
-  for (i = ebits; i; i -= 1) { bits.push((e % 2) !== 0 ? 1 : 0); e = Math.floor(e / 2); }
+  const bits = [];
+
+  for (i = fbits; i > 0; i -= 1) { bits.push((f % 2) !== 0 ? 1 : 0); f = Math.floor(f / 2); }
+  for (i = ebits; i > 0; i -= 1) { bits.push((e % 2) !== 0 ? 1 : 0); e = Math.floor(e / 2); }
+
   bits.push(s ? 1 : 0);
   bits.reverse();
   str = bits.join('');
@@ -256,7 +246,7 @@ class ArrayBufferClass {
   _bytes: number[]
 
   constructor(length: number) {
-    length = ECMAScript.ToInt32(length);
+    length = ECMA_ToInt32(length);
     if (length < 0) { throw new RangeError('ArrayBufferClass size is not a small enough positive integer'); }
 
     this.byteLength = length;
@@ -277,11 +267,11 @@ globalNamespace.ArrayBuffer = ArrayBufferClass
 
 // NOTE: this constructor is not exported
 class ArrayBufferView {
-  buffer: ArrayBufferLike
+  buffer: ArrayBufferClass
   byteOffset: number
   byteLength: number
 
-  constructor(buffer: ArrayBufferLike, byteOffset: number, byteLength: number) {
+  constructor(buffer: ArrayBufferClass, byteOffset: number, byteLength: number) {
     this.buffer = buffer
     this.byteOffset = byteOffset
     this.byteLength = byteLength
@@ -305,7 +295,7 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
     _pack = pack
     _unpack = unpack
 
-    constructor(buffer: TypedArrayClass | ArrayBufferLike | number, byteOffset: number, length?: number) {
+    constructor(buffer: TypedArrayClass | ArrayBufferClass | number, byteOffset: number, length?: number) {
       let i, s;
 
       if (typeof buffer === 'number') {
@@ -318,7 +308,7 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
         super(new ArrayBuffer(byteLength) as any, 0, ownLength)
 
         this.byteLength = byteLength;
-        this.length = ECMAScript.ToInt32(buffer);
+        this.length = ECMA_ToInt32(buffer);
 
       } else if (typeof buffer === 'object' && buffer.constructor === TypedArrayClass) {
         // Constructor(TypedArray array)
@@ -334,11 +324,11 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
           this._setter(i, buffer._getter(i));
         }
       } else if (typeof buffer === 'object'
-          && !(buffer instanceof ArrayBuffer || ECMAScript.Class(buffer) === 'ArrayBuffer')) {
+          && !(buffer instanceof ArrayBuffer || ECMA_Class(buffer) === 'ArrayBuffer')) {
         // Constructor(sequence<type> array)
         const sequence = buffer;
 
-        const length = ECMAScript.ToUint32((sequence as any).length);
+        const length = ECMA_ToUint32((sequence as any).length);
         const byteLength = length * bytesPerElement;
         const ownBuffer = new ArrayBuffer(byteLength) as any;
 
@@ -350,11 +340,11 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
           this._setter(i, Number(s));
         }
       } else if (typeof buffer === 'object'
-                  && (buffer instanceof ArrayBuffer || ECMAScript.Class(buffer) === 'ArrayBuffer')) {
+                  && (buffer instanceof ArrayBuffer || ECMA_Class(buffer) === 'ArrayBuffer')) {
         // Constructor(ArrayBuffer buffer,
         //             optional unsigned long byteOffset, optional unsigned long length)
 
-        super(buffer as any, ECMAScript.ToUint32(byteOffset), buffer.byteLength)
+        super(buffer as any, ECMA_ToUint32(byteOffset), buffer.byteLength)
 
         if (this.byteOffset > this.buffer.byteLength) {
           throw new RangeError('byteOffset out of range');
@@ -374,7 +364,7 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
           }
           this.length = this.byteLength / this.BYTES_PER_ELEMENT;
         } else {
-          this.length = ECMAScript.ToUint32(length);
+          this.length = ECMA_ToUint32(length);
           this.byteLength = this.length * this.BYTES_PER_ELEMENT;
         }
 
@@ -387,25 +377,42 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
 
       this.constructor = TypedArrayClass;
 
-      makeArrayAccessors(this);
+      // makeArrayAccessors(this);
+    }
+
+    [key: string | number | symbol]: any;
+
+    __index(key: any) {
+      if (key in TypedArrayClass.prototype)
+          return TypedArrayClass.prototype[key as keyof typeof TypedArrayClass.prototype] as any
+      return this._getter(key)
+    }
+
+    __newindex(key: any, value: number) {
+      if (typeof key === 'string') {
+        rawset(this, key, value as any)
+      } else {
+        this._setter(key, value)
+      }
+      return value
     }
 
     // getter type (unsigned long index);
     _getter(index: number): number {
-      if (arguments.length < 1) { throw new SyntaxError('Not enough arguments'); }
-
-      index = ECMAScript.ToUint32(index);
+      index = ECMA_ToUint32(index);
       if (index >= this.length) {
         return 0;
       }
 
+      const buffer = this.buffer;
       let bytes = [];
       for (let i = 0, o = this.byteOffset + (index * this.BYTES_PER_ELEMENT);
         i < this.BYTES_PER_ELEMENT;
         i += 1, o += 1) {
-        bytes.push((this.buffer as unknown as ArrayBufferClass)._bytes[o]);
+        bytes.push(buffer._bytes[o]);
       }
-      return this._unpack(bytes);
+      const _unpack = rawget(this, '_unpack')
+      return _unpack(bytes);
     }
 
     // NONSTANDARD: convenience alias for getter: type get(unsigned long index);
@@ -413,16 +420,20 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
 
     // setter void (unsigned long index, type value);
     _setter(index: number, value: number) {
+      index = ECMA_ToUint32(index);
 
-      index = ECMAScript.ToUint32(index);
-      if (index < this.length) {
-        let bytes = this._pack(value);
-        let i;
-        let o;
-        for (i = 0, o = this.byteOffset + (index * this.BYTES_PER_ELEMENT);
-          i < this.BYTES_PER_ELEMENT;
-          i += 1, o += 1) {
-          (this.buffer as unknown as ArrayBufferClass)._bytes[o] = bytes[i];
+      const length = rawget(this, 'length')
+      const _pack = rawget(this, '_pack')
+
+      if (index < length) {
+        const buffer = this.buffer;
+        const bytes = _pack(value);
+
+        let i = 0;
+        let o= this.byteOffset + (index * this.BYTES_PER_ELEMENT);
+
+        for (; i < this.BYTES_PER_ELEMENT; i += 1, o += 1) {
+          buffer._bytes[o] = bytes[i];
         }
       }
     };
@@ -438,7 +449,7 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
       if (typeof arguments[0] === 'object' && arguments[0].constructor === this.constructor) {
         // void set(TypedArray array, optional unsigned long offset);
         array = arguments[0];
-        offset = ECMAScript.ToUint32(arguments[1]);
+        offset = ECMA_ToUint32(arguments[1]);
 
         if (offset + array.length > this.length) {
           throw new RangeError('Offset plus length of array is out of range');
@@ -464,8 +475,8 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
       } else if (typeof arguments[0] === 'object' && typeof arguments[0].length !== 'undefined') {
         // void set(sequence<type> array, optional unsigned long offset);
         sequence = arguments[0];
-        len = ECMAScript.ToUint32(sequence.length);
-        offset = ECMAScript.ToUint32(arguments[1]);
+        len = ECMA_ToUint32(sequence.length);
+        offset = ECMA_ToUint32(arguments[1]);
 
         if (offset + len > this.length) {
           throw new RangeError('Offset plus length of array is out of range');
@@ -483,8 +494,8 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
     // TypedArray subarray(long begin, optional long end);
     subarray(start: number, end: number) {
 
-      start = ECMAScript.ToInt32(start);
-      end = ECMAScript.ToInt32(end);
+      start = ECMA_ToInt32(start);
+      end = ECMA_ToInt32(end);
 
       if (arguments.length < 1) { start = 0; }
       if (arguments.length < 2) { end = this.length; }
@@ -514,15 +525,15 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
   return TypedArrayClass;
 }
 
-globalNamespace.Int8Array = makeConstructor(1, packI8, unpackI8);
-globalNamespace.Uint8Array = makeConstructor(1, packU8, unpackU8);
-globalNamespace.Uint8ClampedArray = makeConstructor(1, packU8Clamped, unpackU8);
-globalNamespace.Int16Array = makeConstructor(2, packI16, unpackI16);
-globalNamespace.Uint16Array = makeConstructor(2, packU16, unpackU16);
-globalNamespace.Int32Array = makeConstructor(4, packI32, unpackI32);
-globalNamespace.Uint32Array = makeConstructor(4, packU32, unpackU32);
-globalNamespace.Float32Array = makeConstructor(4, packF32, unpackF32);
-globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
+export const Int8Array = globalNamespace.Int8Array = makeConstructor(1, packI8, unpackI8);
+export const Uint8Array = globalNamespace.Uint8Array = makeConstructor(1, packU8, unpackU8);
+export const Uint8ClampedArray = globalNamespace.Uint8ClampedArray = makeConstructor(1, packU8Clamped, unpackU8);
+export const Int16Array = globalNamespace.Int16Array = makeConstructor(2, packI16, unpackI16);
+export const Uint16Array = globalNamespace.Uint16Array = makeConstructor(2, packU16, unpackU16);
+export const Int32Array = globalNamespace.Int32Array = makeConstructor(4, packI32, unpackI32);
+export const Uint32Array = globalNamespace.Uint32Array = makeConstructor(4, packU32, unpackU32);
+export const Float32Array = globalNamespace.Float32Array = makeConstructor(4, packF32, unpackF32);
+export const Float64Array = globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
 
 //
 // 6 The DataView View Type
@@ -530,7 +541,7 @@ globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
 
 // (function () {
 //  function r(array, index) {
-//    return ECMAScript.IsCallable(array.get) ? array.get(index) : array[index];
+//    return ECMA_IsCallable(array.get) ? array.get(index) : array[index];
 //  }
 //
 //  let IS_BIG_ENDIAN = (function () {
@@ -546,13 +557,13 @@ globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
 //  function DataView(buffer, byteOffset, byteLength) {
 //    if (arguments.length === 0) {
 //      buffer = new exports.ArrayBufferClass(0);
-//    } else if (!(buffer instanceof exports.ArrayBufferClass || ECMAScript.Class(buffer) === 'ArrayBufferClass')) {
+//    } else if (!(buffer instanceof exports.ArrayBufferClass || ECMA_Class(buffer) === 'ArrayBufferClass')) {
 //      throw new TypeError('TypeError');
 //    }
 //
 //    this.buffer = buffer || new exports.ArrayBufferClass(0);
 //
-//    this.byteOffset = ECMAScript.ToUint32(byteOffset);
+//    this.byteOffset = ECMA_ToUint32(byteOffset);
 //    if (this.byteOffset > this.buffer.byteLength) {
 //      throw new RangeError('byteOffset out of range');
 //    }
@@ -560,7 +571,7 @@ globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
 //    if (arguments.length < 3) {
 //      this.byteLength = this.buffer.byteLength - this.byteOffset;
 //    } else {
-//      this.byteLength = ECMAScript.ToUint32(byteLength);
+//      this.byteLength = ECMA_ToUint32(byteLength);
 //    }
 //
 //    if ((this.byteOffset + this.byteLength) > this.buffer.byteLength) {
@@ -572,7 +583,7 @@ globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
 //  function makeGetter(arrayType) {
 //    return function (byteOffset, littleEndian) {
 //
-//      byteOffset = ECMAScript.ToUint32(byteOffset);
+//      byteOffset = ECMA_ToUint32(byteOffset);
 //
 //      if (byteOffset + arrayType.BYTES_PER_ELEMENT > this.byteLength) {
 //        throw new RangeError('Array index out of range');
@@ -606,7 +617,7 @@ globalNamespace.Float64Array = makeConstructor(8, packF64, unpackF64);
 //  function makeSetter(arrayType) {
 //    return function (byteOffset, value, littleEndian) {
 //
-//      byteOffset = ECMAScript.ToUint32(byteOffset);
+//      byteOffset = ECMA_ToUint32(byteOffset);
 //      if (byteOffset + arrayType.BYTES_PER_ELEMENT > this.byteLength) {
 //        throw new RangeError('Array index out of range');
 //      }

@@ -886,7 +886,7 @@ sr.unmap_image = function(sr, isr)
 	C.cairo_surface_unmap_image(sr, isr)
 end
 
-sr.sub = ref_func(C.cairo_surface_create_for_rectangle, C.cairo_surface_destroy)
+sr.create_for_rectangle = ref_func(C.cairo_surface_create_for_rectangle, C.cairo_surface_destroy)
 
 map('CAIRO_SURFACE_OBSERVER_', {
 	'NORMAL',
@@ -1002,21 +1002,20 @@ sr.show_page = C.cairo_surface_show_page
 sr.has_show_text_glyphs = bool_func(C.cairo_surface_has_show_text_glyphs)
 
 M.image_surface = function(fmt, w, h)
-	if type(fmt) == 'table' then
-		local bmp = fmt
-		local fmt = M.cairo_format(bmp.format)
-		local sr = C.cairo_image_surface_create_for_data(
-			bmp.data, convert_prefix('CAIRO_FORMAT_', fmt), bmp.w, bmp.h, bmp.stride)
-		return ffi.gc(sr, function(sr)
-			local _ = bmp.data --pin it
-			C.cairo_surface_destroy(sr)
-		end)
-	else
-		local fmt = M.cairo_format(fmt)
-		return ffi.gc(
-			C.cairo_image_surface_create(convert_prefix('CAIRO_FORMAT_', fmt), w, h),
-			C.cairo_surface_destroy)
-	end
+	local fmt = M.cairo_format(fmt)
+	return ffi.gc(
+		C.cairo_image_surface_create(convert_prefix('CAIRO_FORMAT_', fmt), w, h),
+		C.cairo_surface_destroy)
+end
+
+M.image_surface_from_data = function(fmt, data, w, h, stride)
+	local format = convert_prefix('CAIRO_FORMAT_', M.cairo_format(fmt))
+	local srf = C.cairo_image_surface_create_for_data(
+		data, format, w, h, stride)
+	return ffi.gc(srf, function(srf_)
+		local _ = data --pin it
+		C.cairo_surface_destroy(srf)
+	end)
 end
 
 M.stride = function(fmt, width)

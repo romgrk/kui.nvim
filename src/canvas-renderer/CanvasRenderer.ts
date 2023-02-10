@@ -91,6 +91,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
     public readonly type: RENDERER_TYPE.CANVAS;
 
+    public readonly resolution: number = 1;
+
     /** When logging Pixi to the console, this is the name we will show */
     public readonly rendererLogId = 'Canvas';
 

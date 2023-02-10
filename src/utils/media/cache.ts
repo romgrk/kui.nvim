@@ -1,17 +1,8 @@
 import type {
-    // BaseTexture,
+    BaseTexture,
     // Program,
-    // Texture
+    Texture
 } from 'src/core';
-
-/**
- * @todo Describe property usage
- * @static
- * @name ProgramCache
- * @memberof PIXI.utils
- * @type {object}
- */
-// export const ProgramCache: {[key: string]: Program} = {};
 
 /**
  * @todo Describe property usage
@@ -20,7 +11,7 @@ import type {
  * @memberof PIXI.utils
  * @type {object}
  */
-// export const TextureCache: {[key: string]: Texture} = {};
+export const TextureCache: {[key: string]: Texture} = {};
 
 /**
  * @todo Describe property usage
@@ -29,42 +20,42 @@ import type {
  * @memberof PIXI.utils
  * @type {object}
  */
-// export const BaseTextureCache: {[key: string]: BaseTexture} = {};
+export const BaseTextureCache: {[key: string]: BaseTexture} = {};
 
 /**
  * Destroys all texture in the cache
  * @memberof PIXI.utils
  * @function destroyTextureCache
  */
-// export function destroyTextureCache(): void
-// {
-//     let key;
-//
-//     for (key in TextureCache)
-//     {
-//         TextureCache[key].destroy();
-//     }
-//     for (key in BaseTextureCache)
-//     {
-//         BaseTextureCache[key].destroy();
-//     }
-// }
+export function destroyTextureCache(): void
+{
+    let key;
+
+    for (key in TextureCache)
+    {
+        TextureCache[key].destroy();
+    }
+    for (key in BaseTextureCache)
+    {
+        BaseTextureCache[key].destroy();
+    }
+}
 
 /**
  * Removes all textures from cache, but does not destroy them
  * @memberof PIXI.utils
  * @function clearTextureCache
  */
-// export function clearTextureCache(): void
-// {
-//     let key;
-//
-//     for (key in TextureCache)
-//     {
-//         delete TextureCache[key];
-//     }
-//     for (key in BaseTextureCache)
-//     {
-//         delete BaseTextureCache[key];
-//     }
-// }
+export function clearTextureCache(): void
+{
+    let key;
+
+    for (key in TextureCache)
+    {
+        delete TextureCache[key];
+    }
+    for (key in BaseTextureCache)
+    {
+        delete BaseTextureCache[key];
+    }
+}

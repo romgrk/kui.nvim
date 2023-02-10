@@ -1,15 +1,34 @@
 declare module 'kui.cairo.cairo' {
   type ImageType = 'argb32' | 'rgb24'
 
-  class ImageSurface {
+  class Surface {
     flush(): void;
     context(): Context;
+    data(): number[];
+    create_for_rectangle(x: number, y: number, width: number, height: number): Surface;
   }
 
   class Pattern {}
+  class TextExtents {
+    x_bearing: number;
+    y_bearing: number;
+    width: number;
+    height: number;
+    x_advance: number;
+    y_advance: number;
+  }
+  class FontExtents {
+    ascent: number;
+    descent: number;
+    height: number;
+    max_x_advance: number;
+    max_y_advance: number;
+  }
 
   /** @noSelf */
-  function image_surface(type: ImageType, width: number, height: number): ImageSurface;
+  function image_surface(type: ImageType, width: number, height: number): Surface;
+  /** @noSelf */
+  function image_surface_from_data(type: ImageType, data: number[], width: number, height: number, stride: number): Surface;
 
 
   type LineCap = 'butt' | 'round' | 'square'
@@ -20,6 +39,7 @@ declare module 'kui.cairo.cairo' {
     restore(): void;
 
     rgba(r: number, g: number, b: number, a: number): void;
+    source(source: Surface, x?: number, y?: number): void;
 
     font_face(name: string, slant: string, weight: string): void;
     font_size(size: number): void;
@@ -55,7 +75,7 @@ declare module 'kui.cairo.cairo' {
     close_path(): void;
     path_extents(): [number, number, number, number];
     mask(pattern: Pattern): void;
-    mask_surface(surface: ImageSurface, x: number, y: number): void;
+    mask_surface(surface: Surface, x: number, y: number): void;
     elliptic_arc(cx: number, cy: number, rx: number, ry: number, rotation: number, a1: number, a2: number): void;
     elliptic_arc_negative(cx: number, cy: number, rx: number, ry: number, rotation: number, a1: number, a2: number): void;
 
@@ -77,6 +97,8 @@ declare module 'kui.cairo.cairo' {
 
     show_text(text: string): void;
     text_path(text: string): void;
+    text_extents(text: string): TextExtents;
+    font_extents(): FontExtents;
   }
 
 

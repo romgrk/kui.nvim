@@ -1,6 +1,9 @@
-import { Canvas } from 'src/context2d'
+import { Context2D, Canvas } from 'src/context2d'
 
 export const settings = {
+  RESOLUTION: 1,
+  ROUND_PIXELS: true,
+
   RENDER_OPTIONS: {
     view: null,
     width: 800,
@@ -16,9 +19,10 @@ export const settings = {
   },
 
   ADAPTER: {
+    getCanvasRenderingContext2D: () => Context2D,
     createCanvas: (width: number, height: number): Canvas => {
       return new Canvas(width, height)
-    }
+    },
   }
 }
 

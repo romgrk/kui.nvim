@@ -40,12 +40,17 @@ export type CompositeOperation =
   | 'screen'
   | 'soft-light'
 
-export class Context2D {
+type TextMetrics = {
   width: number
   height: number
+}
 
-  surface: cairo.ImageSurface
+export class Context2D {
+  surface: cairo.Surface
   context: cairo.Context
+
+  private _width: number
+  private _height: number
 
   private _globalCompositeOperation: CompositeOperation
   private _globalAlpha: number
@@ -54,17 +59,34 @@ export class Context2D {
   private _font: string
 
   constructor(width: number, height: number) {
-    this.width = width
-    this.height = height
-
     this.surface = cairo.image_surface('argb32', width, height)
     this.context = this.surface.context()
+
+    this._width = width
+    this._height = height
 
     this._globalCompositeOperation = 'source-over'
     this._globalAlpha = 1.0
     this._fillColor = new Color(0x000000)
     this._strokeColor = new Color(0x000000)
     this._font = '10x sans-serif'
+  }
+
+  get width() { return this._width }
+  set width(width: number) { this.setDimensions(width, this._height) }
+  get height() { return this._height }
+  set height(height: number) { this.setDimensions(this._width, height) }
+
+  setDimensions(width: number, height: number) {
+    const surface = cairo.image_surface('argb32', width, height)
+    const context = surface.context()
+    this.surface.flush()
+    context.source(this.surface)
+    context.paint()
+    this.surface = surface
+    this.context = context
+    this._width = width
+    this._height = height
   }
 
   // canvas
@@ -129,6 +151,8 @@ export class Context2D {
   // imageSmoothingEnabled
   // imageSmoothingQuality
   // letterSpacing
+  get letterSpacing() { return '0px' }
+  set letterSpacing(value: string) { /* TODO: unimplemented */ }
   // lineDashOffset
   // shadowBlur
   // shadowColor
@@ -170,15 +194,45 @@ export class Context2D {
     this._fill()
   }
   // getContextAttributes()
-  // getImageData()
+  getImageData(x: number, y: number, width: number, height: number) {
+    const isSameDimensions =
+      x !== 0 && y !== 0 && width !== this._width && height !== this._height
+
+    if (isSameDimensions) {
+      const length = width * height * 4
+      const arrayLike = setmetatable(this.surface.data(), {
+        __len: () => length,
+      })
+
+      return new ImageData(width, height, arrayLike)
+    } else {
+      const surface = cairo.image_surface('argb32', width, height)
+      const context = surface.context()
+      context.source(this.surface, -x, -y)
+      context.paint()
+
+      const length = width * height * 4
+      const arrayLike = setmetatable(surface.data(), {
+        __len: () => length,
+      })
+
+      return new ImageData(width, height, arrayLike, [surface, context])
+    }
+  }
+  putImageData(image: ImageData, dx: number, dy: number) {
+    const surface = cairo.image_surface_from_data(
+      'argb32', image.data, image.width, image.height, 4
+    )
+    this.context.source(surface, -dx, -dy)
+    this.context.paint()
+  }
   // getLineDash()
   // isContextLost()
   // isPointInPath()
   // isPointInStroke()
   lineTo(x: number, y: number) { this.context.line_to(x, y) }
-  // measureText()
+  measureText(text: string): TextMetrics { return this.context.text_extents(text) }
   moveTo(x: number, y: number) { this.context.move_to(x, y) }
-  // putImageData()
   quadraticCurveTo(x1: number, y1: number, x2: number, y2: number) { this.context.quad_curve_to(x1, y1, x2, y2) }
   // reset()
   // resetTransform()
@@ -231,6 +285,10 @@ export class Context2D {
   getTransform(): DOMMatrix {
     throw new Error('unimplemented')
   }
+
+  // Non-standard methods
+
+  getFontExtents() { return this.context.font_extents() }
 }
 
 export class Canvas {
@@ -246,8 +304,33 @@ export class Canvas {
   get height() { return this.context.height }
   set height(value: number) { this.context.height = value }
 
+  /** Non-standard method to resize in one step */
+  setDimensions(width: number, height: number) {
+    this.context.setDimensions(width, height)
+  }
+
   getContext(_name: '2d') {
     return this.context
+  }
+}
+
+export class ImageData {
+  readonly width: number
+  readonly height: number
+  data: number[]
+
+  private _refs?: any[]
+
+  constructor(
+    width: number,
+    height: number,
+    data: number[],
+    refs?: any[],
+  ) {
+    this.width = width
+    this.height = height
+    this.data = data
+    this._refs = refs
   }
 }
 

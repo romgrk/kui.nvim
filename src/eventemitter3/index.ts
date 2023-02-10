@@ -159,7 +159,7 @@ export class EventEmitter<
   ): boolean {
     if (!this._events[event]) return false;
 
-    const listeners = this._events[event]
+    const listeners = this._events[event] as EE[];
 
     for (let i = 0; i < listeners.length; i++) {
       if (listeners[i].once)
