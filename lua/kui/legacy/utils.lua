@@ -81,20 +81,21 @@ function m.cairo_surface_to_bytes(surface)
   return rgba, length * 4
 end
 
+local png_bytes = nil
+
+local function save_png_callback(_, data, length)
+  local byte_data = ffi.cast('uint8_t*', data)
+  for i = 0, length - 1 do
+    table.insert(png_bytes, byte_data[i])
+  end
+  return cairo.enums.CAIRO_STATUS_.success
+end
+local save_png_callback_ptr = ffi.cast('cairo_write_func_t', save_png_callback)
+
 function m.cairo_surface_to_png_bytes(surface)
-  local bytes = {}
-
-  surface:save_png(function(_, data, length)
-    local byte_data = ffi.cast('uint8_t*', data)
-
-    for i = 0, length - 1 do
-      table.insert(bytes, byte_data[i])
-    end
-
-    return cairo.enums.CAIRO_STATUS_.success
-  end, nil)
-
-  return bytes
+  png_bytes = {}
+  surface:save_png(save_png_callback_ptr, nil)
+  return png_bytes
 end
 
 -- 1-indexed
