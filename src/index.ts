@@ -23,11 +23,11 @@ export function setup() {
   const stage = new Container()
 
   const container = stage.addChild(new Graphics())
-  container.x = 1
+  container.x = 0
   container.y = 0
   container.lineStyle(2, 0x20232C, 1)
   container.beginFill(0x3e4556)
-  container.drawRoundedRect(0, 0, width, height, 5)
+  container.drawRoundedRect(0, 0, width, height, 20)
   container.endFill()
 
   const content = stage.addChild(new Graphics())

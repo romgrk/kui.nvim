@@ -19661,7 +19661,7 @@ function ____exports.setup(self)
     local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
     local stage = __TS__New(Container)
     local container = stage:addChild(__TS__New(Graphics))
-    container.x = 1
+    container.x = 0
     container.y = 0
     container:lineStyle(2, 2106156, 1)
     container:beginFill(4080982)
@@ -19670,7 +19670,7 @@ function ____exports.setup(self)
         0,
         width,
         height,
-        5
+        20
     )
     container:endFill()
     local content = stage:addChild(__TS__New(Graphics))
