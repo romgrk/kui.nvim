@@ -130,19 +130,12 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
     }
 
     /**
-     * Destroys this System and optionally removes the canvas from the dom.
-     * @param {boolean} [removeView=false] - Whether to remove the canvas from the DOM.
+     * Destroys this System and removes the canvas from the dom.
      */
-    destroy(removeView: boolean): void
+    destroy(): void
     {
+        this._image?.delete({ free: true })
         this.renderer.off('postrender', this.onPostRender)
-
-        throw new Error('unimplemented')
-        // ka boom!
-        // if (removeView)
-        // {
-        //     this.element.parentNode?.removeChild(this.element);
-        // }
     }
 }
 

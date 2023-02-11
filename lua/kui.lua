@@ -11552,12 +11552,6 @@ return ____exports
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
-local Error = ____lualib.Error
-local RangeError = ____lualib.RangeError
-local ReferenceError = ____lualib.ReferenceError
-local SyntaxError = ____lualib.SyntaxError
-local TypeError = ____lualib.TypeError
-local URIError = ____lualib.URIError
 local ____exports = {}
 local api = require("kui.legacy.api")
 local ____kui_2Elegacy_2Eimage = require("kui.legacy.image")
@@ -11622,12 +11616,12 @@ function ViewSystem.prototype.resizeView(self, desiredScreenWidth, desiredScreen
     self.renderer:emit("resize", screenWidth, screenHeight)
     self.renderer.runners.resize:emit(self.screen.width, self.screen.height)
 end
-function ViewSystem.prototype.destroy(self, removeView)
+function ViewSystem.prototype.destroy(self)
+    local ____opt_2 = self._image
+    if ____opt_2 ~= nil then
+        ____opt_2:delete({free = true})
+    end
     self.renderer:off("postrender", self.onPostRender)
-    error(
-        __TS__New(Error, "unimplemented"),
-        0
-    )
 end
 systems:register("_view", ____exports.ViewSystem)
 return ____exports
@@ -19655,6 +19649,46 @@ local ____text = require("text.index")
 local Text = ____text.Text
 local ____animate = require("animate.index")
 local ticker = ____animate.ticker
+do
+    local ____export = require("animate.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("display.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("graphics.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("math.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("text.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
 function ____exports.setup(self)
     local width = 150
     local height = 80

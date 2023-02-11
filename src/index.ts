@@ -9,8 +9,13 @@ import { Graphics } from 'src/graphics'
 import { Text } from 'src/text'
 import { ticker } from 'src/animate'
 
-export function setup() {
+export * from 'src/animate'
+export * from 'src/display'
+export * from 'src/graphics'
+export * from 'src/math'
+export * from 'src/text'
 
+export function setup() {
   const width = 150
   const height = 80
 
