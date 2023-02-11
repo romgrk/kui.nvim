@@ -1,9 +1,7 @@
 import * as cairo from 'kui.cairo.cairo'
 import { settings } from 'src/settings'
 import { Color, ColorSource } from 'src/color'
-
 import { LineCap, LineJoin } from 'kui.cairo.cairo'
-export { LineCap, LineJoin } from 'kui.cairo.cairo'
 
 export type DOMMatrix = {
   a: number,

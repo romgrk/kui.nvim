@@ -1,5 +1,3 @@
-import type { Timer } from 'types/vim/loop'
-
 //- The amount of time between rendering the next part of the animation.
 const ANIMATION_FREQUENCY = 30
 
@@ -43,7 +41,7 @@ export class Animation {
   initial: number
   final: number
   start: number
-  timer: Timer | null
+  timer: vim.Timer | null
 
   constructor(
     fn: Function,

@@ -6291,7 +6291,7 @@ export interface Fn {
      * 			:echo stdpath("config")
      *
      */
-    stdpath: (what: unknown) => string;
+    stdpath: (what: string) => string;
     /**
      * convert String to Float
      * 		Convert String {expr} to a Float.  This mostly works the same

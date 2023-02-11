@@ -1,10 +1,4 @@
 
-export class Timer {
-  start(delay: number, repeat: number, fn: Function): void;
-  stop(): void;
-  close(): void;
-}
-
 type Callback<T> = (error: Error | null, data: T) => void;
 
 type FStat = {
@@ -26,6 +20,12 @@ type FStat = {
   atim: number;  /* Time of last access */
   mtim: number;  /* Time of last modification */
   ctim: number;  /* Time of last status change */
+}
+
+export class Timer {
+  start(delay: number, repeat: number, fn: Function): void;
+  stop(): void;
+  close(): void;
 }
 
 export interface Loop {
