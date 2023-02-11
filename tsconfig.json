@@ -11,7 +11,8 @@
       "./types/vim"
     ],
     "baseUrl": "./",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
   "tstl": {
     "luaTarget": "JIT",
