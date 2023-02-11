@@ -31,7 +31,7 @@ export interface IResourcePlugin<R, RO>
 }
 
 /**
- * Collection of installed resource types, class must extend {@link PIXI.Resource}.
+ * Collection of installed resource types, class must extend {_link PIXI.Resource}.
  * @example
  * class CustomResource extends PIXI.Resource {
  *     // MUST have source, options constructor signature
@@ -63,11 +63,11 @@ export const INSTALLED: Array<IResourcePlugin<any, any>> = [];
  * are auto-detectable must have a static `test` method and a constructor
  * with the arguments `(source, options?)`. Currently, the supported
  * resources for auto-detection include:
- *  - {@link PIXI.ImageResource}
- *  - {@link PIXI.CanvasResource}
- *  - {@link PIXI.VideoResource}
- *  - {@link PIXI.SVGResource}
- *  - {@link PIXI.BufferResource}
+ *  - {_link PIXI.ImageResource}
+ *  - {_link PIXI.CanvasResource}
+ *  - {_link PIXI.VideoResource}
+ *  - {_link PIXI.SVGResource}
+ *  - {_link PIXI.BufferResource}
  * @static
  * @memberof PIXI
  * @function autoDetectResource

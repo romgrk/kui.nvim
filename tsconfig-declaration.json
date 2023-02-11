@@ -15,17 +15,7 @@
       "types/*": ["../types/*"]
     },
     "baseUrl": "./src",
-    "rootDir": "./src"
-  },
-  "tstl": {
-    "luaTarget": "JIT",
-    "luaBundle": "./lua/kui.lua",
-    "luaBundleEntry": "./src/index.ts",
-    "noResolvePaths": [
-      "bit",
-      "kui.cairo.cairo",
-      "kui.legacy.api",
-      "kui.legacy.image"
-    ]
+    "rootDir": "./src",
+    "outFile": "./dist/bundle.d.ts"
   }
 }

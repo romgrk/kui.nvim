@@ -10861,7 +10861,7 @@ return ____exports
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 do
-    local ____canvas_2Drenderer = require("canvas-renderer.index")
+    local ____canvas_2Drenderer = require("index")
     local Renderer = ____canvas_2Drenderer.CanvasRenderer
     ____exports.Renderer = Renderer
 end
@@ -11895,7 +11895,7 @@ local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
---- Collection of installed resource types, class must extend {@link PIXI.Resource }.
+--- Collection of installed resource types, class must extend {_link PIXI.Resource}.
 -- 
 -- @example class CustomResource extends PIXI.Resource {
 --     // MUST have source, options constructor signature
@@ -11924,11 +11924,11 @@ ____exports.INSTALLED = {}
 -- are auto-detectable must have a static `test` method and a constructor
 -- with the arguments `(source, options?)`. Currently, the supported
 -- resources for auto-detection include:
---  - {@link PIXI.ImageResource }
---  - {@link PIXI.CanvasResource }
---  - {@link PIXI.VideoResource }
---  - {@link PIXI.SVGResource }
---  - {@link PIXI.BufferResource }
+--  - {_link PIXI.ImageResource}
+--  - {_link PIXI.CanvasResource}
+--  - {_link PIXI.VideoResource}
+--  - {_link PIXI.SVGResource}
+--  - {_link PIXI.BufferResource}
 -- 
 -- @static
 -- @memberof PIXI
