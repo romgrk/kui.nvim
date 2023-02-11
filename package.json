@@ -4,7 +4,7 @@
   "description": "A neovim UI framework using the kitty graphics protocol",
   "main": "index.js",
   "scripts": {
-    "build": "tstl",
+    "build": "tstl && node ./scripts/adjustPaths.js",
     "prepare": "npm run build",
     "start": "tstl --watch"
   },
@@ -27,7 +27,8 @@
   "devDependencies": {
     "lua-types": "^2.13.1",
     "typescript": "^4.9.5",
-    "typescript-to-lua": "^1.12.1"
+    "typescript-to-lua": "^1.12.1",
+    "walkdir": "^0.4.1"
   },
   "dependencies": {
     "colord": "^2.9.3"
