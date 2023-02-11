@@ -50,16 +50,18 @@ export interface IRendererOptions
 {
     /** The canvas to use as the view. If omitted, a new canvas will be created. */
     view?: any;
-    /**
-     * The width of the renderer's view.
-     * @default 800
-     */
-    width?: number;
-    /**
-     * The height of the renderer's view.
-     * @default 600
-     */
-    height?: number;
+
+    /** The buffer number of the renderer's view. */
+    buffer?: number;
+
+    /** The x of the renderer's view. */
+    col: number;
+    /** The y of the renderer's view. */
+    row: number;
+    /** The width of the renderer's view. */
+    width: number;
+    /** The height of the renderer's view. */
+    height: number;
 
     /**
      * The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`),

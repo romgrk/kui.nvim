@@ -6,9 +6,9 @@
     "moduleResolution": "node",
     "types": [
       "lua-types/jit",
-      "./types/vim",
       "./types/cairo",
-      "./types/lualib"
+      "./types/kui",
+      "./types/vim"
     ],
     "baseUrl": "./",
     "rootDir": "./src"
@@ -20,7 +20,8 @@
     "noResolvePaths": [
       "bit",
       "kui.cairo.cairo",
-      "kui.legacy"
+      "kui.legacy.api",
+      "kui.legacy.image"
     ]
   }
 }

@@ -4493,7 +4493,7 @@ function Color.prototype.normalize(self, value)
             error(
                 __TS__New(
                     Error,
-                    "Color: invalid input: " .. vim.inspect(values)
+                    "Color: invalid input: " .. tostring(vim.inspect(values))
                 ),
                 0
             )
@@ -10584,7 +10584,14 @@ function CanvasRenderer.prototype.____constructor(self, options)
     if ____options_clearBeforeRender_0 == nil then
         ____options_clearBeforeRender_0 = false
     end
-    local startupOptions = {background = {alpha = ____temp_1, color = ____temp_2, clearBeforeRender = ____options_clearBeforeRender_0}, _view = {height = options.height or 100, width = options.width or 100, view = options.view}}
+    local startupOptions = {background = {alpha = ____temp_1, color = ____temp_2, clearBeforeRender = ____options_clearBeforeRender_0}, _view = {
+        buffer = options.buffer,
+        row = options.row,
+        col = options.col,
+        height = options.height or 100,
+        width = options.width or 100,
+        view = options.view
+    }}
     self.type = RENDERER_TYPE.CANVAS
     self.options = options
     self.startup:run(startupOptions)
@@ -10651,7 +10658,6 @@ end
 function CanvasRenderer.prototype.reset(self)
 end
 function CanvasRenderer.prototype.render(self, displayObject, options)
-    print("Renderer#render")
     self.objectRenderer:render(displayObject, options)
     self.canvasContext.rootContext.surface:flush()
 end
@@ -11632,11 +11638,15 @@ local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
 local ____exports = {}
+local api = require("kui.legacy.api")
+local ____kui_2Elegacy_2Eimage = require("kui.legacy.image")
+local Image = ____kui_2Elegacy_2Eimage.Image
 local systems = require("core.systems")
 local ____math = require("math.index")
 local Rectangle = ____math.Rectangle
 local ____settings = require("settings")
 local settings = ____settings.settings
+api.setup()
 --- The view system manages the main canvas that is attached to the DOM.
 -- This main role is to deal with how the holding the view reference and dealing with how it is resized.
 -- 
@@ -11645,11 +11655,32 @@ ____exports.ViewSystem = __TS__Class()
 local ViewSystem = ____exports.ViewSystem
 ViewSystem.name = "ViewSystem"
 function ViewSystem.prototype.____constructor(self, renderer)
+    self.onPostRender = function()
+        if self._isTransmitting then
+            return
+        end
+        local surface = self.renderer.canvasContext.rootContext.surface
+        local image = Image.new(surface, {buffer = self._options.buffer, row = self._options.row, col = self._options.col})
+        self._isTransmitting = true
+        image:transmit(function()
+            local ____opt_0 = self._image
+            if ____opt_0 ~= nil then
+                ____opt_0:delete({free = true})
+            end
+            image:display()
+            self._image = image
+            self._isTransmitting = false
+        end)
+    end
     self.renderer = renderer
     self.screen = nil
     self.element = nil
+    self._options = nil
+    self._image = nil
+    self._isTransmitting = false
 end
 function ViewSystem.prototype.init(self, options)
+    self._options = options
     self.screen = __TS__New(
         Rectangle,
         0,
@@ -11658,6 +11689,7 @@ function ViewSystem.prototype.init(self, options)
         options.height
     )
     self.element = options.view or settings.ADAPTER:createCanvas(options.width, options.height)
+    self.renderer:on("postrender", self.onPostRender)
 end
 function ViewSystem.prototype.resizeView(self, desiredScreenWidth, desiredScreenHeight)
     self.element.width = math.floor(desiredScreenWidth + 0.5)
@@ -11670,6 +11702,7 @@ function ViewSystem.prototype.resizeView(self, desiredScreenWidth, desiredScreen
     self.renderer.runners.resize:emit(self.screen.width, self.screen.height)
 end
 function ViewSystem.prototype.destroy(self, removeView)
+    self.renderer:off("postrender", self.onPostRender)
     error(
         __TS__New(Error, "unimplemented"),
         0
@@ -19531,6 +19564,79 @@ do
 end
 return ____exports
  end,
+["animate.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ANIMATION_FREQUENCY = 30
+--- The current time in milliseconds
+function ____exports.currentTime(self, start)
+    local t = vim.loop:hrtime() / 1000000
+    if start ~= nil then
+        t = t - start
+    end
+    return t
+end
+function ____exports.lerp(self, ratio, initial, final)
+    return (1 - ratio) * initial + ratio * final
+end
+local function tick(self, animation)
+    local duration = animation.duration
+    local elapsed = ____exports.currentTime(nil, animation.start)
+    local ratio = elapsed / duration
+    local fn = animation.fn
+    if ratio < 1 then
+        local current = duration ~= math.huge and ____exports.lerp(nil, ratio, animation.initial, animation.final) or elapsed
+        fn(nil, current, false, animation)
+    else
+        fn(nil, animation.final, true, animation)
+        animation:stop()
+    end
+end
+____exports.Animation = __TS__Class()
+local Animation = ____exports.Animation
+Animation.name = "Animation"
+function Animation.prototype.____constructor(self, fn, duration, initial, final)
+    self.fn = fn
+    self.duration = duration
+    self.initial = initial
+    self.final = final
+    self.start = ____exports.currentTime(nil)
+    self.timer = vim.loop:new_timer()
+    self.timer:start(
+        0,
+        ANIMATION_FREQUENCY,
+        vim.schedule_wrap(function() return tick(nil, self) end)
+    )
+end
+function Animation.prototype.stop(self)
+    if self.timer ~= nil then
+        self.timer:stop()
+        self.timer:close()
+        self.timer = nil
+    end
+end
+function ____exports.animate(self, duration, initial, final, callback)
+    return __TS__New(
+        ____exports.Animation,
+        callback,
+        duration,
+        initial,
+        final
+    )
+end
+function ____exports.ticker(self, callback)
+    return __TS__New(
+        ____exports.Animation,
+        callback,
+        math.huge,
+        0,
+        0
+    )
+end
+return ____exports
+ end,
 ["index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
@@ -19538,7 +19644,6 @@ local ____exports = {}
 require("setup")
 require("typedarray.index")
 require("graphics.index")
-local h = require("kui.legacy")
 local ____core = require("core.index")
 local Renderer = ____core.Renderer
 local ____display = require("display.index")
@@ -19547,9 +19652,26 @@ local ____graphics = require("graphics.index")
 local Graphics = ____graphics.Graphics
 local ____text = require("text.index")
 local Text = ____text.Text
+local ____animate = require("animate.index")
+local ticker = ____animate.ticker
 function ____exports.setup(self)
-    local renderer = __TS__New(Renderer, {width = 150, height = 80})
+    local width = 150
+    local height = 80
+    local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
     local stage = __TS__New(Container)
+    local container = stage:addChild(__TS__New(Graphics))
+    container.x = 1
+    container.y = 0
+    container:lineStyle(2, 2106156, 1)
+    container:beginFill(4080982)
+    container:drawRoundedRect(
+        0,
+        0,
+        width,
+        height,
+        5
+    )
+    container:endFill()
     local content = stage:addChild(__TS__New(Graphics))
     content.x = 10
     content.y = 10
@@ -19565,9 +19687,13 @@ function ____exports.setup(self)
     local text = stage:addChild(__TS__New(Text, "Hello world", {fontSize = 12, fill = 16777215}))
     text.x = 10
     text.y = 20
-    renderer:render(stage)
-    h.setup()
-    h.add_image(renderer.canvasContext.rootContext.surface, {buffer = 0, row = 0, col = 0})
+    ticker(
+        nil,
+        function(____, current)
+            text.y = 20 + 20 * math.sin(current / 1000)
+            renderer:render(stage)
+        end
+    )
 end
 return ____exports
  end,

@@ -1,7 +1,27 @@
 local Image = require('kui.legacy.image')
+local state = require('kui.legacy.state')
 local vim = _G.vim
 
 local kui = {}
+
+local did_init = false
+
+local function initialize()
+  if did_init then
+    return
+  end
+
+  vim.g.kui_extmark_ns = vim.api.nvim_create_namespace('kui_extmark')
+
+  -- api.create_autocmds()
+  state.update_dimensions()
+
+  did_init = true
+end
+
+function kui.setup()
+  initialize()
+end
 
 -- Get all extmarks in viewport (and within winwidth/2 of viewport bounds)
 function kui.get_ext_loclist(buf)
@@ -40,14 +60,6 @@ function kui.clear_images(buf)
             image:delete({ free = true })
         end
     end
-end
-
--- @param data
--- @param opts
-function kui.add_image(data, opts)
-    local img = Image.new(data, opts)
-    img:transmit()
-    return img
 end
 
 -- Return image in 'buf' linked to 'ext'

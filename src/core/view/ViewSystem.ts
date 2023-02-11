@@ -1,10 +1,14 @@
+import * as api from 'kui.legacy.api'
+import { Image } from 'kui.legacy.image'
 import * as systems from '../systems'
 import { Rectangle } from 'src/math';
 import { settings } from 'src/settings';
 
 import type { ICanvas } from 'src/core';
-import type { IRenderer } from '../IRenderer';
+import type { Renderer } from '../Renderer';
 import type { ISystem } from '../system/ISystem';
+
+api.setup()
 
 /**
  * Options passed to the ViewSystem
@@ -12,6 +16,12 @@ import type { ISystem } from '../system/ISystem';
  */
 export interface ViewOptions
 {
+    /** The buffer number to which we are attached */
+    buffer?: number
+    /** The x position of the screen. */
+    col: number
+    /** The y position of the screen. */
+    row: number
     /** The width of the screen. */
     width: number
     /** The height of the screen. */
@@ -31,7 +41,10 @@ export interface ViewOptions
  */
 export class ViewSystem implements ISystem<ViewOptions, boolean>
 {
-    private renderer: IRenderer;
+    private renderer: Renderer;
+    private _options: ViewOptions | null;
+    private _image: Image | null;
+    private _isTransmitting: boolean;
 
     /**
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
@@ -47,11 +60,14 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
      */
     public element: ICanvas;
 
-    constructor(renderer: IRenderer)
+    constructor(renderer: Renderer)
     {
         this.renderer = renderer;
         this.screen = null as any;
         this.element = null as any;
+        this._options = null;
+        this._image = null;
+        this._isTransmitting = false;
     }
 
     /**
@@ -60,9 +76,31 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
      */
     init(options: ViewOptions): void
     {
+        this._options = options
         this.screen = new Rectangle(0, 0, options.width, options.height);
         this.element = options.view ??
             settings.ADAPTER.createCanvas(options.width, options.height) as ICanvas;
+
+        this.renderer.on('postrender', this.onPostRender)
+    }
+
+    /** After rendering, transmit the image to the terminal */
+    onPostRender = () => {
+        if (this._isTransmitting)
+            return
+        const surface = this.renderer.canvasContext.rootContext.surface
+        const image = Image.new(surface, {
+            buffer: this._options!.buffer,
+            row: this._options!.row,
+            col: this._options!.col,
+        })
+        this._isTransmitting = true
+        image.transmit(() => {
+            this._image?.delete({ free: true })
+            image.display()
+            this._image = image
+            this._isTransmitting = false
+        })
     }
 
     /**
@@ -97,6 +135,8 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
      */
     destroy(removeView: boolean): void
     {
+        this.renderer.off('postrender', this.onPostRender)
+
         throw new Error('unimplemented')
         // ka boom!
         // if (removeView)

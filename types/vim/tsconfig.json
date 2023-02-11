@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "strict": true,
+      "target": "esnext",
+      "lib": ["esnext"],
+      "module": "CommonJS",
+      "moduleResolution": "node",
+      "types": ["typescript-to-lua/language-extensions", "lua-types/jit"],
+      "outDir": "lua",
+      "baseUrl": ".",
+      "rootDir": "."
+    },
+    "tstl": {
+        "noImplicitSelf": true,
+        "luaTarget": "JIT"
+    }
+}

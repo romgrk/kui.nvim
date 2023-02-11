@@ -168,10 +168,7 @@ end
 
 -- Instance methods
 
-function Image:transmit(opts)
-  opts = defaults(opts, {})
-  opts.display = defaults(opts.display, true)
-
+function Image:transmit(and_then)
   local action = 't'
 
   if self.source == SOURCE.FILE then
@@ -188,7 +185,7 @@ function Image:transmit(opts)
     -- }
 
     -- vim.schedule_wrap(function ()
-    --   self:transmit_data(opts, params, self.path)
+    --   self:transmit_data(params, self.path, and_then)
     -- end)
 
     fs.read_file(self.path, vim.schedule_wrap(function(content)
@@ -201,7 +198,7 @@ function Image:transmit(opts)
         p = 1, -- placement id
       }
 
-      self:transmit_data(opts, params, content)
+      self:transmit_data(params, content, and_then)
     end))
 
   elseif self.source == SOURCE.RGB then
@@ -215,7 +212,7 @@ function Image:transmit(opts)
     }
 
     vim.defer_fn(function ()
-      self:transmit_data(opts, params, bytes_to_string(self.data))
+      self:transmit_data(params, bytes_to_string(self.data, and_then))
     end, 0)
 
   elseif self.source == SOURCE.RGBA then
@@ -229,7 +226,7 @@ function Image:transmit(opts)
     }
 
     vim.defer_fn(function ()
-      self:transmit_data(opts, params, bytes_to_string(self.data))
+      self:transmit_data(params, bytes_to_string(self.data, and_then))
     end, 0)
 
   elseif self.source == SOURCE.CAIRO then
@@ -243,7 +240,7 @@ function Image:transmit(opts)
     }
 
     vim.defer_fn(function ()
-      self:transmit_data(opts, params, cairo_surface_to_png_bytes(self.data))
+      self:transmit_data(params, cairo_surface_to_png_bytes(self.data), and_then)
     end, 0)
 
   else
@@ -251,7 +248,7 @@ function Image:transmit(opts)
   end
 end
 
-function Image:transmit_data(opts, params, content)
+function Image:transmit_data(params, content, and_then)
 
   -- Encode in base64 format
   local data =
@@ -287,8 +284,8 @@ function Image:transmit_data(opts, params, content)
 
   terminal.write(parts)
 
-  if opts.display then
-    self:display(opts)
+  if and_then ~= nil then
+    and_then()
   end
 end
 
@@ -457,4 +454,4 @@ function Image:pos()
     self.buffer, vim.g.kui_extmark_ns, self.extmark, {})
 end
 
-return Image
+return { Image = Image }

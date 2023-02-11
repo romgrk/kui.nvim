@@ -206,6 +206,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                 clearBeforeRender: options.clearBeforeRender ?? false,
             },
             _view: {
+                buffer: options.buffer,
+                row: options.row,
+                col: options.col,
                 height: options.height ?? 100,
                 width: options.width ?? 100,
                 view: options.view,
@@ -250,7 +253,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
-        print('Renderer#render')
         this.objectRenderer.render(displayObject, options);
         this.canvasContext.rootContext.surface.flush()
     }
