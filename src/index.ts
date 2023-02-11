@@ -3,6 +3,10 @@ import './typedarray'
 import './graphics'
 import './canvas-renderer'
 
+import { settings } from 'src/settings'
+import { readKittyConfig } from 'src/utils'
+import { TextStyle } from 'src/text'
+
 import { Renderer } from 'src/core'
 import { Container } from 'src/display'
 import { Graphics } from 'src/graphics'
@@ -16,6 +20,16 @@ export * from 'src/math'
 export * from 'src/text'
 
 export function setup() {
+  const config = readKittyConfig()
+  settings.DEFAULT_FONT_NAME = config.font_family ?? settings.DEFAULT_FONT_NAME
+  settings.DEFAULT_FONT_SIZE = config.font_size ? parseFloat(config.font_size) * 1.33 : settings.DEFAULT_FONT_SIZE
+  settings.FONT_NAMES.monospace = settings.DEFAULT_FONT_NAME
+  TextStyle.defaultStyle.fontSize = settings.DEFAULT_FONT_SIZE
+
+  demo()
+}
+
+function demo() {
   const width = 150
   const height = 80
 
@@ -43,11 +57,11 @@ export function setup() {
   content.endFill()
 
   const text = stage.addChild(new Text('Hello world', {
-    fontSize: 12,
     fill: 0xffffff,
   }))
   text.x = 10
   text.y = 20
+  print(vim.inspect(text.style.fontFamily))
 
   ticker((current: number) => {
     text.y = 20 + 20 * Math.sin(current / 1000)

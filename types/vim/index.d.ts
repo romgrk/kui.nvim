@@ -9,6 +9,7 @@ import { Lsp } from './lsp.d';
 import { Treesitter } from './treesitter.d';
 import { Diagnostic } from './diagnostic.d';
 import { Fn } from './fn.d';
+import { Fs } from './fs.d';
 import { Option, Window, Global, Buffer } from './option.d';
 
 declare global {
@@ -25,6 +26,7 @@ declare global {
     diagnostic: Diagnostic;
     treesitter: Treesitter;
     fn: Fn;
+    fs: Fs;
     opt: Option;
     go: Global;
     bo: Buffer;

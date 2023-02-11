@@ -6755,26 +6755,51 @@ local ReferenceError = ____lualib.ReferenceError
 local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
-local __TS__StringTrim = ____lualib.__TS__StringTrim
-local __TS__StringSplit = ____lualib.__TS__StringSplit
-local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local __TS__StringAccess = ____lualib.__TS__StringAccess
+local __TS__StringSlice = ____lualib.__TS__StringSlice
 local __TS__StringEndsWith = ____lualib.__TS__StringEndsWith
 local __TS__ParseInt = ____lualib.__TS__ParseInt
 local ____exports = {}
-local parseFont, defaultFontName, FONT_NAMES, FONT_WEIGHT_NAMES, FONT_STYLE_NAMES
+local parseFont, FONT_NAMES, FONT_WEIGHT_NAMES, FONT_STYLE_NAMES
 local cairo = require("kui.cairo.cairo")
+local ____settings = require("settings")
+local settings = ____settings.settings
 local ____color = require("color.index")
 local Color = ____color.Color
 function parseFont(self, fontStyle)
     local size = 10
-    local name = defaultFontName
+    local name = "defaultFontName"
     local style = "normal"
     local weight = "normal"
-    local parts = __TS__ArrayMap(
-        __TS__StringSplit(fontStyle, " "),
-        function(____, s) return __TS__StringTrim(s) end
-    )
-    for ____, part in ipairs(parts) do
+    local offset = 0
+    while offset < #fontStyle do
+        while offset < #fontStyle and __TS__StringAccess(fontStyle, offset) == " " do
+            offset = offset + 1
+        end
+        local ____temp_2
+        if __TS__StringAccess(fontStyle, offset) == "\"" then
+            local ____fontStyle_1 = fontStyle
+            local ____offset_0 = offset
+            offset = ____offset_0 + 1
+            ____temp_2 = (string.find(
+                ____fontStyle_1,
+                "\"",
+                math.max(____offset_0 + 1 + 1, 1),
+                true
+            ) or 0) - 1
+        else
+            ____temp_2 = (string.find(
+                fontStyle,
+                " ",
+                math.max(offset + 1 + 1, 1),
+                true
+            ) or 0) - 1
+        end
+        local endIndex = ____temp_2
+        if endIndex == -1 then
+            endIndex = #fontStyle
+        end
+        local part = __TS__StringSlice(fontStyle, offset, endIndex)
         if __TS__StringEndsWith(part, "px") then
             size = __TS__ParseInt(
                 string.sub(part, 1, -3),
@@ -6788,6 +6813,7 @@ function parseFont(self, fontStyle)
         else
             name = part
         end
+        offset = endIndex
     end
     return {size, FONT_NAMES[name] or name, style, weight}
 end
@@ -7240,11 +7266,7 @@ function ImageData.prototype.____constructor(self, width, height, data, refs)
     self.data = data
     self._refs = refs
 end
-defaultFontName = "sans-serif"
-function ____exports.setDefaultFontName(self, n)
-    defaultFontName = n
-end
-FONT_NAMES = {serif = "Cantarell", ["sans-serif"] = "Cantarell", monospace = "DejaVu Sans Mono"}
+FONT_NAMES = settings.FONT_NAMES
 FONT_WEIGHT_NAMES = {
     [100] = "normal",
     [200] = "normal",
@@ -7277,10 +7299,10 @@ return ____exports
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
-local ____context2d = require("context2d.index")
-local Context2D = ____context2d.Context2D
-local Canvas = ____context2d.Canvas
 ____exports.settings = {
+    DEFAULT_FONT_NAME = "monospace",
+    DEFAULT_FONT_SIZE = 12,
+    FONT_NAMES = {serif = "Arial", ["sans-serif"] = "Arial", monospace = "Arial"},
     RESOLUTION = 1,
     ROUND_PIXELS = true,
     RENDER_OPTIONS = {
@@ -7297,8 +7319,9 @@ ____exports.settings = {
         hello = false
     },
     ADAPTER = {
-        getCanvasRenderingContext2D = function() return Context2D end,
+        getCanvasRenderingContext2D = function() return require("context2d.index").Context2D end,
         createCanvas = function(____, width, height)
+            local Canvas = require("context2d.index").Canvas
             return __TS__New(Canvas, width, height)
         end
     }
@@ -8710,6 +8733,58 @@ function ____exports.decomposeDataUri(self, dataUri)
 end
 return ____exports
  end,
+["utils.kitty"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__StringTrim = ____lualib.__TS__StringTrim
+local __TS__StringStartsWith = ____lualib.__TS__StringStartsWith
+local __TS__ArrayFilter = ____lualib.__TS__ArrayFilter
+local __TS__StringSlice = ____lualib.__TS__StringSlice
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local __TS__ObjectFromEntries = ____lualib.__TS__ObjectFromEntries
+local ____exports = {}
+local fileExists, readLines
+function fileExists(self, path)
+    local file = io.open(path, "rb")
+    if file ~= nil then
+        file:close()
+    end
+    return file ~= nil
+end
+function readLines(self, path)
+    if not fileExists(nil, path) then
+        return {}
+    end
+    local lines = {}
+    for line in io.lines(path) do
+        lines[#lines + 1] = line
+    end
+    return lines
+end
+function ____exports.readKittyConfig(self)
+    local configDir = vim.fs.dirname(vim.fn.stdpath("config"))
+    local configFile = configDir .. "/kitty/kitty.conf"
+    local allLines = readLines(nil, configFile)
+    local lines = __TS__ArrayFilter(
+        allLines,
+        function(____, line) return __TS__StringTrim(line) ~= "" and not __TS__StringStartsWith(
+            __TS__StringTrim(line),
+            "#"
+        ) end
+    )
+    local entries = __TS__ArrayMap(
+        lines,
+        function(____, line)
+            local content = __TS__StringTrim(line)
+            local firstSpace = (string.find(line, " ", nil, true) or 0) - 1
+            local key = __TS__StringSlice(content, 0, firstSpace)
+            local value = __TS__StringTrim(__TS__StringSlice(content, firstSpace))
+            return {key, value}
+        end
+    )
+    return __TS__ObjectFromEntries(entries)
+end
+return ____exports
+ end,
 ["utils.index"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
@@ -8840,6 +8915,14 @@ do
 end
 do
     local ____export = require("utils.network.decomposeDataUri")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("utils.kitty")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
             ____exports[____exportKey] = ____exportValue
@@ -18724,8 +18807,8 @@ TextStyle.defaultStyle = {
     fill = "black",
     fillGradientType = TEXT_GRADIENT.LINEAR_VERTICAL,
     fillGradientStops = {},
-    fontFamily = "Arial",
-    fontSize = 26,
+    fontFamily = "monospace",
+    fontSize = 12,
     fontStyle = "normal",
     fontVariant = "normal",
     fontWeight = "normal",
@@ -19413,6 +19496,7 @@ function Text.prototype.drawLetterSpacing(self, text, x, y, isStroke)
     local stringArray = TextMetrics:graphemeSegmenter(text)
     local previousWidth = self.context:measureText(text).width
     local currentWidth = 0
+    print(vim.inspect(self.context.font))
     do
         local i = 0
         while i < #stringArray do
@@ -19442,8 +19526,7 @@ function Text.prototype.updateTexture(self)
     if self._style.trim then
         local trimmed = utils:trimCanvas(canvas)
         if trimmed.data then
-            canvas.width = trimmed.width
-            canvas.height = trimmed.height
+            self.context:setDimensions(trimmed.width + 1, trimmed.height)
             self.context:putImageData(trimmed.data, 0, 0)
         end
     end
@@ -19633,12 +19716,20 @@ return ____exports
  end,
 ["index"] = function(...) 
 local ____lualib = require("lualib_bundle")
+local __TS__ParseFloat = ____lualib.__TS__ParseFloat
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
+local demo
 require("setup")
 require("typedarray.index")
 require("graphics.index")
 require("canvas-renderer.index")
+local ____settings = require("settings")
+local settings = ____settings.settings
+local ____utils = require("utils.index")
+local readKittyConfig = ____utils.readKittyConfig
+local ____text = require("text.index")
+local TextStyle = ____text.TextStyle
 local ____core = require("core.index")
 local Renderer = ____core.Renderer
 local ____display = require("display.index")
@@ -19649,6 +19740,48 @@ local ____text = require("text.index")
 local Text = ____text.Text
 local ____animate = require("animate.index")
 local ticker = ____animate.ticker
+function demo(self)
+    local width = 150
+    local height = 80
+    local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
+    local stage = __TS__New(Container)
+    local container = stage:addChild(__TS__New(Graphics))
+    container.x = 0
+    container.y = 0
+    container:lineStyle(2, 2106156, 1)
+    container:beginFill(4080982)
+    container:drawRoundedRect(
+        0,
+        0,
+        width,
+        height,
+        20
+    )
+    container:endFill()
+    local content = stage:addChild(__TS__New(Graphics))
+    content.x = 10
+    content.y = 10
+    content:beginFill(5873407)
+    content:drawRoundedRect(
+        0,
+        0,
+        50,
+        10,
+        5
+    )
+    content:endFill()
+    local text = stage:addChild(__TS__New(Text, "Hello world", {fill = 16777215}))
+    text.x = 10
+    text.y = 20
+    print(vim.inspect(text.style.fontFamily))
+    ticker(
+        nil,
+        function(____, current)
+            text.y = 20 + 20 * math.sin(current / 1000)
+            renderer:render(stage)
+        end
+    )
+end
 do
     local ____export = require("animate.index")
     for ____exportKey, ____exportValue in pairs(____export) do
@@ -19690,45 +19823,12 @@ do
     end
 end
 function ____exports.setup(self)
-    local width = 150
-    local height = 80
-    local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
-    local stage = __TS__New(Container)
-    local container = stage:addChild(__TS__New(Graphics))
-    container.x = 0
-    container.y = 0
-    container:lineStyle(2, 2106156, 1)
-    container:beginFill(4080982)
-    container:drawRoundedRect(
-        0,
-        0,
-        width,
-        height,
-        20
-    )
-    container:endFill()
-    local content = stage:addChild(__TS__New(Graphics))
-    content.x = 10
-    content.y = 10
-    content:beginFill(5873407)
-    content:drawRoundedRect(
-        0,
-        0,
-        50,
-        10,
-        5
-    )
-    content:endFill()
-    local text = stage:addChild(__TS__New(Text, "Hello world", {fontSize = 12, fill = 16777215}))
-    text.x = 10
-    text.y = 20
-    ticker(
-        nil,
-        function(____, current)
-            text.y = 20 + 20 * math.sin(current / 1000)
-            renderer:render(stage)
-        end
-    )
+    local config = readKittyConfig(nil)
+    settings.DEFAULT_FONT_NAME = config.font_family or settings.DEFAULT_FONT_NAME
+    settings.DEFAULT_FONT_SIZE = config.font_size and __TS__ParseFloat(config.font_size) * 1.33 or settings.DEFAULT_FONT_SIZE
+    settings.FONT_NAMES.monospace = settings.DEFAULT_FONT_NAME
+    TextStyle.defaultStyle.fontSize = settings.DEFAULT_FONT_SIZE
+    demo(nil)
 end
 return ____exports
  end,

@@ -7,7 +7,6 @@ import {
     utils
 } from 'src/core';
 import { Sprite } from 'src/sprite';
-import { TEXT_GRADIENT } from './const';
 import { TextMetrics } from './TextMetrics';
 import { TextStyle } from './TextStyle';
 
@@ -363,6 +362,7 @@ export class Text extends Sprite
         let previousWidth = this.context.measureText(text).width;
         let currentWidth = 0;
 
+        print(vim.inspect(this.context.font))
         for (let i = 0; i < stringArray.length; ++i)
         {
             const currentChar = stringArray[i];
@@ -398,8 +398,10 @@ export class Text extends Sprite
 
             if (trimmed.data)
             {
-                canvas.width = trimmed.width;
-                canvas.height = trimmed.height;
+                this.context.setDimensions(
+                    trimmed.width + 1,
+                    trimmed.height
+                )
                 this.context.putImageData(trimmed.data, 0, 0);
             }
         }

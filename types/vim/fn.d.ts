@@ -1,7 +1,6 @@
 /** This is automatically generated file. Do not modify this file manually. */
 /** @noResolution */
 /** @noSelfInFile */
-import type { INvimFloatWinConfig } from "./utils";
 /** @noSelf */
 export interface Fn {
     /**

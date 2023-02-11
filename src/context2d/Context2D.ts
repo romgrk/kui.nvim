@@ -1,4 +1,5 @@
 import * as cairo from 'kui.cairo.cairo'
+import { settings } from 'src/settings'
 import { Color, ColorSource } from 'src/color'
 
 import { LineCap, LineJoin } from 'kui.cairo.cairo'
@@ -359,18 +360,7 @@ export class ImageData {
 }
 
 
-let defaultFontName = 'sans-serif'
-
-export function setDefaultFontName(n: string) {
-  defaultFontName = n
-}
-
-// FIXME: need to fill these accurately
-const FONT_NAMES = {
-  'serif':      'Cantarell',
-  'sans-serif': 'Cantarell',
-  'monospace':  'DejaVu Sans Mono',
-}
+const FONT_NAMES = settings.FONT_NAMES
 
 const FONT_WEIGHT_NAMES = {
   100: 'normal',
@@ -392,11 +382,27 @@ const FONT_STYLE_NAMES = {
 
 function parseFont(fontStyle: string) {
   let size = 10
-  let name = defaultFontName
+  let name = 'defaultFontName'
   let style = 'normal'
   let weight = 'normal'
-  const parts = fontStyle.split(' ').map(s => s.trim())
-  for (const part of parts) {
+
+  let offset = 0
+
+  while (offset < fontStyle.length) {
+    while (offset < fontStyle.length && fontStyle[offset] === ' ') {
+      offset += 1
+    }
+
+    let endIndex =
+      fontStyle[offset] === '"' ?
+        fontStyle.indexOf('"', offset++ + 1) :
+        fontStyle.indexOf(' ', offset + 1)
+
+    if (endIndex === -1)
+      endIndex = fontStyle.length
+
+    const part = fontStyle.slice(offset, endIndex)
+
     if (part.endsWith('px'))
       size = parseInt(part.slice(0, -2), 10)
     else if (part in FONT_STYLE_NAMES)
@@ -407,7 +413,10 @@ function parseFont(fontStyle: string) {
       {}
     else
       name = part
+
+    offset = endIndex
   }
+
   return [
     size,
     FONT_NAMES[name as keyof typeof FONT_NAMES] ?? name,

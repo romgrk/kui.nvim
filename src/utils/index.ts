@@ -97,4 +97,5 @@ export * from './media/BoundingBox';
 export * from './media/getCanvasBoundingBox';
 export * from './media/trimCanvas';
 export * from './network/decomposeDataUri';
+export * from './kitty';
 export * from './types';

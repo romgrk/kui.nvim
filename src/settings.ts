@@ -1,6 +1,14 @@
-import { Context2D, Canvas } from 'src/context2d'
+import type { Canvas } from 'src/context2d'
 
 export const settings = {
+  DEFAULT_FONT_NAME: 'monospace',
+  DEFAULT_FONT_SIZE: 12,
+  FONT_NAMES: {
+    'serif':      'Arial',
+    'sans-serif': 'Arial',
+    'monospace':  'Arial',
+  },
+
   RESOLUTION: 1,
   ROUND_PIXELS: true,
 
@@ -19,8 +27,9 @@ export const settings = {
   },
 
   ADAPTER: {
-    getCanvasRenderingContext2D: () => Context2D,
+    getCanvasRenderingContext2D: () => require('src/context2d').Context2D,
     createCanvas: (width: number, height: number): Canvas => {
+      const Canvas = require('src/context2d').Canvas
       return new Canvas(width, height)
     },
   }

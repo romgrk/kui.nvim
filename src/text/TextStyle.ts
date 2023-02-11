@@ -203,12 +203,12 @@ export class TextStyle implements ITextStyle
          * See {@link PIXI.TextStyle.fontFamily}
          * @type {string|string[]}
          */
-        fontFamily: 'Arial',
+        fontFamily: 'monospace',
         /**
          * See {@link PIXI.TextStyle.fontSize}
          * @type {number|string} 
          */
-        fontSize: 26,
+        fontSize: 12,
         /**
          * See {@link PIXI.TextStyle.fontStyle}
          * @type {'normal'|'italic'|'oblique'}
