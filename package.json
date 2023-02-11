@@ -1,6 +1,6 @@
 {
   "name": "kui.nvim",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A neovim UI framework using the kitty graphics protocol",
   "main": "index.js",
   "scripts": {
