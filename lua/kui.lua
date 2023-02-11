@@ -8,6 +8,7 @@ local function require(file, ...)
         return ____moduleCache[file].value
     end
     if ____modules[file] then
+        print(file)
         local module = ____modules[file]
         ____moduleCache[file] = { value = (select("#", ...) > 0) and module(...) or module(file) }
         return ____moduleCache[file].value
