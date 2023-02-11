@@ -26,10 +26,10 @@ export function setup() {
   settings.FONT_NAMES.monospace = settings.DEFAULT_FONT_NAME
   TextStyle.defaultStyle.fontSize = settings.DEFAULT_FONT_SIZE
 
-  demo()
+  // demo()
 }
 
-function demo() {
+export function demo() {
   const width = 150
   const height = 80
 
@@ -56,14 +56,10 @@ function demo() {
   content.drawRoundedRect(0, 0, 50, 10, 5)
   content.endFill()
 
-  const text = stage.addChild(new Text('Hello world', {
-    fill: 0xffffff,
-  }))
+  const text = stage.addChild(new Text('Hello world', { fill: 0xffffff }))
   text.x = 10
-  text.y = 20
-  print(vim.inspect(text.style.fontFamily))
 
-  ticker((current: number) => {
+  return ticker((current: number) => {
     text.y = 20 + 20 * Math.sin(current / 1000)
     renderer.render(stage)
   })

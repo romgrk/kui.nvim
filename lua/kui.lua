@@ -19719,7 +19719,6 @@ local ____lualib = require("lualib_bundle")
 local __TS__ParseFloat = ____lualib.__TS__ParseFloat
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
-local demo
 require("setup")
 require("typedarray.index")
 require("graphics.index")
@@ -19740,48 +19739,6 @@ local ____text = require("text.index")
 local Text = ____text.Text
 local ____animate = require("animate.index")
 local ticker = ____animate.ticker
-function demo(self)
-    local width = 150
-    local height = 80
-    local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
-    local stage = __TS__New(Container)
-    local container = stage:addChild(__TS__New(Graphics))
-    container.x = 0
-    container.y = 0
-    container:lineStyle(2, 2106156, 1)
-    container:beginFill(4080982)
-    container:drawRoundedRect(
-        0,
-        0,
-        width,
-        height,
-        20
-    )
-    container:endFill()
-    local content = stage:addChild(__TS__New(Graphics))
-    content.x = 10
-    content.y = 10
-    content:beginFill(5873407)
-    content:drawRoundedRect(
-        0,
-        0,
-        50,
-        10,
-        5
-    )
-    content:endFill()
-    local text = stage:addChild(__TS__New(Text, "Hello world", {fill = 16777215}))
-    text.x = 10
-    text.y = 20
-    print(vim.inspect(text.style.fontFamily))
-    ticker(
-        nil,
-        function(____, current)
-            text.y = 20 + 20 * math.sin(current / 1000)
-            renderer:render(stage)
-        end
-    )
-end
 do
     local ____export = require("animate.index")
     for ____exportKey, ____exportValue in pairs(____export) do
@@ -19828,7 +19785,46 @@ function ____exports.setup(self)
     settings.DEFAULT_FONT_SIZE = config.font_size and __TS__ParseFloat(config.font_size) * 1.33 or settings.DEFAULT_FONT_SIZE
     settings.FONT_NAMES.monospace = settings.DEFAULT_FONT_NAME
     TextStyle.defaultStyle.fontSize = settings.DEFAULT_FONT_SIZE
-    demo(nil)
+end
+function ____exports.demo(self)
+    local width = 150
+    local height = 80
+    local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
+    local stage = __TS__New(Container)
+    local container = stage:addChild(__TS__New(Graphics))
+    container.x = 0
+    container.y = 0
+    container:lineStyle(2, 2106156, 1)
+    container:beginFill(4080982)
+    container:drawRoundedRect(
+        0,
+        0,
+        width,
+        height,
+        20
+    )
+    container:endFill()
+    local content = stage:addChild(__TS__New(Graphics))
+    content.x = 10
+    content.y = 10
+    content:beginFill(5873407)
+    content:drawRoundedRect(
+        0,
+        0,
+        50,
+        10,
+        5
+    )
+    content:endFill()
+    local text = stage:addChild(__TS__New(Text, "Hello world", {fill = 16777215}))
+    text.x = 10
+    return ticker(
+        nil,
+        function(____, current)
+            text.y = 20 + 20 * math.sin(current / 1000)
+            renderer:render(stage)
+        end
+    )
 end
 return ____exports
  end,

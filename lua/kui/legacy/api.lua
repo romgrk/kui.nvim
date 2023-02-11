@@ -1,4 +1,4 @@
-local Image = require('kui.legacy.image')
+local Image = require('kui.legacy.image').Image
 local state = require('kui.legacy.state')
 local vim = _G.vim
 

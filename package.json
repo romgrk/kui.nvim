@@ -1,12 +1,17 @@
 {
   "name": "kui.nvim",
-  "version": "1.0.0",
-  "description": "An experimental fork of [hologram.nvim](https://github.com/edluffy/hologram.nvim) aiming to create a UI framework.",
+  "version": "0.1.0",
+  "description": "A neovim UI framework using the kitty graphics protocol",
   "main": "index.js",
   "scripts": {
     "build": "tstl",
+    "prepare": "npm run build",
     "start": "tstl --watch"
   },
+  "files": [
+      "/dist"
+    , "/index.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/romgrk/kui.nvim.git"
