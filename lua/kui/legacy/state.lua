@@ -1,6 +1,10 @@
 local ffi = require('ffi')
 local Rectangle = require('kui.legacy.rectangle')
 
+ffi.cdef[[
+  int ioctl(int fildes, int request, uint16_t *winsize);
+]]
+
 
 local state = {
   dimensions = {
@@ -34,10 +38,15 @@ function state.update_dimensions()
   -- Use `ioctl` to retrieve the current window size
   -- https://sw.kovidgoyal.net/kitty/graphics-protocol/#getting-the-window-size
 
-  local TIOCGWINSZ = 0x5413
-  ffi.cdef[[
-    int ioctl(int fildes, int request, uint16_t *winsize);
-  ]]
+  local TIOCGWINSZ = nil
+  if vim.fn.has('linux') == 1 then
+      TIOCGWINSZ = 0x5413
+  elseif vim.fn.has('mac') == 1 then
+      TIOCGWINSZ = 0x40087468
+  elseif vim.fn.has('bsd') == 1 then
+      TIOCGWINSZ = 0x40087468
+  end
+
   local libc = ffi.load('c')
   local winsize = ffi.new('uint16_t[?]', 4)
   libc.ioctl(0, TIOCGWINSZ, winsize)
