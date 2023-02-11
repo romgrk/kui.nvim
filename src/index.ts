@@ -1,6 +1,7 @@
 import './setup'
 import './typedarray'
 import './graphics'
+import './canvas-renderer'
 
 import { Renderer } from 'src/core'
 import { Container } from 'src/display'

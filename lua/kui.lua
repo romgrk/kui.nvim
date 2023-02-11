@@ -8,7 +8,6 @@ local function require(file, ...)
         return ____moduleCache[file].value
     end
     if ____modules[file] then
-        print(file)
         local module = ____modules[file]
         ____moduleCache[file] = { value = (select("#", ...) > 0) and module(...) or module(file) }
         return ____moduleCache[file].value
@@ -8862,95 +8861,6 @@ end
 ____exports.default = {byName = ____exports.byName, register = ____exports.register, get = ____exports.get}
 return ____exports
  end,
-["canvas-renderer.BaseTexture"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
-____exports.texture = 0
-return ____exports
- end,
-["canvas-renderer.utils.canUseNewCanvasBlendModes"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
---- Checks whether the Canvas BlendModes are supported by the current browser
--- 
--- @private
--- @returns whether they are supported
-function ____exports.canUseNewCanvasBlendModes(self)
-    return false
-end
-return ____exports
- end,
-["canvas-renderer.utils.mapCanvasBlendModesToPixi"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
-local ____constants = require("constants.index")
-local BLEND_MODES = ____constants.BLEND_MODES
-local ____canUseNewCanvasBlendModes = require("canvas-renderer.utils.canUseNewCanvasBlendModes")
-local canUseNewCanvasBlendModes = ____canUseNewCanvasBlendModes.canUseNewCanvasBlendModes
---- Maps blend combinations to Canvas.
--- 
--- @memberof PIXI
--- @function mapCanvasBlendModesToPixi
--- @private
--- @param array - The array to output into.
--- @returns Mapped modes.
-function ____exports.mapCanvasBlendModesToPixi(self, array)
-    if array == nil then
-        array = {}
-    end
-    if canUseNewCanvasBlendModes(nil) then
-        array[BLEND_MODES.NORMAL + 1] = "source-over"
-        array[BLEND_MODES.ADD + 1] = "lighter"
-        array[BLEND_MODES.MULTIPLY + 1] = "multiply"
-        array[BLEND_MODES.SCREEN + 1] = "screen"
-        array[BLEND_MODES.OVERLAY + 1] = "overlay"
-        array[BLEND_MODES.DARKEN + 1] = "darken"
-        array[BLEND_MODES.LIGHTEN + 1] = "lighten"
-        array[BLEND_MODES.COLOR_DODGE + 1] = "color-dodge"
-        array[BLEND_MODES.COLOR_BURN + 1] = "color-burn"
-        array[BLEND_MODES.HARD_LIGHT + 1] = "hard-light"
-        array[BLEND_MODES.SOFT_LIGHT + 1] = "soft-light"
-        array[BLEND_MODES.DIFFERENCE + 1] = "difference"
-        array[BLEND_MODES.EXCLUSION + 1] = "exclusion"
-        array[BLEND_MODES.HUE + 1] = "hue"
-        array[BLEND_MODES.SATURATION + 1] = "saturation"
-        array[BLEND_MODES.COLOR + 1] = "color"
-        array[BLEND_MODES.LUMINOSITY + 1] = "luminosity"
-    else
-        array[BLEND_MODES.NORMAL + 1] = "source-over"
-        array[BLEND_MODES.ADD + 1] = "lighter"
-        array[BLEND_MODES.MULTIPLY + 1] = "source-over"
-        array[BLEND_MODES.SCREEN + 1] = "source-over"
-        array[BLEND_MODES.OVERLAY + 1] = "source-over"
-        array[BLEND_MODES.DARKEN + 1] = "source-over"
-        array[BLEND_MODES.LIGHTEN + 1] = "source-over"
-        array[BLEND_MODES.COLOR_DODGE + 1] = "source-over"
-        array[BLEND_MODES.COLOR_BURN + 1] = "source-over"
-        array[BLEND_MODES.HARD_LIGHT + 1] = "source-over"
-        array[BLEND_MODES.SOFT_LIGHT + 1] = "source-over"
-        array[BLEND_MODES.DIFFERENCE + 1] = "source-over"
-        array[BLEND_MODES.EXCLUSION + 1] = "source-over"
-        array[BLEND_MODES.HUE + 1] = "source-over"
-        array[BLEND_MODES.SATURATION + 1] = "source-over"
-        array[BLEND_MODES.COLOR + 1] = "source-over"
-        array[BLEND_MODES.LUMINOSITY + 1] = "source-over"
-    end
-    array[BLEND_MODES.NORMAL_NPM + 1] = array[BLEND_MODES.NORMAL + 1]
-    array[BLEND_MODES.ADD_NPM + 1] = array[BLEND_MODES.ADD + 1]
-    array[BLEND_MODES.SCREEN_NPM + 1] = array[BLEND_MODES.SCREEN + 1]
-    array[BLEND_MODES.SRC_IN + 1] = "source-in"
-    array[BLEND_MODES.SRC_OUT + 1] = "source-out"
-    array[BLEND_MODES.SRC_ATOP + 1] = "source-atop"
-    array[BLEND_MODES.DST_OVER + 1] = "destination-over"
-    array[BLEND_MODES.DST_IN + 1] = "destination-in"
-    array[BLEND_MODES.DST_OUT + 1] = "destination-out"
-    array[BLEND_MODES.DST_ATOP + 1] = "destination-atop"
-    array[BLEND_MODES.XOR + 1] = "xor"
-    array[BLEND_MODES.SUBTRACT + 1] = "source-over"
-    return array
-end
-return ____exports
- end,
 ["display.Bounds"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -10411,6 +10321,198 @@ function SystemManager.prototype.destroy(self)
 end
 return ____exports
  end,
+["canvas-renderer.utils.canUseNewCanvasBlendModes"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Checks whether the Canvas BlendModes are supported by the current browser
+-- 
+-- @private
+-- @returns whether they are supported
+function ____exports.canUseNewCanvasBlendModes(self)
+    return false
+end
+return ____exports
+ end,
+["canvas-renderer.utils.mapCanvasBlendModesToPixi"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____constants = require("constants.index")
+local BLEND_MODES = ____constants.BLEND_MODES
+local ____canUseNewCanvasBlendModes = require("canvas-renderer.utils.canUseNewCanvasBlendModes")
+local canUseNewCanvasBlendModes = ____canUseNewCanvasBlendModes.canUseNewCanvasBlendModes
+--- Maps blend combinations to Canvas.
+-- 
+-- @memberof PIXI
+-- @function mapCanvasBlendModesToPixi
+-- @private
+-- @param array - The array to output into.
+-- @returns Mapped modes.
+function ____exports.mapCanvasBlendModesToPixi(self, array)
+    if array == nil then
+        array = {}
+    end
+    if canUseNewCanvasBlendModes(nil) then
+        array[BLEND_MODES.NORMAL + 1] = "source-over"
+        array[BLEND_MODES.ADD + 1] = "lighter"
+        array[BLEND_MODES.MULTIPLY + 1] = "multiply"
+        array[BLEND_MODES.SCREEN + 1] = "screen"
+        array[BLEND_MODES.OVERLAY + 1] = "overlay"
+        array[BLEND_MODES.DARKEN + 1] = "darken"
+        array[BLEND_MODES.LIGHTEN + 1] = "lighten"
+        array[BLEND_MODES.COLOR_DODGE + 1] = "color-dodge"
+        array[BLEND_MODES.COLOR_BURN + 1] = "color-burn"
+        array[BLEND_MODES.HARD_LIGHT + 1] = "hard-light"
+        array[BLEND_MODES.SOFT_LIGHT + 1] = "soft-light"
+        array[BLEND_MODES.DIFFERENCE + 1] = "difference"
+        array[BLEND_MODES.EXCLUSION + 1] = "exclusion"
+        array[BLEND_MODES.HUE + 1] = "hue"
+        array[BLEND_MODES.SATURATION + 1] = "saturation"
+        array[BLEND_MODES.COLOR + 1] = "color"
+        array[BLEND_MODES.LUMINOSITY + 1] = "luminosity"
+    else
+        array[BLEND_MODES.NORMAL + 1] = "source-over"
+        array[BLEND_MODES.ADD + 1] = "lighter"
+        array[BLEND_MODES.MULTIPLY + 1] = "source-over"
+        array[BLEND_MODES.SCREEN + 1] = "source-over"
+        array[BLEND_MODES.OVERLAY + 1] = "source-over"
+        array[BLEND_MODES.DARKEN + 1] = "source-over"
+        array[BLEND_MODES.LIGHTEN + 1] = "source-over"
+        array[BLEND_MODES.COLOR_DODGE + 1] = "source-over"
+        array[BLEND_MODES.COLOR_BURN + 1] = "source-over"
+        array[BLEND_MODES.HARD_LIGHT + 1] = "source-over"
+        array[BLEND_MODES.SOFT_LIGHT + 1] = "source-over"
+        array[BLEND_MODES.DIFFERENCE + 1] = "source-over"
+        array[BLEND_MODES.EXCLUSION + 1] = "source-over"
+        array[BLEND_MODES.HUE + 1] = "source-over"
+        array[BLEND_MODES.SATURATION + 1] = "source-over"
+        array[BLEND_MODES.COLOR + 1] = "source-over"
+        array[BLEND_MODES.LUMINOSITY + 1] = "source-over"
+    end
+    array[BLEND_MODES.NORMAL_NPM + 1] = array[BLEND_MODES.NORMAL + 1]
+    array[BLEND_MODES.ADD_NPM + 1] = array[BLEND_MODES.ADD + 1]
+    array[BLEND_MODES.SCREEN_NPM + 1] = array[BLEND_MODES.SCREEN + 1]
+    array[BLEND_MODES.SRC_IN + 1] = "source-in"
+    array[BLEND_MODES.SRC_OUT + 1] = "source-out"
+    array[BLEND_MODES.SRC_ATOP + 1] = "source-atop"
+    array[BLEND_MODES.DST_OVER + 1] = "destination-over"
+    array[BLEND_MODES.DST_IN + 1] = "destination-in"
+    array[BLEND_MODES.DST_OUT + 1] = "destination-out"
+    array[BLEND_MODES.DST_ATOP + 1] = "destination-atop"
+    array[BLEND_MODES.XOR + 1] = "xor"
+    array[BLEND_MODES.SUBTRACT + 1] = "source-over"
+    return array
+end
+return ____exports
+ end,
+["canvas-renderer.CanvasContextSystem"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__New = ____lualib.__TS__New
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
+local ____exports = {}
+local systems = require("core.systems")
+local ____math = require("math.index")
+local Matrix = ____math.Matrix
+local ____constants = require("constants.index")
+local BLEND_MODES = ____constants.BLEND_MODES
+local ____color = require("color.index")
+local Color = ____color.Color
+local ____mapCanvasBlendModesToPixi = require("canvas-renderer.utils.mapCanvasBlendModesToPixi")
+local mapCanvasBlendModesToPixi = ____mapCanvasBlendModesToPixi.mapCanvasBlendModesToPixi
+local ____context2d = require("context2d.index")
+local Context2D = ____context2d.Context2D
+local tempMatrix = __TS__New(Matrix)
+--- System that manages the canvas `2d` contexts
+-- 
+-- @memberof PIXI
+____exports.CanvasContextSystem = __TS__Class()
+local CanvasContextSystem = ____exports.CanvasContextSystem
+CanvasContextSystem.name = "CanvasContextSystem"
+function CanvasContextSystem.prototype.____constructor(self, renderer)
+    self.activeResolution = 1
+    self.blendModes = mapCanvasBlendModesToPixi(nil)
+    self._projTransform = nil
+    self._outerBlend = false
+    self._activeBlendMode = BLEND_MODES.NORMAL
+    self.renderer = renderer
+    self.rootContext = nil
+    self.activeContext = nil
+end
+function CanvasContextSystem.prototype.init(self)
+    self.rootContext = __TS__New(Context2D, self.renderer.view.width, self.renderer.view.height)
+    if self.renderer.background.alpha < 1 then
+        self.rootContext.globalAlpha = self.renderer.background.alpha
+    end
+    self.activeContext = self.rootContext
+end
+function CanvasContextSystem.prototype.setContextTransform(self, transform, roundPixels, localResolution)
+    local mat = transform
+    local proj = self._projTransform
+    local contextResolution = self.activeResolution
+    localResolution = localResolution or contextResolution
+    if proj then
+        mat = tempMatrix
+        mat:copyFrom(transform)
+        mat:prepend(proj)
+    end
+    if roundPixels then
+        self.activeContext:setTransform(
+            mat.a * localResolution,
+            mat.b * localResolution,
+            mat.c * localResolution,
+            mat.d * localResolution,
+            bit.bor(mat.tx * contextResolution, 0),
+            bit.bor(mat.ty * contextResolution, 0)
+        )
+    else
+        self.activeContext:setTransform(
+            mat.a * localResolution,
+            mat.b * localResolution,
+            mat.c * localResolution,
+            mat.d * localResolution,
+            mat.tx * contextResolution,
+            mat.ty * contextResolution
+        )
+    end
+end
+function CanvasContextSystem.prototype.clear(self, clearColor, alpha)
+    local context = self.activeContext
+    local renderer = self.renderer
+    local fillColor = clearColor and Color.shared:setValue(clearColor) or self.renderer.background.backgroundColor
+    context:clearRect(0, 0, renderer.width, renderer.height)
+    if clearColor then
+        context.globalAlpha = alpha or self.renderer.background.alpha
+        context.fillStyle = fillColor:toHex()
+        context:fillRect(0, 0, renderer.width, renderer.height)
+        context.globalAlpha = 1
+    end
+end
+function CanvasContextSystem.prototype.setBlendMode(self, blendMode, readyForOuterBlend)
+    local outerBlend = blendMode == BLEND_MODES.SRC_IN or blendMode == BLEND_MODES.SRC_OUT or blendMode == BLEND_MODES.DST_IN or blendMode == BLEND_MODES.DST_ATOP
+    if not readyForOuterBlend and outerBlend then
+        blendMode = BLEND_MODES.NORMAL
+    end
+    if self._activeBlendMode == blendMode then
+        return
+    end
+    self._activeBlendMode = blendMode
+    self._outerBlend = outerBlend
+    self.activeContext.globalCompositeOperation = self.blendModes[blendMode + 1]
+end
+function CanvasContextSystem.prototype.resize(self)
+end
+function CanvasContextSystem.prototype.invalidateBlendMode(self)
+    self._activeBlendMode = __TS__ArrayIndexOf(self.blendModes, self.activeContext.globalCompositeOperation)
+end
+function CanvasContextSystem.prototype.destroy(self)
+    local ____self = self
+    ____self.renderer = nil
+    ____self.rootContext = nil
+    ____self.activeContext = nil
+end
+systems:register("canvasContext", ____exports.CanvasContextSystem)
+return ____exports
+ end,
 ["canvas-renderer.CanvasObjectRendererSystem"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -10676,194 +10778,12 @@ end
 CanvasRenderer.__systems = {}
 return ____exports
  end,
-["canvas-renderer.CanvasContextSystem"] = function(...) 
-local ____lualib = require("lualib_bundle")
-local __TS__New = ____lualib.__TS__New
-local __TS__Class = ____lualib.__TS__Class
-local __TS__ArrayIndexOf = ____lualib.__TS__ArrayIndexOf
-local ____exports = {}
-local systems = require("core.systems")
-local ____math = require("math.index")
-local Matrix = ____math.Matrix
-local ____constants = require("constants.index")
-local BLEND_MODES = ____constants.BLEND_MODES
-local ____color = require("color.index")
-local Color = ____color.Color
-local ____mapCanvasBlendModesToPixi = require("canvas-renderer.utils.mapCanvasBlendModesToPixi")
-local mapCanvasBlendModesToPixi = ____mapCanvasBlendModesToPixi.mapCanvasBlendModesToPixi
-local ____context2d = require("context2d.index")
-local Context2D = ____context2d.Context2D
-local tempMatrix = __TS__New(Matrix)
---- System that manages the canvas `2d` contexts
--- 
--- @memberof PIXI
-____exports.CanvasContextSystem = __TS__Class()
-local CanvasContextSystem = ____exports.CanvasContextSystem
-CanvasContextSystem.name = "CanvasContextSystem"
-function CanvasContextSystem.prototype.____constructor(self, renderer)
-    self.activeResolution = 1
-    self.blendModes = mapCanvasBlendModesToPixi(nil)
-    self._projTransform = nil
-    self._outerBlend = false
-    self._activeBlendMode = BLEND_MODES.NORMAL
-    self.renderer = renderer
-    self.rootContext = nil
-    self.activeContext = nil
-end
-function CanvasContextSystem.prototype.init(self)
-    self.rootContext = __TS__New(Context2D, self.renderer.view.width, self.renderer.view.height)
-    if self.renderer.background.alpha < 1 then
-        self.rootContext.globalAlpha = self.renderer.background.alpha
-    end
-    self.activeContext = self.rootContext
-end
-function CanvasContextSystem.prototype.setContextTransform(self, transform, roundPixels, localResolution)
-    local mat = transform
-    local proj = self._projTransform
-    local contextResolution = self.activeResolution
-    localResolution = localResolution or contextResolution
-    if proj then
-        mat = tempMatrix
-        mat:copyFrom(transform)
-        mat:prepend(proj)
-    end
-    if roundPixels then
-        self.activeContext:setTransform(
-            mat.a * localResolution,
-            mat.b * localResolution,
-            mat.c * localResolution,
-            mat.d * localResolution,
-            bit.bor(mat.tx * contextResolution, 0),
-            bit.bor(mat.ty * contextResolution, 0)
-        )
-    else
-        self.activeContext:setTransform(
-            mat.a * localResolution,
-            mat.b * localResolution,
-            mat.c * localResolution,
-            mat.d * localResolution,
-            mat.tx * contextResolution,
-            mat.ty * contextResolution
-        )
-    end
-end
-function CanvasContextSystem.prototype.clear(self, clearColor, alpha)
-    local context = self.activeContext
-    local renderer = self.renderer
-    local fillColor = clearColor and Color.shared:setValue(clearColor) or self.renderer.background.backgroundColor
-    context:clearRect(0, 0, renderer.width, renderer.height)
-    if clearColor then
-        context.globalAlpha = alpha or self.renderer.background.alpha
-        context.fillStyle = fillColor:toHex()
-        context:fillRect(0, 0, renderer.width, renderer.height)
-        context.globalAlpha = 1
-    end
-end
-function CanvasContextSystem.prototype.setBlendMode(self, blendMode, readyForOuterBlend)
-    local outerBlend = blendMode == BLEND_MODES.SRC_IN or blendMode == BLEND_MODES.SRC_OUT or blendMode == BLEND_MODES.DST_IN or blendMode == BLEND_MODES.DST_ATOP
-    if not readyForOuterBlend and outerBlend then
-        blendMode = BLEND_MODES.NORMAL
-    end
-    if self._activeBlendMode == blendMode then
-        return
-    end
-    self._activeBlendMode = blendMode
-    self._outerBlend = outerBlend
-    self.activeContext.globalCompositeOperation = self.blendModes[blendMode + 1]
-end
-function CanvasContextSystem.prototype.resize(self)
-end
-function CanvasContextSystem.prototype.invalidateBlendMode(self)
-    self._activeBlendMode = __TS__ArrayIndexOf(self.blendModes, self.activeContext.globalCompositeOperation)
-end
-function CanvasContextSystem.prototype.destroy(self)
-    local ____self = self
-    ____self.renderer = nil
-    ____self.rootContext = nil
-    ____self.activeContext = nil
-end
-systems:register("canvasContext", ____exports.CanvasContextSystem)
-return ____exports
- end,
-["canvas-renderer.CanvasMaskSystem"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
-____exports.placeholder = 0
-return ____exports
- end,
-["canvas-renderer.canvasUtils"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
---- Utility methods for Sprite/Texture tinting.
--- 
--- Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
--- so be aware of the performance implications.
--- 
--- @namespace PIXI.canvasUtils
--- @memberof PIXI
-____exports.canvasUtils = {}
-return ____exports
- end,
-["canvas-renderer.index"] = function(...) 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
-local ____exports = {}
-require("canvas-renderer.BaseTexture")
-do
-    local ____export = require("canvas-renderer.CanvasContextSystem")
-    for ____exportKey, ____exportValue in pairs(____export) do
-        if ____exportKey ~= "default" then
-            ____exports[____exportKey] = ____exportValue
-        end
-    end
-end
-do
-    local ____export = require("canvas-renderer.CanvasMaskSystem")
-    for ____exportKey, ____exportValue in pairs(____export) do
-        if ____exportKey ~= "default" then
-            ____exports[____exportKey] = ____exportValue
-        end
-    end
-end
-do
-    local ____export = require("canvas-renderer.CanvasObjectRendererSystem")
-    for ____exportKey, ____exportValue in pairs(____export) do
-        if ____exportKey ~= "default" then
-            ____exports[____exportKey] = ____exportValue
-        end
-    end
-end
-do
-    local ____export = require("canvas-renderer.CanvasRenderer")
-    for ____exportKey, ____exportValue in pairs(____export) do
-        if ____exportKey ~= "default" then
-            ____exports[____exportKey] = ____exportValue
-        end
-    end
-end
-do
-    local ____export = require("canvas-renderer.canvasUtils")
-    for ____exportKey, ____exportValue in pairs(____export) do
-        if ____exportKey ~= "default" then
-            ____exports[____exportKey] = ____exportValue
-        end
-    end
-end
-do
-    local ____export = require("canvas-renderer.utils.canUseNewCanvasBlendModes")
-    for ____exportKey, ____exportValue in pairs(____export) do
-        if ____exportKey ~= "default" then
-            ____exports[____exportKey] = ____exportValue
-        end
-    end
-end
-return ____exports
- end,
 ["core.Renderer"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 do
-    local ____canvas_2Drenderer = require("index")
-    local Renderer = ____canvas_2Drenderer.CanvasRenderer
+    local ____CanvasRenderer = require("canvas-renderer.CanvasRenderer")
+    local Renderer = ____CanvasRenderer.CanvasRenderer
     ____exports.Renderer = Renderer
 end
 return ____exports
@@ -16389,6 +16309,85 @@ ____exports.BATCH_POOL = {}
 ____exports.DRAW_CALL_POOL = {}
 return ____exports
  end,
+["canvas-renderer.BaseTexture"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.texture = 0
+return ____exports
+ end,
+["canvas-renderer.CanvasMaskSystem"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+____exports.placeholder = 0
+return ____exports
+ end,
+["canvas-renderer.canvasUtils"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+--- Utility methods for Sprite/Texture tinting.
+-- 
+-- Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
+-- so be aware of the performance implications.
+-- 
+-- @namespace PIXI.canvasUtils
+-- @memberof PIXI
+____exports.canvasUtils = {}
+return ____exports
+ end,
+["canvas-renderer.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+require("canvas-renderer.BaseTexture")
+do
+    local ____export = require("canvas-renderer.CanvasContextSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.CanvasMaskSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.CanvasObjectRendererSystem")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.CanvasRenderer")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.canvasUtils")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("canvas-renderer.utils.canUseNewCanvasBlendModes")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
 ["graphics.utils.PolygonUtils"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -19645,6 +19644,7 @@ local ____exports = {}
 require("setup")
 require("typedarray.index")
 require("graphics.index")
+require("canvas-renderer.index")
 local ____core = require("core.index")
 local Renderer = ____core.Renderer
 local ____display = require("display.index")
