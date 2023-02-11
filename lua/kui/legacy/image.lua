@@ -6,11 +6,9 @@
 --
 
 local vim = _G.vim
-local ffi = require('ffi')
 local fs = require('kui.legacy.fs')
 local state = require('kui.legacy.state')
 local utils = require('kui.legacy.utils')
-local cairo = require('kui.cairo.cairo')
 local base64 = require('kui.legacy.base64')
 local terminal = require('kui.legacy.terminal')
 local Rectangle = require('kui.legacy.rectangle')
