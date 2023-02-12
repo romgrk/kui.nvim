@@ -2,6 +2,8 @@
 
 An experimental fork of [hologram.nvim](https://github.com/edluffy/hologram.nvim) aiming to create a UI framework.
 
+![demo](./assets/kui-demo.webm)
+
 ## License
 
 MIT
