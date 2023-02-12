@@ -2,7 +2,7 @@
 
 An experimental fork of [hologram.nvim](https://github.com/edluffy/hologram.nvim) aiming to create a UI framework.
 
-https://raw.githubusercontent.com/romgrk/kui.nvim/master/assets/kui-demo.webm
+![demo](./assets/kui-demo.gif)
 
 ## License
 
