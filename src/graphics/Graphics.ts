@@ -29,12 +29,12 @@ import type {
     SCALE_MODES
 } from 'src/core';
 
-import type { BatchDrawCall, ColorSource, IPointData, IShape, Renderer } from 'src/core';
+import type { ColorSource, IPointData, IShape, Renderer } from 'src/core';
 import type { IDestroyOptions } from 'src/display';
 import type { CanvasGraphicsRenderer } from 'src/graphics/GraphicsRenderer';
 
-let canvasRenderer: CanvasRenderer;
-const tempMatrix = new Matrix();
+// let canvasRenderer: CanvasRenderer;
+// const tempMatrix = new Matrix();
 
 /** Batch element computed from Graphics geometry */
 export interface IGraphicsBatchElement
@@ -836,15 +836,6 @@ export class Graphics extends Container
             && !data[0].matrix
             && !data[0].holes.length
             && !(data[0].lineStyle!.visible && data[0].lineStyle!.width);
-    }
-
-    /**
-     * Renders the object using the WebGL renderer
-     * @param renderer - The renderer
-     */
-    protected _render(_renderer: Renderer): void
-    {
-        throw new Error('Graphics#_render is invalid')
     }
 
     /**

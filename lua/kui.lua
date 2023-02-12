@@ -17089,7 +17089,6 @@ local ____core = require("core.index")
 local Circle = ____core.Circle
 local Color = ____core.Color
 local Ellipse = ____core.Ellipse
-local Matrix = ____core.Matrix
 local PI_2 = ____core.PI_2
 local Point = ____core.Point
 local Polygon = ____core.Polygon
@@ -17112,8 +17111,6 @@ local ____utils = require("graphics.utils.index")
 local ArcUtils = ____utils.ArcUtils
 local BezierUtils = ____utils.BezierUtils
 local QuadraticUtils = ____utils.QuadraticUtils
-local canvasRenderer
-local tempMatrix = __TS__New(Matrix)
 local temp = __TS__New(Float32Array, 3)
 --- The Graphics class is primarily used to render primitive shapes such as lines, circles and
 -- rectangles to the display, and to color and fill them.  However, you can also use a Graphics
@@ -17520,12 +17517,6 @@ end
 function Graphics.prototype.isFastRect(self)
     local data = self._geometry.graphicsData
     return #data == 1 and data[1].shape.type == SHAPES.RECT and not data[1].matrix and not #data[1].holes and not (data[1].lineStyle.visible and data[1].lineStyle.width)
-end
-function Graphics.prototype._render(self, _renderer)
-    error(
-        __TS__New(Error, "Graphics#_render is invalid"),
-        0
-    )
 end
 function Graphics.prototype.generateCanvasTexture(self, scaleMode, resolution)
     if resolution == nil then
