@@ -3191,7 +3191,6 @@ local function makeConstructor(self, bytesPerElement, pack, ____unpack)
         return __TS__New(TypedArrayClass, self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, len)
     end
     function TypedArrayClass.prototype.fill(self, value)
-        print(vim:inspect({value, self.length, self.buffer}))
         do
             local i = 0
             while i < self.length do
@@ -4493,7 +4492,7 @@ function Color.prototype.normalize(self, value)
             error(
                 __TS__New(
                     Error,
-                    "Color: invalid input: " .. tostring(vim:inspect(values))
+                    "Color: invalid input: " .. tostring(vim.inspect(values))
                 ),
                 0
             )
@@ -18926,7 +18925,7 @@ function TextMetrics.measureText(self, text, style, wordWrap, canvas)
     local context = canvas:getContext("2d")
     context.font = font
     local outputText = wordWrap and ____exports.TextMetrics:wordWrap(text, style, canvas) or text
-    local lines = vim:split(outputText, "\n")
+    local lines = vim.split(outputText, "\n")
     local lineWidths = {}
     local maxLineWidth = 0
     do
@@ -19496,7 +19495,7 @@ function Text.prototype.drawLetterSpacing(self, text, x, y, isStroke)
     local stringArray = TextMetrics:graphemeSegmenter(text)
     local previousWidth = self.context:measureText(text).width
     local currentWidth = 0
-    print(vim:inspect(self.context.font))
+    print(vim.inspect(self.context.font))
     do
         local i = 0
         while i < #stringArray do
@@ -19684,7 +19683,7 @@ function Animation.prototype.____constructor(self, fn, duration, initial, final)
     self.timer:start(
         0,
         ANIMATION_FREQUENCY,
-        vim:schedule_wrap(function() return tick(nil, self) end)
+        vim.schedule_wrap(function() return tick(nil, self) end)
     )
 end
 function Animation.prototype.stop(self)
@@ -19807,21 +19806,23 @@ function ____exports.demo(self)
     local content = stage:addChild(__TS__New(Graphics))
     content.x = 10
     content.y = 10
-    content:beginFill(5873407)
-    content:drawRoundedRect(
-        0,
-        0,
-        50,
-        10,
-        5
-    )
-    content:endFill()
     local text = stage:addChild(__TS__New(Text, "Hello world", {fill = 16777215}))
     text.x = 10
-    return ticker(
+    ticker(
         nil,
         function(____, current)
-            text.y = 20 + 20 * math.sin(current / 1000)
+            local width = 50 + 50 * math.abs(math.sin(current / 1000))
+            content:clear()
+            content:beginFill(5873407)
+            content:drawRoundedRect(
+                0,
+                0,
+                width,
+                10,
+                5
+            )
+            content:endFill()
+            text.y = 40 + 15 * math.sin(current / 1000)
             renderer:render(stage)
         end
     )

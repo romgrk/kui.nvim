@@ -515,7 +515,6 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
     }
 
     fill(value: number) {
-      print(vim.inspect([value, this.length, this.buffer]))
       for (let i = 0; i < this.length; i++) {
         this._setter(i, value)
       }

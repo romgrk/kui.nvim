@@ -52,15 +52,18 @@ export function demo() {
   const content = stage.addChild(new Graphics())
   content.x = 10
   content.y = 10
-  content.beginFill(0x599eff)
-  content.drawRoundedRect(0, 0, 50, 10, 5)
-  content.endFill()
 
   const text = stage.addChild(new Text('Hello world', { fill: 0xffffff }))
   text.x = 10
 
-  return ticker((current: number) => {
-    text.y = 20 + 20 * Math.sin(current / 1000)
+  ticker((current: number) => {
+    const width = 50 + 50 * Math.abs(Math.sin(current / 1000))
+    content.clear()
+    content.beginFill(0x599eff)
+    content.drawRoundedRect(0, 0, width, 10, 5)
+    content.endFill()
+
+    text.y = 40 + 15 * Math.sin(current / 1000)
     renderer.render(stage)
   })
 }

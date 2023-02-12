@@ -9,6 +9,7 @@ import { Option, Window, Global, Buffer } from './option.d';
 
 declare global {
   /** `lua-builtin` */
+  /** @noSelf */
   namespace vim {
     type Timer = LoopTimer;
 
