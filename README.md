@@ -2,7 +2,12 @@
 
 An experimental fork of [hologram.nvim](https://github.com/edluffy/hologram.nvim) aiming to create a UI framework.
 
+This depends on the user having a terminal with support for the [kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
+as well as [libcairo](https://www.cairographics.org/) installed.
+
 ![demo](./assets/kui-demo.gif)
+
+See https://github.com/romgrk/kui-demo.nvim for a template showing how to implement the demo above.
 
 ## License
 
