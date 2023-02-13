@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter3'
+import EventEmitter from 'src/eventemitter3'
 
 type Events = 'colorscheme'
 type Fn = (...args: any[]) => unknown
