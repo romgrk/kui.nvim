@@ -40,7 +40,6 @@ export function demo() {
 
   const width  = 20 * cw
   const height = 8 * ch
-
   const renderer = new Renderer({ col: 10, row: 5, width, height })
   const stage = new Container()
 
