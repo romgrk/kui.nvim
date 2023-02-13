@@ -16,11 +16,13 @@ import { Input } from 'src/input'
 import { ticker } from 'src/animate'
 
 export * from 'src/animate'
+export * from 'src/core'
 export * from 'src/editor'
 export * from 'src/display'
 export * from 'src/graphics'
 export * from 'src/input'
 export * from 'src/math'
+export * from 'src/settings'
 export * from 'src/text'
 
 export function setup() {

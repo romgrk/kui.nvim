@@ -9,7 +9,7 @@ import { Container } from 'src/display';
 import { GraphicsGeometry } from 'src/graphics/GraphicsGeometry';
 import { FillStyle } from 'src/graphics/styles/FillStyle';
 
-import type { ColorSource, IPointData, Renderer } from 'src/core';
+import type { IPointData, Renderer } from 'src/core';
 import type { IDestroyOptions } from 'src/display';
 
 export interface Input extends Container {}

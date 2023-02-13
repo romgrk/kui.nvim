@@ -4,7 +4,9 @@
   "description": "A neovim UI framework using the kitty graphics protocol",
   "main": "index.js",
   "scripts": {
-    "build": "tstl && node ./scripts/adjustPaths.js",
+    "build": "npm run build:lua && npm run build:types",
+    "build:lua": "tstl",
+    "build:types": "tsc --declaration --emitDeclarationOnly --project tsconfig-declaration.json && node ./scripts/adjustPaths.js",
     "prepare": "npm run build",
     "start": "tstl --watch"
   },
