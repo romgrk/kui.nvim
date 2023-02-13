@@ -8,6 +8,7 @@
     "prepare": "npm run build",
     "start": "tstl --watch"
   },
+  "types": "./dist/index.d.ts",
   "files": [
     "/dist",
     "/types",
