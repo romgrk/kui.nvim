@@ -40,7 +40,7 @@ export class LineStyle extends FillStyle
 
         obj.color = this.color;
         obj.alpha = this.alpha;
-        // obj.texture = this.texture;
+        obj.texture = this.texture;
         obj.matrix = this.matrix;
         obj.visible = this.visible;
         obj.width = this.width;

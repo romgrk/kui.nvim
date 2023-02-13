@@ -235,7 +235,7 @@ export class Bounds
      * @param beginOffset - begin offset
      * @param endOffset - end offset, excluded
      */
-    addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
+    addVertexData(vertexData: number[], beginOffset: number, endOffset: number): void
     {
         let minX = this.minX;
         let minY = this.minY;

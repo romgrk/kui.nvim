@@ -33,6 +33,36 @@ declare module 'kui.cairo.cairo' {
 
   type LineCap = 'butt' | 'round' | 'square'
   type LineJoin = 'miter' | 'round' | 'bevel'
+  type Operator =
+    | 'clear'
+    | 'source'
+    | 'over'
+    | 'in'
+    | 'out'
+    | 'atop'
+    | 'dest'
+    | 'dest_over'
+    | 'dest_in'
+    | 'dest_out'
+    | 'dest_atop'
+    | 'xor'
+    | 'add'
+    | 'saturate'
+    | 'multiply'
+    | 'screen'
+    | 'overlay'
+    | 'darken'
+    | 'lighten'
+    | 'color_dodge'
+    | 'color_burn'
+    | 'hard_light'
+    | 'soft_light'
+    | 'difference'
+    | 'exclusion'
+    | 'hsl_hue'
+    | 'hsl_saturation'
+    | 'hsl_color'
+    | 'hsl_luminosity'
 
   class Context {
     save(): void;
@@ -40,6 +70,8 @@ declare module 'kui.cairo.cairo' {
 
     rgba(r: number, g: number, b: number, a: number): void;
     source(source: Surface, x?: number, y?: number): void;
+    operator(): Operator;
+    operator(op: Operator): void;
 
     font_face(name: string, slant: string, weight: string): void;
     font_size(size: number): void;

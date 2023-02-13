@@ -1,4 +1,4 @@
-// import { Texture } from 'src/core';
+import { Texture } from 'src/core';
 
 import type { Matrix } from 'src/math';
 
@@ -8,6 +8,12 @@ import type { Matrix } from 'src/math';
  */
 export class FillStyle
 {
+    static WHITE = (() => {
+        const result = new FillStyle()
+        result.visible = true
+        return result
+    })()
+
     /**
      * The hex color value used when coloring the Graphics object.
      * @default 0xFFFFFF
@@ -21,7 +27,7 @@ export class FillStyle
      * The texture to be used for the fill.
      * @default 0
      */
-    // public texture: Texture = Texture.WHITE;
+    public texture: Texture = Texture.WHITE;
 
     /**
      * The transform applied to the texture.
@@ -44,7 +50,7 @@ export class FillStyle
 
         obj.color = this.color;
         obj.alpha = this.alpha;
-        // obj.texture = this.texture;
+        obj.texture = this.texture;
         obj.matrix = this.matrix;
         obj.visible = this.visible;
 
@@ -56,7 +62,7 @@ export class FillStyle
     {
         this.color = 0xFFFFFF;
         this.alpha = 1;
-        // this.texture = Texture.WHITE;
+        this.texture = Texture.WHITE;
         this.matrix = null;
         this.visible = false;
     }
@@ -64,7 +70,7 @@ export class FillStyle
     /** Destroy and don't use after this. */
     public destroy(): void
     {
-        // this.texture = null;
+        this.texture = null as any;
         this.matrix = null;
     }
 }

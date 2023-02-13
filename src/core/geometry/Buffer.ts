@@ -75,7 +75,7 @@ export class Buffer
      */
     update(data?: IArrayBuffer | Array<number>): void
     {
-        if (data instanceof Array)
+        if (Array.isArray(data))
         {
             data = new Float32Array(data);
         }

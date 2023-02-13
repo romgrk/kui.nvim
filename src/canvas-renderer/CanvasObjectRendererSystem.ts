@@ -121,36 +121,32 @@ export class CanvasObjectRendererSystem implements ISystem
         _context._outerBlend = false;
         context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL] as CompositeOperation;
 
-        // if (clear ?? renderer.background.clearBeforeRender)
-        // {
-        //     if (this.renderingToScreen)
-        //     {
-        //         context2D.clearRect(0, 0, renderer.width, renderer.height);
-        //
-        //         const background = renderer.background;
-        //
-        //         if (background.alpha > 0)
-        //         {
-        //             context2D.globalAlpha = background.backgroundColor.alpha;
-        //             context2D.fillStyle = background.backgroundColor.toHex();
-        //             context2D.fillRect(0, 0, renderer.width, renderer.height);
-        //             context2D.globalAlpha = 1;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         renderTexture = (renderTexture as BaseRenderTexture);
-        //         renderTexture._canvasRenderTarget.clear();
-        //
-        //         if (renderTexture.clear.alpha > 0)
-        //         {
-        //             context2D.globalAlpha = renderTexture.clear.alpha;
-        //             context2D.fillStyle = renderTexture.clear.toHex();
-        //             context2D.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
-        //             context2D.globalAlpha = 1;
-        //         }
-        //     }
-        // }
+        if (this.renderingToScreen)
+        {
+            context2D.clearRect(0, 0, renderer.width, renderer.height);
+
+            // const background = renderer.background;
+            //
+            // if (background.alpha > 0)
+            // {
+            //     context2D.globalAlpha = background.backgroundColor.alpha;
+            //     context2D.fillStyle = background.backgroundColor.toHex();
+            //     context2D.fillRect(0, 0, renderer.width, renderer.height);
+            //     context2D.globalAlpha = 1;
+            // }
+        }
+        else
+        {
+            // renderTexture = (renderTexture as BaseRenderTexture);
+            // renderTexture._canvasRenderTarget.clear();
+            // if (renderTexture.clear.alpha > 0)
+            // {
+            //     context2D.globalAlpha = renderTexture.clear.alpha;
+            //     context2D.fillStyle = renderTexture.clear.toHex();
+            //     context2D.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
+            //     context2D.globalAlpha = 1;
+            // }
+        }
 
         // TODO RENDER TARGET STUFF HERE..
         const tempContext = _context.activeContext;

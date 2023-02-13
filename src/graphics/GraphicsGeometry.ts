@@ -1,11 +1,12 @@
 import {
-    // BaseTexture,
+    BaseTexture,
     BatchDrawCall,
     BatchGeometry,
     BatchTextureArray,
     Color,
     DRAW_MODES,
     Point,
+    Texture,
     utils,
     WRAP_MODES,
 } from 'src/core';
@@ -395,11 +396,11 @@ export class GraphicsGeometry extends BatchGeometry
 
                 if (!style?.visible) continue;
 
-                // const nextTexture = style.texture.baseTexture;
+                const nextTexture = style.texture.baseTexture;
                 const index = this.indices.length;
                 const attribIndex = this.points.length / 2;
 
-                // nextTexture.wrapMode = WRAP_MODES.REPEAT;
+                nextTexture.wrapMode = WRAP_MODES.REPEAT;
 
                 if (j === 0)
                 {
@@ -428,14 +429,14 @@ export class GraphicsGeometry extends BatchGeometry
                     currentStyle = style;
                 }
 
-                // this.addUvs(
-                //     this.points,
-                //     uvs,
-                //     style.texture,
-                //     attribIndex,
-                //     size,
-                //     style.matrix
-                // );
+                this.addUvs(
+                    this.points,
+                    uvs,
+                    style.texture,
+                    attribIndex,
+                    size,
+                    style.matrix
+                );
             }
         }
 
@@ -585,122 +586,121 @@ export class GraphicsGeometry extends BatchGeometry
     /** Converts intermediate batches data to drawCalls. */
     protected buildDrawCalls(): void
     {
-        throw new Error('buildDrawCalls unimplemented')
-        // let TICK = ++BaseTexture._globalBatch;
-        //
-        // for (let i = 0; i < this.drawCalls.length; i++)
-        // {
-        //     this.drawCalls[i].texArray.clear();
-        //     DRAW_CALL_POOL.push(this.drawCalls[i]);
-        // }
-        //
-        // this.drawCalls.length = 0;
-        //
-        // const colors = this.colors;
-        // const textureIds = this.textureIds;
-        //
-        // let currentGroup: BatchDrawCall = DRAW_CALL_POOL.pop();
-        //
-        // if (!currentGroup)
-        // {
-        //     currentGroup = new BatchDrawCall();
-        //     currentGroup.texArray = new BatchTextureArray();
-        // }
-        // currentGroup.texArray.count = 0;
-        // currentGroup.start = 0;
-        // currentGroup.size = 0;
-        // currentGroup.type = DRAW_MODES.TRIANGLES;
-        //
-        // let textureCount = 0;
-        // let currentTexture = null;
-        // let textureId = 0;
-        // let native = false;
-        // let drawMode = DRAW_MODES.TRIANGLES;
-        //
-        // let index = 0;
-        //
-        // this.drawCalls.push(currentGroup);
-        //
-        // // TODO - this can be simplified
-        // for (let i = 0; i < this.batches.length; i++)
-        // {
-        //     const data = this.batches[i];
-        //
-        //     // TODO add some full on MAX_TEXTURE CODE..
-        //     const maxTextures = 8;
-        //
-        //     // Forced cast for checking `native` without errors
-        //     const style = data.style as LineStyle;
-        //
-        //     const nextTexture = style.texture.baseTexture;
-        //
-        //     if (native !== !!style.native)
-        //     {
-        //         native = !!style.native;
-        //         drawMode = native ? DRAW_MODES.LINES : DRAW_MODES.TRIANGLES;
-        //
-        //         // force the batch to break!
-        //         currentTexture = null;
-        //         textureCount = maxTextures;
-        //         TICK++;
-        //     }
-        //
-        //     if (currentTexture !== nextTexture)
-        //     {
-        //         currentTexture = nextTexture;
-        //
-        //         if (nextTexture._batchEnabled !== TICK)
-        //         {
-        //             if (textureCount === maxTextures)
-        //             {
-        //                 TICK++;
-        //
-        //                 textureCount = 0;
-        //
-        //                 if (currentGroup.size > 0)
-        //                 {
-        //                     currentGroup = DRAW_CALL_POOL.pop();
-        //                     if (!currentGroup)
-        //                     {
-        //                         currentGroup = new BatchDrawCall();
-        //                         currentGroup.texArray = new BatchTextureArray();
-        //                     }
-        //                     this.drawCalls.push(currentGroup);
-        //                 }
-        //
-        //                 currentGroup.start = index;
-        //                 currentGroup.size = 0;
-        //                 currentGroup.texArray.count = 0;
-        //                 currentGroup.type = drawMode;
-        //             }
-        //
-        //             // TODO add this to the render part..
-        //             // Hack! Because texture has protected `touched`
-        //             nextTexture.touched = 1;// touch;
-        //
-        //             nextTexture._batchEnabled = TICK;
-        //             nextTexture._batchLocation = textureCount;
-        //             nextTexture.wrapMode = WRAP_MODES.REPEAT;
-        //
-        //             currentGroup.texArray.elements[currentGroup.texArray.count++] = nextTexture;
-        //             textureCount++;
-        //         }
-        //     }
-        //
-        //     currentGroup.size += data.size;
-        //     index += data.size;
-        //
-        //     textureId = nextTexture._batchLocation;
-        //
-        //     this.addColors(colors, style.color, style.alpha, data.attribSize, data.attribStart);
-        //     this.addTextureIds(textureIds, textureId, data.attribSize, data.attribStart);
-        // }
-        //
-        // BaseTexture._globalBatch = TICK;
-        //
-        // // upload..
-        // // merge for now!
-        // this.packAttributes();
+        let TICK = ++BaseTexture._globalBatch;
+
+        for (let i = 0; i < this.drawCalls.length; i++)
+        {
+            this.drawCalls[i].texArray.clear();
+            DRAW_CALL_POOL.push(this.drawCalls[i]);
+        }
+
+        this.drawCalls.length = 0;
+
+        const colors = this.colors;
+        const textureIds = this.textureIds;
+
+        let currentGroup = DRAW_CALL_POOL.pop();
+
+        if (!currentGroup)
+        {
+            currentGroup = new BatchDrawCall();
+            currentGroup.texArray = new BatchTextureArray();
+        }
+        currentGroup.texArray.count = 0;
+        currentGroup.start = 0;
+        currentGroup.size = 0;
+        currentGroup.type = DRAW_MODES.TRIANGLES;
+
+        let textureCount = 0;
+        let currentTexture = null;
+        let textureId = 0;
+        let native = false;
+        let drawMode = DRAW_MODES.TRIANGLES;
+
+        let index = 0;
+
+        this.drawCalls.push(currentGroup);
+
+        // TODO - this can be simplified
+        for (let i = 0; i < this.batches.length; i++)
+        {
+            const data = this.batches[i];
+
+            // TODO add some full on MAX_TEXTURE CODE..
+            const maxTextures = 8;
+
+            // Forced cast for checking `native` without errors
+            const style = data.style as LineStyle;
+
+            const nextTexture = style.texture.baseTexture;
+
+            if (native !== !!style.native)
+            {
+                native = !!style.native;
+                drawMode = native ? DRAW_MODES.LINES : DRAW_MODES.TRIANGLES;
+
+                // force the batch to break!
+                currentTexture = null;
+                textureCount = maxTextures;
+                TICK++;
+            }
+
+            if (currentTexture !== nextTexture)
+            {
+                currentTexture = nextTexture;
+
+                if (nextTexture._batchEnabled !== TICK)
+                {
+                    if (textureCount === maxTextures)
+                    {
+                        TICK++;
+
+                        textureCount = 0;
+
+                        if (currentGroup.size > 0)
+                        {
+                            currentGroup = DRAW_CALL_POOL.pop();
+                            if (!currentGroup)
+                            {
+                                currentGroup = new BatchDrawCall();
+                                currentGroup.texArray = new BatchTextureArray();
+                            }
+                            this.drawCalls.push(currentGroup);
+                        }
+
+                        currentGroup.start = index;
+                        currentGroup.size = 0;
+                        currentGroup.texArray.count = 0;
+                        currentGroup.type = drawMode;
+                    }
+
+                    // TODO add this to the render part..
+                    // Hack! Because texture has protected `touched`
+                    nextTexture.touched = 1;// touch;
+
+                    nextTexture._batchEnabled = TICK;
+                    nextTexture._batchLocation = textureCount;
+                    nextTexture.wrapMode = WRAP_MODES.REPEAT;
+
+                    currentGroup.texArray.elements[currentGroup.texArray.count++] = nextTexture;
+                    textureCount++;
+                }
+            }
+
+            currentGroup.size += data.size;
+            index += data.size;
+
+            textureId = nextTexture._batchLocation;
+
+            this.addColors(colors, style.color, style.alpha, data.attribSize, data.attribStart);
+            this.addTextureIds(textureIds, textureId, data.attribSize, data.attribStart);
+        }
+
+        BaseTexture._globalBatch = TICK;
+
+        // upload..
+        // merge for now!
+        this.packAttributes();
     }
 
     /** Packs attributes to single buffer. */
@@ -793,7 +793,7 @@ export class GraphicsGeometry extends BatchGeometry
         const bounds = this._bounds;
 
         bounds.clear();
-        bounds.addVertexData((this.points as any), 0, this.points.length);
+        bounds.addVertexData(this.points, 0, this.points.length);
         bounds.pad(this.boundsPadding, this.boundsPadding);
     }
 
@@ -872,45 +872,45 @@ export class GraphicsGeometry extends BatchGeometry
      * @param size - The size/length for index buffer.
      * @param matrix - Optional transform for all points.
      */
-    // protected addUvs(
-    //     verts: Array<number>,
-    //     uvs: Array<number>,
-    //     texture: Texture,
-    //     start: number,
-    //     size: number,
-    //     matrix: Matrix | null = null
-    // ): void
-    // {
-    //     let index = 0;
-    //     const uvsStart = uvs.length;
-    //     const frame = texture.frame;
-    //
-    //     while (index < size)
-    //     {
-    //         let x = verts[(start + index) * 2];
-    //         let y = verts[((start + index) * 2) + 1];
-    //
-    //         if (matrix)
-    //         {
-    //             const nx = (matrix.a * x) + (matrix.c * y) + matrix.tx;
-    //
-    //             y = (matrix.b * x) + (matrix.d * y) + matrix.ty;
-    //             x = nx;
-    //         }
-    //
-    //         index++;
-    //
-    //         uvs.push(x / frame.width, y / frame.height);
-    //     }
-    //
-    //     const baseTexture = texture.baseTexture;
-    //
-    //     if (frame.width < baseTexture.width
-    //         || frame.height < baseTexture.height)
-    //     {
-    //         this.adjustUvs(uvs, texture, uvsStart, size);
-    //     }
-    // }
+    protected addUvs(
+        verts: Array<number>,
+        uvs: Array<number>,
+        texture: Texture,
+        start: number,
+        size: number,
+        matrix: Matrix | null = null
+    ): void
+    {
+        let index = 0;
+        const uvsStart = uvs.length;
+        const frame = texture.frame;
+
+        while (index < size)
+        {
+            let x = verts[(start + index) * 2];
+            let y = verts[((start + index) * 2) + 1];
+
+            if (matrix)
+            {
+                const nx = (matrix.a * x) + (matrix.c * y) + matrix.tx;
+
+                y = (matrix.b * x) + (matrix.d * y) + matrix.ty;
+                x = nx;
+            }
+
+            index++;
+
+            uvs.push(x / frame.width, y / frame.height);
+        }
+
+        const baseTexture = texture.baseTexture;
+
+        if (frame.width < baseTexture.width
+            || frame.height < baseTexture.height)
+        {
+            this.adjustUvs(uvs, texture, uvsStart, size);
+        }
+    }
 
     /**
      * Modify uvs array according to position of texture region
@@ -920,30 +920,30 @@ export class GraphicsGeometry extends BatchGeometry
      * @param start - starting index for uvs
      * @param size - how many points to adjust
      */
-    // protected adjustUvs(uvs: Array<number>, texture: Texture, start: number, size: number): void
-    // {
-    //     const baseTexture = texture.baseTexture;
-    //     const eps = 1e-6;
-    //     const finish = start + (size * 2);
-    //     const frame = texture.frame;
-    //     const scaleX = frame.width / baseTexture.width;
-    //     const scaleY = frame.height / baseTexture.height;
-    //     let offsetX = frame.x / frame.width;
-    //     let offsetY = frame.y / frame.height;
-    //     let minX = Math.floor(uvs[start] + eps);
-    //     let minY = Math.floor(uvs[start + 1] + eps);
-    //
-    //     for (let i = start + 2; i < finish; i += 2)
-    //     {
-    //         minX = Math.min(minX, Math.floor(uvs[i] + eps));
-    //         minY = Math.min(minY, Math.floor(uvs[i + 1] + eps));
-    //     }
-    //     offsetX -= minX;
-    //     offsetY -= minY;
-    //     for (let i = start; i < finish; i += 2)
-    //     {
-    //         uvs[i] = (uvs[i] + offsetX) * scaleX;
-    //         uvs[i + 1] = (uvs[i + 1] + offsetY) * scaleY;
-    //     }
-    // }
+    protected adjustUvs(uvs: Array<number>, texture: Texture, start: number, size: number): void
+    {
+        const baseTexture = texture.baseTexture;
+        const eps = 1e-6;
+        const finish = start + (size * 2);
+        const frame = texture.frame;
+        const scaleX = frame.width / baseTexture.width;
+        const scaleY = frame.height / baseTexture.height;
+        let offsetX = frame.x / frame.width;
+        let offsetY = frame.y / frame.height;
+        let minX = Math.floor(uvs[start] + eps);
+        let minY = Math.floor(uvs[start + 1] + eps);
+
+        for (let i = start + 2; i < finish; i += 2)
+        {
+            minX = Math.min(minX, Math.floor(uvs[i] + eps));
+            minY = Math.min(minY, Math.floor(uvs[i + 1] + eps));
+        }
+        offsetX -= minX;
+        offsetY -= minY;
+        for (let i = start; i < finish; i += 2)
+        {
+            uvs[i] = (uvs[i] + offsetX) * scaleX;
+            uvs[i + 1] = (uvs[i + 1] + offsetY) * scaleY;
+        }
+    }
 }

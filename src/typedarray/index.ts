@@ -65,8 +65,8 @@ function clamp(v: number, minimum: number, max: number) { return v < minimum ? m
 // http://blogs.msdn.com/b/ie/archive/2010/09/07/transitioning-existing-code-to-the-es5-getter-setter-apis.aspx
 // (second clause tests for Object.defineProperty() in IE<9 that only supports extending DOM prototypes, but
 // note that IE<9 does not support __defineGetter__ or __defineSetter__ so it just renders the method harmless)
-const defineProp = (o: Object, prop: any, descriptor: any) =>
-  Object.defineProperty(o, prop, descriptor);
+// const defineProp = (o: Object, prop: any, descriptor: any) =>
+//   Object.defineProperty(o, prop, descriptor);
 
 // ES5: Make obj[index] an alias for obj._getter(index)/obj._setter(index, value)
 // for index in 0 ... obj.length
@@ -406,9 +406,9 @@ function makeConstructor(bytesPerElement: number, pack: PackFn, unpack: UnpackFn
 
       const buffer = this.buffer;
       let bytes = [];
-      for (let i = 0, o = this.byteOffset + (index * this.BYTES_PER_ELEMENT);
-        i < this.BYTES_PER_ELEMENT;
-        i += 1, o += 1) {
+      let i = 0
+      let o = this.byteOffset + (index * this.BYTES_PER_ELEMENT)
+      for (; i < this.BYTES_PER_ELEMENT; i += 1, o += 1) {
         bytes.push(buffer._bytes[o]);
       }
       const _unpack = rawget(this, '_unpack')

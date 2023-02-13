@@ -1,3 +1,4 @@
+import * as state from 'kui.legacy.state'
 import type { Canvas } from 'src/context2d'
 
 export const settings = {
@@ -8,6 +9,8 @@ export const settings = {
     'sans-serif': 'Arial',
     'monospace':  'Arial',
   },
+
+  DIMENSIONS: state.dimensions,
 
   RESOLUTION: 1,
   ROUND_PIXELS: true,

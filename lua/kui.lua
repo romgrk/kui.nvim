@@ -2529,7 +2529,6 @@ return {
 ["typedarray.index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__StringReplace = ____lualib.__TS__StringReplace
-local __TS__ObjectDefineProperty = ____lualib.__TS__ObjectDefineProperty
 local __TS__Number = ____lualib.__TS__Number
 local __TS__ArrayReverse = ____lualib.__TS__ArrayReverse
 local __TS__StringSubstring = ____lualib.__TS__StringSubstring
@@ -2585,9 +2584,6 @@ local LN2 = 0.6931471805599453
 -- @noSelf
 local function clamp(v, minimum, max)
     return v < minimum and minimum or (v > max and max or v)
-end
-local function defineProp(____, o, prop, descriptor)
-    return __TS__ObjectDefineProperty(o, prop, descriptor)
 end
 local function as_signed(self, value, bits)
     local s = 32 - bits
@@ -3028,9 +3024,9 @@ local function makeConstructor(self, bytesPerElement, pack, ____unpack)
         end
         local buffer = self.buffer
         local bytes = {}
+        local i = 0
+        local o = self.byteOffset + index * self.BYTES_PER_ELEMENT
         do
-            local i = 0
-            local o = self.byteOffset + index * self.BYTES_PER_ELEMENT
             while i < self.BYTES_PER_ELEMENT do
                 bytes[#bytes + 1] = buffer._bytes[o + 1]
                 do
@@ -7169,7 +7165,24 @@ function Context2D.prototype.clearRect(self, x, y, width, height)
     self.context:save()
     self.context:rectangle(x, y, width, height)
     self.context:clip()
-    self.context:paint_with_alpha(0)
+    self.context:rgba(0, 0, 0, 0)
+    self.context:operator("source")
+    self.context:paint()
+    self.context:restore()
+end
+function Context2D.prototype.clearRoundRect(self, x, y, width, height, radius)
+    self.context:save()
+    self.context:rounded_rectangle(
+        x,
+        y,
+        width,
+        height,
+        radius
+    )
+    self.context:clip()
+    self.context:rgba(0, 0, 0, 0)
+    self.context:operator("source")
+    self.context:paint()
     self.context:restore()
 end
 function Context2D.prototype.fillRect(self, x, y, width, height)
@@ -7298,10 +7311,12 @@ return ____exports
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
+local state = require("kui.legacy.state")
 ____exports.settings = {
     DEFAULT_FONT_NAME = "monospace",
     DEFAULT_FONT_SIZE = 12,
     FONT_NAMES = {serif = "Arial", ["sans-serif"] = "Arial", monospace = "Arial"},
+    DIMENSIONS = state.dimensions,
     RESOLUTION = 1,
     ROUND_PIXELS = true,
     RENDER_OPTIONS = {
@@ -9105,8 +9120,8 @@ function Bounds.prototype.addVertexData(self, vertexData, beginOffset, endOffset
     do
         local i = beginOffset
         while i < endOffset do
-            local x = vertexData[i]
-            local y = vertexData[i + 1]
+            local x = vertexData[i + 1]
+            local y = vertexData[i + 1 + 1]
             minX = x < minX and x or minX
             minY = y < minY and y or minY
             maxX = x > maxX and x or maxX
@@ -10666,6 +10681,10 @@ function CanvasObjectRendererSystem.prototype.render(self, displayObject, option
     _context._activeBlendMode = BLEND_MODES.NORMAL
     _context._outerBlend = false
     context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL + 1]
+    if self.renderingToScreen then
+        context2D:clearRect(0, 0, renderer.width, renderer.height)
+    else
+    end
     local tempContext = _context.activeContext
     _context.activeContext = context2D
     displayObject:renderCanvas(renderer)
@@ -10997,6 +11016,7 @@ local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
 local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local __TS__InstanceOf = ____lualib.__TS__InstanceOf
 local ____exports = {}
 local ____constants = require("constants.index")
@@ -11040,7 +11060,7 @@ __TS__SetDescriptor(
     true
 )
 function Buffer.prototype.update(self, data)
-    if __TS__InstanceOf(data, Array) then
+    if __TS__ArrayIsArray(data) then
         data = __TS__New(Float32Array, data)
     end
     self.data = data or self.data
@@ -13267,6 +13287,8 @@ local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
+local ____core = require("core.index")
+local Texture = ____core.Texture
 --- Fill style object for Graphics.
 -- 
 -- @memberof PIXI
@@ -13276,6 +13298,7 @@ FillStyle.name = "FillStyle"
 function FillStyle.prototype.____constructor(self)
     self.color = 16777215
     self.alpha = 1
+    self.texture = Texture.WHITE
     self.matrix = nil
     self.visible = false
     self:reset()
@@ -13284,6 +13307,7 @@ function FillStyle.prototype.clone(self)
     local obj = __TS__New(____exports.FillStyle)
     obj.color = self.color
     obj.alpha = self.alpha
+    obj.texture = self.texture
     obj.matrix = self.matrix
     obj.visible = self.visible
     return obj
@@ -13291,12 +13315,19 @@ end
 function FillStyle.prototype.reset(self)
     self.color = 16777215
     self.alpha = 1
+    self.texture = Texture.WHITE
     self.matrix = nil
     self.visible = false
 end
 function FillStyle.prototype.destroy(self)
+    self.texture = nil
     self.matrix = nil
 end
+FillStyle.WHITE = (function()
+    local result = __TS__New(____exports.FillStyle)
+    result.visible = true
+    return result
+end)(nil)
 return ____exports
  end,
 ["graphics.const"] = function(...) 
@@ -13399,6 +13430,7 @@ function LineStyle.prototype.clone(self)
     local obj = __TS__New(____exports.LineStyle)
     obj.color = self.color
     obj.alpha = self.alpha
+    obj.texture = self.texture
     obj.matrix = self.matrix
     obj.visible = self.visible
     obj.width = self.width
@@ -13475,18 +13507,18 @@ local __TS__Class = ____lualib.__TS__Class
 local __TS__ClassExtends = ____lualib.__TS__ClassExtends
 local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
 local __TS__ArraySetLength = ____lualib.__TS__ArraySetLength
-local Error = ____lualib.Error
-local RangeError = ____lualib.RangeError
-local ReferenceError = ____lualib.ReferenceError
-local SyntaxError = ____lualib.SyntaxError
-local TypeError = ____lualib.TypeError
-local URIError = ____lualib.URIError
+local __TS__ArrayPush = ____lualib.__TS__ArrayPush
 local ____exports = {}
 local ____core = require("core.index")
+local BaseTexture = ____core.BaseTexture
+local BatchDrawCall = ____core.BatchDrawCall
 local BatchGeometry = ____core.BatchGeometry
+local BatchTextureArray = ____core.BatchTextureArray
 local Color = ____core.Color
+local DRAW_MODES = ____core.DRAW_MODES
 local Point = ____core.Point
 local utils = ____core.utils
+local WRAP_MODES = ____core.WRAP_MODES
 local ____display = require("display.index")
 local Bounds = ____display.Bounds
 local ____GraphicsData = require("graphics.GraphicsData")
@@ -13747,8 +13779,10 @@ function GraphicsGeometry.prototype.updateBatches(self)
                         if not (style and style.visible) then
                             goto __continue33
                         end
+                        local nextTexture = style.texture.baseTexture
                         local index = #self.indices
                         local attribIndex = #self.points / 2
+                        nextTexture.wrapMode = WRAP_MODES.REPEAT
                         if j == 0 then
                             self:processFill(data)
                         else
@@ -13769,6 +13803,14 @@ function GraphicsGeometry.prototype.updateBatches(self)
                             ____self_batches_13[#____self_batches_13 + 1] = batchPart
                             currentStyle = style
                         end
+                        self:addUvs(
+                            self.points,
+                            uvs,
+                            style.texture,
+                            attribIndex,
+                            size,
+                            style.matrix
+                        )
                     end
                     ::__continue33::
                     j = j + 1
@@ -13855,10 +13897,100 @@ function GraphicsGeometry.prototype.isBatchable(self)
     return #self.points < ____exports.GraphicsGeometry.BATCHABLE_SIZE * 2
 end
 function GraphicsGeometry.prototype.buildDrawCalls(self)
-    error(
-        __TS__New(Error, "buildDrawCalls unimplemented"),
-        0
-    )
+    local ____BaseTexture_14, ____globalBatch_15 = BaseTexture, "_globalBatch"
+    local ____BaseTexture__globalBatch_16 = ____BaseTexture_14[____globalBatch_15] + 1
+    ____BaseTexture_14[____globalBatch_15] = ____BaseTexture__globalBatch_16
+    local TICK = ____BaseTexture__globalBatch_16
+    do
+        local i = 0
+        while i < #self.drawCalls do
+            self.drawCalls[i + 1].texArray:clear()
+            DRAW_CALL_POOL[#DRAW_CALL_POOL + 1] = self.drawCalls[i + 1]
+            i = i + 1
+        end
+    end
+    __TS__ArraySetLength(self.drawCalls, 0)
+    local colors = self.colors
+    local textureIds = self.textureIds
+    local currentGroup = table.remove(DRAW_CALL_POOL)
+    if not currentGroup then
+        currentGroup = __TS__New(BatchDrawCall)
+        currentGroup.texArray = __TS__New(BatchTextureArray)
+    end
+    currentGroup.texArray.count = 0
+    currentGroup.start = 0
+    currentGroup.size = 0
+    currentGroup.type = DRAW_MODES.TRIANGLES
+    local textureCount = 0
+    local currentTexture = nil
+    local textureId = 0
+    local native = false
+    local drawMode = DRAW_MODES.TRIANGLES
+    local index = 0
+    local ____self_drawCalls_17 = self.drawCalls
+    ____self_drawCalls_17[#____self_drawCalls_17 + 1] = currentGroup
+    do
+        local i = 0
+        while i < #self.batches do
+            local data = self.batches[i + 1]
+            local maxTextures = 8
+            local style = data.style
+            local nextTexture = style.texture.baseTexture
+            if native ~= not not style.native then
+                native = not not style.native
+                drawMode = native and DRAW_MODES.LINES or DRAW_MODES.TRIANGLES
+                currentTexture = nil
+                textureCount = maxTextures
+                TICK = TICK + 1
+            end
+            if currentTexture ~= nextTexture then
+                currentTexture = nextTexture
+                if nextTexture._batchEnabled ~= TICK then
+                    if textureCount == maxTextures then
+                        TICK = TICK + 1
+                        textureCount = 0
+                        if currentGroup.size > 0 then
+                            currentGroup = table.remove(DRAW_CALL_POOL)
+                            if not currentGroup then
+                                currentGroup = __TS__New(BatchDrawCall)
+                                currentGroup.texArray = __TS__New(BatchTextureArray)
+                            end
+                            local ____self_drawCalls_18 = self.drawCalls
+                            ____self_drawCalls_18[#____self_drawCalls_18 + 1] = currentGroup
+                        end
+                        currentGroup.start = index
+                        currentGroup.size = 0
+                        currentGroup.texArray.count = 0
+                        currentGroup.type = drawMode
+                    end
+                    nextTexture.touched = 1
+                    nextTexture._batchEnabled = TICK
+                    nextTexture._batchLocation = textureCount
+                    nextTexture.wrapMode = WRAP_MODES.REPEAT
+                    local ____currentGroup_texArray_elements_22 = currentGroup.texArray.elements
+                    local ____currentGroup_texArray_19, ____count_20 = currentGroup.texArray, "count"
+                    local ____currentGroup_texArray_count_21 = ____currentGroup_texArray_19[____count_20]
+                    ____currentGroup_texArray_19[____count_20] = ____currentGroup_texArray_count_21 + 1
+                    ____currentGroup_texArray_elements_22[____currentGroup_texArray_count_21 + 1] = nextTexture
+                    textureCount = textureCount + 1
+                end
+            end
+            currentGroup.size = currentGroup.size + data.size
+            index = index + data.size
+            textureId = nextTexture._batchLocation
+            self:addColors(
+                colors,
+                style.color,
+                style.alpha,
+                data.attribSize,
+                data.attribStart
+            )
+            self:addTextureIds(textureIds, textureId, data.attribSize, data.attribStart)
+            i = i + 1
+        end
+    end
+    BaseTexture._globalBatch = TICK
+    self:packAttributes()
 end
 function GraphicsGeometry.prototype.packAttributes(self)
     local verts = self.points
@@ -13872,24 +14004,24 @@ function GraphicsGeometry.prototype.packAttributes(self)
     do
         local i = 0
         while i < #verts / 2 do
-            local ____p_14 = p
-            p = ____p_14 + 1
-            f32[____p_14] = verts[i * 2 + 1]
-            local ____p_15 = p
-            p = ____p_15 + 1
-            f32[____p_15] = verts[i * 2 + 1 + 1]
-            local ____p_16 = p
-            p = ____p_16 + 1
-            f32[____p_16] = uvs[i * 2 + 1]
-            local ____p_17 = p
-            p = ____p_17 + 1
-            f32[____p_17] = uvs[i * 2 + 1 + 1]
-            local ____p_18 = p
-            p = ____p_18 + 1
-            u32[____p_18] = colors[i + 1]
-            local ____p_19 = p
-            p = ____p_19 + 1
-            f32[____p_19] = textureIds[i + 1]
+            local ____p_23 = p
+            p = ____p_23 + 1
+            f32[____p_23] = verts[i * 2 + 1]
+            local ____p_24 = p
+            p = ____p_24 + 1
+            f32[____p_24] = verts[i * 2 + 1 + 1]
+            local ____p_25 = p
+            p = ____p_25 + 1
+            f32[____p_25] = uvs[i * 2 + 1]
+            local ____p_26 = p
+            p = ____p_26 + 1
+            f32[____p_26] = uvs[i * 2 + 1 + 1]
+            local ____p_27 = p
+            p = ____p_27 + 1
+            u32[____p_27] = colors[i + 1]
+            local ____p_28 = p
+            p = ____p_28 + 1
+            f32[____p_28] = textureIds[i + 1]
             i = i + 1
         end
     end
@@ -13977,6 +14109,65 @@ function GraphicsGeometry.prototype.addTextureIds(self, textureIds, id, size, of
         while i < size do
             textureIds[offset + i + 1] = id
             i = i + 1
+        end
+    end
+end
+function GraphicsGeometry.prototype.addUvs(self, verts, uvs, texture, start, size, matrix)
+    if matrix == nil then
+        matrix = nil
+    end
+    local index = 0
+    local uvsStart = #uvs
+    local frame = texture.frame
+    while index < size do
+        local x = verts[(start + index) * 2 + 1]
+        local y = verts[(start + index) * 2 + 1 + 1]
+        if matrix then
+            local nx = matrix.a * x + matrix.c * y + matrix.tx
+            y = matrix.b * x + matrix.d * y + matrix.ty
+            x = nx
+        end
+        index = index + 1
+        __TS__ArrayPush(uvs, x / frame.width, y / frame.height)
+    end
+    local baseTexture = texture.baseTexture
+    if frame.width < baseTexture.width or frame.height < baseTexture.height then
+        self:adjustUvs(uvs, texture, uvsStart, size)
+    end
+end
+function GraphicsGeometry.prototype.adjustUvs(self, uvs, texture, start, size)
+    local baseTexture = texture.baseTexture
+    local eps = 0.000001
+    local finish = start + size * 2
+    local frame = texture.frame
+    local scaleX = frame.width / baseTexture.width
+    local scaleY = frame.height / baseTexture.height
+    local offsetX = frame.x / frame.width
+    local offsetY = frame.y / frame.height
+    local minX = math.floor(uvs[start + 1] + eps)
+    local minY = math.floor(uvs[start + 1 + 1] + eps)
+    do
+        local i = start + 2
+        while i < finish do
+            minX = math.min(
+                minX,
+                math.floor(uvs[i + 1] + eps)
+            )
+            minY = math.min(
+                minY,
+                math.floor(uvs[i + 1 + 1] + eps)
+            )
+            i = i + 2
+        end
+    end
+    offsetX = offsetX - minX
+    offsetY = offsetY - minY
+    do
+        local i = start
+        while i < finish do
+            uvs[i + 1] = (uvs[i + 1] + offsetX) * scaleX
+            uvs[i + 1 + 1] = (uvs[i + 1 + 1] + offsetY) * scaleY
+            i = i + 2
         end
     end
 end
@@ -17734,6 +17925,41 @@ ____exports.graphicsUtils = {
 }
 return ____exports
  end,
+["editor.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ____eventemitter3 = require("eventemitter3.index")
+local EventEmitter = ____eventemitter3.default
+local Editor = __TS__Class()
+Editor.name = "Editor"
+__TS__ClassExtends(Editor, EventEmitter)
+function Editor.prototype.____constructor(self)
+    EventEmitter.prototype.____constructor(self)
+    vim.api.nvim_create_autocmd(
+        {"ColorScheme"},
+        {
+            pattern = {"*"},
+            callback = function() return self:emit("colorscheme") end
+        }
+    )
+end
+function Editor.prototype.getHighlight(self, name)
+    if vim.fn.hlexists(name) == 0 then
+        return {}
+    end
+    return vim.api.nvim_get_hl_by_name(name, true)
+end
+function Editor.prototype.onColorSchemeChange(self, fn)
+    self:on("colorscheme", fn)
+    return function() return self:off("colorscheme", fn) end
+end
+____exports.editor = __TS__New(Editor)
+____exports.default = ____exports.editor
+return ____exports
+ end,
 ["text.const"] = function(...) 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
@@ -19486,7 +19712,6 @@ function Text.prototype.drawLetterSpacing(self, text, x, y, isStroke)
     local stringArray = TextMetrics:graphemeSegmenter(text)
     local previousWidth = self.context:measureText(text).width
     local currentWidth = 0
-    print(vim.inspect(self.context.font))
     do
         local i = 0
         while i < #stringArray do
@@ -19631,6 +19856,306 @@ do
 end
 return ____exports
  end,
+["dispose.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ArrayForEach = ____lualib.__TS__ArrayForEach
+local ____exports = {}
+____exports.Disposer = __TS__Class()
+local Disposer = ____exports.Disposer
+Disposer.name = "Disposer"
+function Disposer.prototype.____constructor(self)
+    self.tasks = {}
+end
+function Disposer.prototype.add(self, task)
+    local ____self_tasks_0 = self.tasks
+    ____self_tasks_0[#____self_tasks_0 + 1] = task
+end
+function Disposer.prototype.destroy(self)
+    __TS__ArrayForEach(
+        self.tasks,
+        function(____, t) return t(nil) end
+    )
+end
+return ____exports
+ end,
+["input.Input"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__ClassExtends = ____lualib.__TS__ClassExtends
+local __TS__New = ____lualib.__TS__New
+local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__NumberToString = ____lualib.__TS__NumberToString
+local __TS__StringPadStart = ____lualib.__TS__StringPadStart
+local ____exports = {}
+local getGroupForColors
+local ____settings = require("settings")
+local settings = ____settings.default
+local ____core = require("core.index")
+local Point = ____core.Point
+local Rectangle = ____core.Rectangle
+local ____editor = require("editor.index")
+local editor = ____editor.editor
+local ____dispose = require("dispose.index")
+local Disposer = ____dispose.Disposer
+local ____display = require("display.index")
+local Container = ____display.Container
+local ____GraphicsGeometry = require("graphics.GraphicsGeometry")
+local GraphicsGeometry = ____GraphicsGeometry.GraphicsGeometry
+local ____FillStyle = require("graphics.styles.FillStyle")
+local FillStyle = ____FillStyle.FillStyle
+function getGroupForColors(self, foreground, background)
+    local fg = __TS__StringPadStart(
+        __TS__NumberToString(foreground, 16),
+        6,
+        "0"
+    )
+    local bg = __TS__StringPadStart(
+        __TS__NumberToString(background, 16),
+        6,
+        "0"
+    )
+    local name = (("kui_" .. fg) .. "_") .. bg
+    if vim.fn.hlexists(name) == 0 then
+        vim.cmd((((("hi " .. name) .. " guifg=#") .. fg) .. " guibg=#") .. bg)
+    end
+    return name
+end
+--- The Input interface represents a text input, including the associated neovim buffer
+-- and window required to display it.
+____exports.Input = __TS__Class()
+local Input = ____exports.Input
+Input.name = "Input"
+__TS__ClassExtends(Input, Container)
+function Input.prototype.____constructor(self, options)
+    Container.prototype.____constructor(self)
+    self._recomputeColors = function()
+        if self._group then
+            local colors = vim.api.nvim_get_hl_by_name(self._group, true)
+            self._color = colors.foreground or 16777215
+            self._backgroundColor = colors.background or 0
+        else
+            local colors = vim.api.nvim_get_hl_by_name("NormalFloat", true)
+            self._color = self._color or colors.foreground or 16777215
+            self._backgroundColor = self._backgroundColor or colors.background or 0
+        end
+        self._computedGroup = getGroupForColors(nil, self._color, self._backgroundColor)
+    end
+    self._dispose = __TS__New(Disposer)
+    self._geometry = __TS__New(GraphicsGeometry)
+    local ____self__geometry_0, ____refCount_1 = self._geometry, "refCount"
+    ____self__geometry_0[____refCount_1] = ____self__geometry_0[____refCount_1] + 1
+    self._dirtyWindow = true
+    self._bufferId = -1
+    self._windowId = -1
+    self._group = options.group or nil
+    self._color = options.color
+    self._backgroundColor = options.backgroundColor
+    self._computedGroup = "NormalFloat"
+    self:_recomputeColors()
+    self._borderColor = options.borderColor or 0
+    self._borderWidth = options.borderWidth or 0
+    self._borderRadius = options.borderRadius or 0
+    self._paddingX = options.paddingX or options.padding or 0
+    self._paddingY = options.paddingY or options.padding or 0
+    self.width = options.width ~= nil and options.width or options.cols * settings.DIMENSIONS.cell_pixels.width
+    self.height = settings.DIMENSIONS.cell_pixels.height
+    self:_updateGeometry()
+    self:_calculateBounds()
+    self._dispose:add(editor:onColorSchemeChange(self._recomputeColors))
+end
+__TS__SetDescriptor(
+    Input.prototype,
+    "x",
+    {
+        get = function(self)
+            return self.transform.position.x
+        end,
+        set = function(self, value)
+            self.transform.position.x = value - self._paddingX
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Input.prototype,
+    "y",
+    {
+        get = function(self)
+            return self.position.y
+        end,
+        set = function(self, value)
+            self.transform.position.y = value - self._paddingY
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Input.prototype,
+    "width",
+    {
+        get = function(self)
+            return self._width
+        end,
+        set = function(self, value)
+            local width = math.ceil(value / settings.DIMENSIONS.cell_pixels.width) * settings.DIMENSIONS.cell_pixels.width
+            self._width = width + 2 * self._paddingX
+            self._dirtyWindow = true
+        end
+    },
+    true
+)
+__TS__SetDescriptor(
+    Input.prototype,
+    "height",
+    {
+        get = function(self)
+            return self._height
+        end,
+        set = function(self, value)
+            local height = math.ceil(value / settings.DIMENSIONS.cell_pixels.height) * settings.DIMENSIONS.cell_pixels.height
+            self._height = height + 2 * self._paddingY
+            self._dirtyWindow = true
+        end
+    },
+    true
+)
+function Input.prototype.clone(self)
+    error(
+        __TS__New(Error, "Input.clone: not supported"),
+        0
+    )
+end
+function Input.prototype._renderCanvas(self, renderer)
+    if self._dirtyWindow then
+        self:_updateWindow(renderer)
+    end
+    local context = renderer.canvasContext.activeContext
+    context.fillStyle = self._backgroundColor
+    context:roundRect(
+        self.x,
+        self.y,
+        self.width,
+        self.height,
+        self._borderRadius
+    )
+    context:fill()
+    context:clearRoundRect(
+        self.x + self._paddingX,
+        self.y + self._paddingY,
+        self.width - 2 * self._paddingX,
+        self.height - 2 * self._paddingY,
+        (self._paddingY > 0 or self._paddingX > 0) and 0 or self._borderRadius
+    )
+    if self._borderWidth > 0 then
+        context.strokeStyle = self._borderColor
+        context.lineWidth = self._borderWidth
+        context:roundRect(
+            self.x,
+            self.y,
+            self.width,
+            self.height,
+            self._borderRadius
+        )
+        context:stroke()
+    end
+end
+function Input.prototype._updateWindow(self, renderer)
+    self._dirtyWindow = false
+    local bounds = self:getBounds()
+    local config = {
+        relative = "editor",
+        style = "minimal",
+        col = renderer.options.col + math.floor((bounds.x + self._paddingX) / settings.DIMENSIONS.cell_pixels.width + 0.5),
+        row = renderer.options.row + math.floor((bounds.y + self._paddingY) / settings.DIMENSIONS.cell_pixels.height + 0.5),
+        width = (self.width - 2 * self._paddingX) / settings.DIMENSIONS.cell_pixels.width,
+        height = (self.height - 2 * self._paddingY) / settings.DIMENSIONS.cell_pixels.height
+    }
+    if self._windowId == -1 or not vim.api.nvim_win_is_valid(self._windowId) then
+        self._windowId = vim.api.nvim_open_win(
+            self:_getBufferId(),
+            true,
+            config
+        )
+    else
+        vim.api.nvim_win_set_config(self._windowId, config)
+    end
+    vim.api.nvim_win_set_option(self._windowId, "sidescrolloff", 0)
+    vim.api.nvim_win_set_option(self._windowId, "winhl", "NormalFloat:" .. self._computedGroup)
+end
+function Input.prototype._getBufferId(self)
+    if self._bufferId == -1 or not vim.api.nvim_buf_is_valid(self._bufferId) then
+        self._bufferId = vim.api.nvim_create_buf(false, true)
+    end
+    return self._bufferId
+end
+function Input.prototype._updateGeometry(self)
+    self._geometry:clear()
+    self._geometry:drawShape(
+        __TS__New(
+            Rectangle,
+            self.x,
+            self.y,
+            self.width,
+            self.height
+        ),
+        FillStyle.WHITE,
+        nil,
+        nil
+    )
+end
+function Input.prototype._calculateBounds(self)
+    local geometry = self._geometry
+    if not #geometry.graphicsData then
+        return
+    end
+    local ____geometry_bounds_2 = geometry.bounds
+    local minX = ____geometry_bounds_2.minX
+    local minY = ____geometry_bounds_2.minY
+    local maxX = ____geometry_bounds_2.maxX
+    local maxY = ____geometry_bounds_2.maxY
+    self._bounds:addFrame(
+        self.transform,
+        minX,
+        minY,
+        maxX,
+        maxY
+    )
+    local ____ = self._bounds.addFrame
+end
+function Input.prototype.containsPoint(self, point)
+    self.worldTransform:applyInverse(point, ____exports.Input._TEMP_POINT)
+    return self._geometry:containsPoint(____exports.Input._TEMP_POINT)
+end
+function Input.prototype.destroy(self, options)
+    Container.prototype.destroy(self, options)
+    self._dispose:destroy()
+    if self._windowId ~= -1 and vim.api.nvim_win_is_valid(self._windowId) then
+        vim.api.nvim_win_close(self._windowId, true)
+    end
+end
+Input._TEMP_POINT = __TS__New(Point)
+return ____exports
+ end,
+["input.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+do
+    local ____export = require("input.Input")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+return ____exports
+ end,
 ["animate.index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -19715,6 +20240,8 @@ require("graphics.index")
 require("canvas-renderer.index")
 local ____settings = require("settings")
 local settings = ____settings.settings
+local ____editor = require("editor.index")
+local editor = ____editor.editor
 local ____utils = require("utils.index")
 local readKittyConfig = ____utils.readKittyConfig
 local ____text = require("text.index")
@@ -19727,6 +20254,8 @@ local ____graphics = require("graphics.index")
 local Graphics = ____graphics.Graphics
 local ____text = require("text.index")
 local Text = ____text.Text
+local ____input = require("input.index")
+local Input = ____input.Input
 local ____animate = require("animate.index")
 local ticker = ____animate.ticker
 do
@@ -19777,14 +20306,16 @@ function ____exports.setup(self)
     TextStyle.defaultStyle.fontSize = settings.DEFAULT_FONT_SIZE
 end
 function ____exports.demo(self)
-    local width = 150
-    local height = 80
+    local cellPixels = settings.DIMENSIONS.cell_pixels
+    local cw = cellPixels.width
+    local ch = cellPixels.height
+    local width = 20 * cw
+    local height = 8 * ch
     local renderer = __TS__New(Renderer, {col = 10, row = 5, width = width, height = height})
     local stage = __TS__New(Container)
     local container = stage:addChild(__TS__New(Graphics))
     container.x = 0
     container.y = 0
-    container:lineStyle(2, 2106156, 1)
     container:beginFill(4080982)
     container:drawRoundedRect(
         0,
@@ -19794,26 +20325,54 @@ function ____exports.demo(self)
         20
     )
     container:endFill()
-    local content = stage:addChild(__TS__New(Graphics))
-    content.x = 10
-    content.y = 10
-    local text = stage:addChild(__TS__New(Text, "Hello world", {fill = 16777215}))
-    text.x = 10
+    container:lineStyle(2, 2106156, 1)
+    container:drawRoundedRect(
+        0,
+        0,
+        width,
+        height,
+        20
+    )
+    local input = stage:addChild(__TS__New(Input, {
+        padding = 5,
+        width = width - 4 * cw,
+        backgroundColor = 5199981,
+        borderColor = 14540253,
+        borderWidth = 1,
+        borderRadius = 5
+    }))
+    input.x = 2 * cw
+    input.y = 1 * ch
+    local underline = input:addChild(__TS__New(Graphics))
+    underline.x = 5
+    underline.y = input.height - 3
+    local text = stage:addChild(__TS__New(
+        Text,
+        "Hello world",
+        {fill = editor:getHighlight("normal").foreground or 0}
+    ))
+    text.x = 2 * cw
+    local dots = stage:addChild(__TS__New(Graphics))
+    dots.y = container.height - 2 * cw
+    dots:beginFill(5873407)
+    dots:drawCircle(3 * cw, 0, 10)
+    dots:drawCircle(width / 2, 0, 10)
+    dots:drawCircle(width - 3 * cw, 0, 10)
     ticker(
         nil,
         function(____, current)
             local width = 50 + 50 * math.abs(math.sin(current / 1000))
-            content:clear()
-            content:beginFill(5873407)
-            content:drawRoundedRect(
+            underline:clear()
+            underline:beginFill(5873407)
+            underline:drawRoundedRect(
                 0,
                 0,
                 width,
-                10,
-                5
+                2,
+                2
             )
-            content:endFill()
-            text.y = 40 + 15 * math.sin(current / 1000)
+            underline:endFill()
+            text.y = 55 + 15 * math.sin(current / 1000)
             renderer:render(stage)
         end
     )

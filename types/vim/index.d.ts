@@ -29,6 +29,7 @@ declare global {
     const go: Global;
     const bo: Buffer;
     const wo: Window;
+    const cmd: (input: string) => void;
     /**
       * Global (|g:|) editor variables.
       * Key with no value returns `nil`.

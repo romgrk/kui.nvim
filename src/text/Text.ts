@@ -362,7 +362,6 @@ export class Text extends Sprite
         let previousWidth = this.context.measureText(text).width;
         let currentWidth = 0;
 
-        print(vim.inspect(this.context.font))
         for (let i = 0; i < stringArray.length; ++i)
         {
             const currentChar = stringArray[i];

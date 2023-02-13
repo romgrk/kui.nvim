@@ -945,7 +945,7 @@ export interface Api {
      * @reference |autocommand|
      * |nvim_del_autocmd()|
      */
-    nvim_create_autocmd: (event: Record<string, unknown>, opts?: Record<string, unknown>, err?: unknown) => number;
+    nvim_create_autocmd: (event: string[], opts?: Record<string, unknown>, err?: unknown) => number;
     /**
      * Creates a new, empty, unnamed buffer.
      * @param listed Sets 'buflisted'
@@ -1407,7 +1407,11 @@ export interface Api {
      * @signature `nvim_get_hl_by_name({name}, {rgb}, {err})`
      * @reference nvim_get_hl_by_id
      */
-    nvim_get_hl_by_name: (name: string, rgb: boolean, err?: unknown) => Record<string, unknown>;
+    nvim_get_hl_by_name: (name: string, rgb: boolean, err?: unknown) => {
+        foreground?: number,
+        background?: number,
+        underline?: boolean,
+    };
     /**
      * Gets a highlight group by name
      * similar to |hlID()|, but allocates a new ID if not present.
@@ -1831,7 +1835,28 @@ export interface Api {
      * @signature `nvim_open_win({buffer}, {enter}, {config}, {err})`
      * @annotations not allowed when |textlock| is active
      */
-    nvim_open_win: (buffer: number, enter: boolean, config?: Record<string, unknown>, err?: unknown) => number;
+    nvim_open_win: (
+        buffer: number,
+        enter: boolean,
+        config?: {
+            relative: 'editor' | 'win' | 'cursor' | 'mouse',
+            win?: number,
+            anchor?: 'NW' | 'NE' | 'SW' | 'SE',
+            width: number,
+            height: number,
+            bufpos?: unknown,
+            row: number,
+            col: number,
+            focusabled?: boolean,
+            zindex?: number,
+            style?: 'minimal',
+            border?: unknown,
+            title?: unknown,
+            title_pos?: unknown,
+            noautocmd?: boolean,
+        },
+        err?: unknown
+    ) => number;
     /**
      * Writes a message to the Vim output buffer. Does not append
      * "\n", the message is buffered (won't display) until a linefeed
@@ -2556,7 +2581,7 @@ export interface Api {
      * @param value Option value
      * @signature `nvim_win_set_option({window}, {name}, {value}, {err})`
      */
-    nvim_win_set_option: (window: number, name: string, value: Record<string, unknown>, err?: unknown) => void;
+    nvim_win_set_option: (window: number, name: string, value: any, err?: unknown) => void;
     /**
      * Sets a window-scoped (w:) variable
      * @param window Window handle, or 0 for current window

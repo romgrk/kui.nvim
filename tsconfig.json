@@ -2,6 +2,7 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "strict": true,
+    "allowSyntheticDefaultImports": true,
     "target": "esnext",
     "lib": ["esnext"],
     "moduleResolution": "node",
@@ -26,6 +27,7 @@
       "bit",
       "kui.cairo.cairo",
       "kui.legacy.api",
+      "kui.legacy.state",
       "kui.legacy.image"
     ]
   }

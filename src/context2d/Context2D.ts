@@ -282,7 +282,18 @@ export class Context2D {
     this.context.save()
     this.context.rectangle(x, y, width, height)
     this.context.clip()
-    this.context.paint_with_alpha(0.0)
+    this.context.rgba(0, 0, 0, 0)
+    this.context.operator('source')
+    this.context.paint()
+    this.context.restore()
+  }
+  clearRoundRect(x: number, y: number, width: number, height: number, radius: number) {
+    this.context.save()
+    this.context.rounded_rectangle(x, y, width, height, radius)
+    this.context.clip()
+    this.context.rgba(0, 0, 0, 0)
+    this.context.operator('source')
+    this.context.paint()
     this.context.restore()
   }
   fillRect(x: number, y: number, width: number, height: number) {
