@@ -65,6 +65,11 @@ export class Input extends Container
 
     private _computedGroup: string
 
+    private _didAttachBuffer: boolean
+    private _changeListeners: Function[]
+    private _didMount: boolean
+    private _mountListeners: Function[]
+
     constructor(options: InputOptions)
     {
         super()
@@ -79,14 +84,19 @@ export class Input extends Container
         this._group = options.group ?? null
         this._color = options.color!
         this._backgroundColor = options.backgroundColor!
-        this._computedGroup = 'NormalFloat'
-        this._recomputeColors()
         this._borderColor = options.borderColor ?? 0
         this._borderWidth = options.borderWidth ?? 0
         this._borderRadius = options.borderRadius ?? 0
-
         this._paddingX = options.paddingX ?? options.padding ?? 0
         this._paddingY = options.paddingY ?? options.padding ?? 0
+
+        this._computedGroup = 'NormalFloat'
+        this._recomputeColors()
+
+        this._didAttachBuffer = false
+        this._changeListeners = []
+        this._didMount = false
+        this._mountListeners = []
 
         this.width = 'width' in options ?
             options.width : options.cols * settings.DIMENSIONS.cell_pixels.width
@@ -179,35 +189,6 @@ export class Input extends Container
         }
     }
 
-    _updateWindow(renderer: Renderer) {
-        this._dirtyWindow = false
-
-        const bounds = this.getBounds()
-        const config = {
-            relative: 'editor' as const,
-            style: 'minimal' as const,
-            col: renderer.options.col + Math.round((bounds.x + this._paddingX) / settings.DIMENSIONS.cell_pixels.width),
-            row: renderer.options.row + Math.round((bounds.y + this._paddingY) / settings.DIMENSIONS.cell_pixels.height),
-            width:  (this.width  - 2 * this._paddingX) / settings.DIMENSIONS.cell_pixels.width,
-            height: (this.height - 2 * this._paddingY) / settings.DIMENSIONS.cell_pixels.height,
-        }
-
-        if (this._windowId === -1 || !vim.api.nvim_win_is_valid(this._windowId)) {
-            this._windowId = vim.api.nvim_open_win(this._getBufferId(), true, config)
-        }
-        else {
-            vim.api.nvim_win_set_config(this._windowId, config)
-        }
-        vim.api.nvim_win_set_option(this._windowId, 'sidescrolloff', 0)
-        vim.api.nvim_win_set_option(this._windowId, 'winhl', `NormalFloat:${this._computedGroup}`)
-    }
-
-    _getBufferId() {
-        if (this._bufferId === -1 || !vim.api.nvim_buf_is_valid(this._bufferId))
-            this._bufferId = vim.api.nvim_create_buf(false, true)
-        return this._bufferId
-    }
-
     _updateGeometry()
     {
         this._geometry.clear()
@@ -218,7 +199,6 @@ export class Input extends Container
             null
         )
     }
-
 
     /** Retrieves the bounds of the graphic shape as a rectangle object. */
     protected _calculateBounds(): void
@@ -245,14 +225,88 @@ export class Input extends Container
         return this._geometry.containsPoint(Input._TEMP_POINT);
     }
 
+    onChange(fn: (value: string) => void) {
+        this._changeListeners.push(fn)
+        this._attachBuffer()
+    }
+
+    onMount(fn: (bufferId: number) => void) {
+        if (this._didMount)
+            fn(this._bufferId)
+        this._mountListeners.push(fn)
+    }
+
+    _hasBuffer() {
+        return this._bufferId !== -1 && vim.api.nvim_buf_is_valid(this._bufferId)
+    }
+
+    _hasWindow() {
+        return this._windowId !== -1 && vim.api.nvim_win_is_valid(this._windowId)
+    }
+
+    _updateWindow(renderer: Renderer) {
+        this._dirtyWindow = false
+
+        const bounds = this.getBounds()
+        const config = {
+            relative: 'editor' as const,
+            style: 'minimal' as const,
+            col: renderer.options.col + Math.round((bounds.x + this._paddingX) / settings.DIMENSIONS.cell_pixels.width),
+            row: renderer.options.row + Math.round((bounds.y + this._paddingY) / settings.DIMENSIONS.cell_pixels.height),
+            width:  (this.width  - 2 * this._paddingX) / settings.DIMENSIONS.cell_pixels.width,
+            height: (this.height - 2 * this._paddingY) / settings.DIMENSIONS.cell_pixels.height,
+        }
+
+        if (this._windowId === -1 || !vim.api.nvim_win_is_valid(this._windowId)) {
+            this._windowId = vim.api.nvim_open_win(this._getBufferId(), true, config)
+
+            if (!this._didMount) {
+                this._didMount = true
+                this._mountListeners.forEach(l => l(this._bufferId))
+            }
+        }
+        else {
+            vim.api.nvim_win_set_config(this._windowId, config)
+        }
+        vim.api.nvim_win_set_option(this._windowId, 'sidescrolloff', 0)
+        vim.api.nvim_win_set_option(this._windowId, 'winhl', `NormalFloat:${this._computedGroup}`)
+
+        this._attachBuffer()
+    }
+
+    _attachBuffer() {
+        if (this._didAttachBuffer)
+            return
+        this._didAttachBuffer = true
+        vim.api.nvim_buf_attach(this._bufferId, false, {
+            on_lines: this._onBufferLines,
+        })
+    }
+
+    _onBufferLines = () => {
+        const content = vim.api.nvim_buf_get_lines(this._bufferId, 0, 1000, false).join('\n')
+        this._changeListeners.forEach(listener => listener(content))
+    }
+
+    _getBufferId() {
+        if (this._bufferId === -1 || !vim.api.nvim_buf_is_valid(this._bufferId))
+            this._bufferId = vim.api.nvim_create_buf(false, true)
+        return this._bufferId
+    }
+
+
     /** Destroys the Input object. */
     public destroy(options?: IDestroyOptions | boolean): void
     {
-        super.destroy(options)
-        this._dispose.destroy()
-        if (this._windowId !== -1 && vim.api.nvim_win_is_valid(this._windowId)) {
+        if (this._hasBuffer()) {
+            // FIXME: see https://github.com/neovim/neovim/issues/17874
+            // vim.api.nvim_buf_detach(this._bufferId)
+        }
+        if (this._hasWindow()) {
             vim.api.nvim_win_close(this._windowId, true)
         }
+        this._dispose.destroy()
+        super.destroy(options)
     }
 }
 

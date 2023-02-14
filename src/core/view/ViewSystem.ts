@@ -44,7 +44,7 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
     private renderer: Renderer;
     private _options: ViewOptions | null;
     private _image: Image | null;
-    private _isTransmitting: boolean;
+    private _transmittingImage: Image | null;
 
     /**
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
@@ -67,7 +67,7 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
         this.element = null as any;
         this._options = null;
         this._image = null;
-        this._isTransmitting = false;
+        this._transmittingImage = null;
     }
 
     /**
@@ -86,20 +86,27 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
 
     /** After rendering, transmit the image to the terminal */
     onPostRender = () => {
-        if (this._isTransmitting)
-            return
+        if (this._transmittingImage) {
+            this._transmittingImage.did_cancel = true
+        }
+
         const surface = this.renderer.canvasContext.rootContext.surface
-        const image = Image.new(surface, {
+        const image = this._transmittingImage = Image.new(surface, {
             buffer: this._options!.buffer,
             row: this._options!.row,
             col: this._options!.col,
         })
-        this._isTransmitting = true
+
         image.transmit(() => {
-            this._image?.delete({ free: true })
+            if (image.did_cancel) {
+                image.delete()
+                return
+            }
+
             image.display()
+            this._image?.delete()
             this._image = image
-            this._isTransmitting = false
+            this._transmittingImage = null
         })
     }
 

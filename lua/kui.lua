@@ -7484,7 +7484,7 @@ function EventEmitter.prototype.removeListener(self, event, fn, context, once)
     local listeners = self._events[event]
     local i = 0
     local events = {}
-    local length = listeners.length
+    local length = listeners.length or 0
     do
         while i < length do
             if listeners[i].fn ~= fn or once and not listeners[i].once or context and listeners[i].context ~= context then
@@ -11673,20 +11673,25 @@ local ViewSystem = ____exports.ViewSystem
 ViewSystem.name = "ViewSystem"
 function ViewSystem.prototype.____constructor(self, renderer)
     self.onPostRender = function()
-        if self._isTransmitting then
-            return
+        if self._transmittingImage then
+            self._transmittingImage.did_cancel = true
         end
         local surface = self.renderer.canvasContext.rootContext.surface
-        local image = Image.new(surface, {buffer = self._options.buffer, row = self._options.row, col = self._options.col})
-        self._isTransmitting = true
+        local ____Image_new_result_0 = Image.new(surface, {buffer = self._options.buffer, row = self._options.row, col = self._options.col})
+        self._transmittingImage = ____Image_new_result_0
+        local image = ____Image_new_result_0
         image:transmit(function()
-            local ____opt_0 = self._image
-            if ____opt_0 ~= nil then
-                ____opt_0:delete({free = true})
+            if image.did_cancel then
+                image:delete()
+                return
             end
             image:display()
+            local ____opt_1 = self._image
+            if ____opt_1 ~= nil then
+                ____opt_1:delete()
+            end
             self._image = image
-            self._isTransmitting = false
+            self._transmittingImage = nil
         end)
     end
     self.renderer = renderer
@@ -11694,7 +11699,7 @@ function ViewSystem.prototype.____constructor(self, renderer)
     self.element = nil
     self._options = nil
     self._image = nil
-    self._isTransmitting = false
+    self._transmittingImage = nil
 end
 function ViewSystem.prototype.init(self, options)
     self._options = options
@@ -11719,9 +11724,9 @@ function ViewSystem.prototype.resizeView(self, desiredScreenWidth, desiredScreen
     self.renderer.runners.resize:emit(self.screen.width, self.screen.height)
 end
 function ViewSystem.prototype.destroy(self)
-    local ____opt_2 = self._image
-    if ____opt_2 ~= nil then
-        ____opt_2:delete({free = true})
+    local ____opt_3 = self._image
+    if ____opt_3 ~= nil then
+        ____opt_3:delete({free = true})
     end
     self.renderer:off("postrender", self.onPostRender)
 end
@@ -19884,6 +19889,7 @@ local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__ClassExtends = ____lualib.__TS__ClassExtends
 local __TS__New = ____lualib.__TS__New
+local __TS__ArrayForEach = ____lualib.__TS__ArrayForEach
 local __TS__SetDescriptor = ____lualib.__TS__SetDescriptor
 local Error = ____lualib.Error
 local RangeError = ____lualib.RangeError
@@ -19947,6 +19953,16 @@ function Input.prototype.____constructor(self, options)
         end
         self._computedGroup = getGroupForColors(nil, self._color, self._backgroundColor)
     end
+    self._onBufferLines = function()
+        local content = table.concat(
+            vim.api.nvim_buf_get_lines(self._bufferId, 0, 1000, false),
+            "\n"
+        )
+        __TS__ArrayForEach(
+            self._changeListeners,
+            function(____, listener) return listener(nil, content) end
+        )
+    end
     self._dispose = __TS__New(Disposer)
     self._geometry = __TS__New(GraphicsGeometry)
     local ____self__geometry_0, ____refCount_1 = self._geometry, "refCount"
@@ -19957,13 +19973,17 @@ function Input.prototype.____constructor(self, options)
     self._group = options.group or nil
     self._color = options.color
     self._backgroundColor = options.backgroundColor
-    self._computedGroup = "NormalFloat"
-    self:_recomputeColors()
     self._borderColor = options.borderColor or 0
     self._borderWidth = options.borderWidth or 0
     self._borderRadius = options.borderRadius or 0
     self._paddingX = options.paddingX or options.padding or 0
     self._paddingY = options.paddingY or options.padding or 0
+    self._computedGroup = "NormalFloat"
+    self:_recomputeColors()
+    self._didAttachBuffer = false
+    self._changeListeners = {}
+    self._didMount = false
+    self._mountListeners = {}
     self.width = options.width ~= nil and options.width or options.cols * settings.DIMENSIONS.cell_pixels.width
     self.height = settings.DIMENSIONS.cell_pixels.height
     self:_updateGeometry()
@@ -20066,35 +20086,6 @@ function Input.prototype._renderCanvas(self, renderer)
         context:stroke()
     end
 end
-function Input.prototype._updateWindow(self, renderer)
-    self._dirtyWindow = false
-    local bounds = self:getBounds()
-    local config = {
-        relative = "editor",
-        style = "minimal",
-        col = renderer.options.col + math.floor((bounds.x + self._paddingX) / settings.DIMENSIONS.cell_pixels.width + 0.5),
-        row = renderer.options.row + math.floor((bounds.y + self._paddingY) / settings.DIMENSIONS.cell_pixels.height + 0.5),
-        width = (self.width - 2 * self._paddingX) / settings.DIMENSIONS.cell_pixels.width,
-        height = (self.height - 2 * self._paddingY) / settings.DIMENSIONS.cell_pixels.height
-    }
-    if self._windowId == -1 or not vim.api.nvim_win_is_valid(self._windowId) then
-        self._windowId = vim.api.nvim_open_win(
-            self:_getBufferId(),
-            true,
-            config
-        )
-    else
-        vim.api.nvim_win_set_config(self._windowId, config)
-    end
-    vim.api.nvim_win_set_option(self._windowId, "sidescrolloff", 0)
-    vim.api.nvim_win_set_option(self._windowId, "winhl", "NormalFloat:" .. self._computedGroup)
-end
-function Input.prototype._getBufferId(self)
-    if self._bufferId == -1 or not vim.api.nvim_buf_is_valid(self._bufferId) then
-        self._bufferId = vim.api.nvim_create_buf(false, true)
-    end
-    return self._bufferId
-end
 function Input.prototype._updateGeometry(self)
     self._geometry:clear()
     self._geometry:drawShape(
@@ -20133,12 +20124,76 @@ function Input.prototype.containsPoint(self, point)
     self.worldTransform:applyInverse(point, ____exports.Input._TEMP_POINT)
     return self._geometry:containsPoint(____exports.Input._TEMP_POINT)
 end
+function Input.prototype.onChange(self, fn)
+    local ____self__changeListeners_3 = self._changeListeners
+    ____self__changeListeners_3[#____self__changeListeners_3 + 1] = fn
+    self:_attachBuffer()
+end
+function Input.prototype.onMount(self, fn)
+    if self._didMount then
+        fn(nil, self._bufferId)
+    end
+    local ____self__mountListeners_4 = self._mountListeners
+    ____self__mountListeners_4[#____self__mountListeners_4 + 1] = fn
+end
+function Input.prototype._hasBuffer(self)
+    return self._bufferId ~= -1 and vim.api.nvim_buf_is_valid(self._bufferId)
+end
+function Input.prototype._hasWindow(self)
+    return self._windowId ~= -1 and vim.api.nvim_win_is_valid(self._windowId)
+end
+function Input.prototype._updateWindow(self, renderer)
+    self._dirtyWindow = false
+    local bounds = self:getBounds()
+    local config = {
+        relative = "editor",
+        style = "minimal",
+        col = renderer.options.col + math.floor((bounds.x + self._paddingX) / settings.DIMENSIONS.cell_pixels.width + 0.5),
+        row = renderer.options.row + math.floor((bounds.y + self._paddingY) / settings.DIMENSIONS.cell_pixels.height + 0.5),
+        width = (self.width - 2 * self._paddingX) / settings.DIMENSIONS.cell_pixels.width,
+        height = (self.height - 2 * self._paddingY) / settings.DIMENSIONS.cell_pixels.height
+    }
+    if self._windowId == -1 or not vim.api.nvim_win_is_valid(self._windowId) then
+        self._windowId = vim.api.nvim_open_win(
+            self:_getBufferId(),
+            true,
+            config
+        )
+        if not self._didMount then
+            self._didMount = true
+            __TS__ArrayForEach(
+                self._mountListeners,
+                function(____, l) return l(nil, self._bufferId) end
+            )
+        end
+    else
+        vim.api.nvim_win_set_config(self._windowId, config)
+    end
+    vim.api.nvim_win_set_option(self._windowId, "sidescrolloff", 0)
+    vim.api.nvim_win_set_option(self._windowId, "winhl", "NormalFloat:" .. self._computedGroup)
+    self:_attachBuffer()
+end
+function Input.prototype._attachBuffer(self)
+    if self._didAttachBuffer then
+        return
+    end
+    self._didAttachBuffer = true
+    vim.api.nvim_buf_attach(self._bufferId, false, {on_lines = self._onBufferLines})
+end
+function Input.prototype._getBufferId(self)
+    if self._bufferId == -1 or not vim.api.nvim_buf_is_valid(self._bufferId) then
+        self._bufferId = vim.api.nvim_create_buf(false, true)
+    end
+    return self._bufferId
+end
 function Input.prototype.destroy(self, options)
-    Container.prototype.destroy(self, options)
-    self._dispose:destroy()
-    if self._windowId ~= -1 and vim.api.nvim_win_is_valid(self._windowId) then
+    if self:_hasBuffer() then
+    end
+    if self:_hasWindow() then
         vim.api.nvim_win_close(self._windowId, true)
     end
+    self._dispose:destroy()
+    Container.prototype.destroy(self, options)
 end
 Input._TEMP_POINT = __TS__New(Point)
 return ____exports
@@ -20276,6 +20331,14 @@ do
 end
 do
     local ____export = require("editor.index")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("eventemitter3.index")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
             ____exports[____exportKey] = ____exportValue

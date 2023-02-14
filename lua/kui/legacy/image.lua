@@ -95,6 +95,7 @@ local function create(opts)
     col = col,
     path = opts.path,
     data = opts.data,
+    did_cancel = false,
   }, Image)
   next_image_id = next_image_id + 1
 
@@ -198,6 +199,9 @@ function Image:transmit(and_then)
         p = 1, -- placement id
       }
 
+      if (self.did_cancel) then
+        return
+      end
       self:transmit_data(params, content, and_then)
     end))
 
@@ -212,6 +216,9 @@ function Image:transmit(and_then)
     }
 
     vim.defer_fn(function ()
+      if (self.did_cancel) then
+        return
+      end
       self:transmit_data(params, bytes_to_string(self.data, and_then))
     end, 0)
 
@@ -226,6 +233,9 @@ function Image:transmit(and_then)
     }
 
     vim.defer_fn(function ()
+      if (self.did_cancel) then
+        return
+      end
       self:transmit_data(params, bytes_to_string(self.data, and_then))
     end, 0)
 
@@ -240,6 +250,9 @@ function Image:transmit(and_then)
     }
 
     vim.defer_fn(function ()
+      if (self.did_cancel) then
+        return
+      end
       self:transmit_data(params, cairo_surface_to_png_bytes(self.data), and_then)
     end, 0)
 
@@ -353,51 +366,19 @@ end
 
 function Image:delete(opts)
   opts = opts or {}
-  opts.free = opts.free or false
-  opts.all = opts.all or false
+  opts.free = opts.free ~= nil and opts.free or true
 
   local set_case = opts.free and string.upper or string.lower
 
-  local keys_set = {}
-
-  keys_set[#keys_set+1] = {
+  local keys = {
+    a = 'd',
+    d = set_case('i'),
     i = self.id,
   }
 
-  if opts.all then
-    keys_set[#keys_set+1] = {
-      d = set_case('a'),
-    }
-  end
-  if opts.z_index then
-    keys_set[#keys_set+1] = {
-      d = set_case('z'),
-      z = opts.z_index,
-    }
-  end
-  if opts.col then
-    keys_set[#keys_set+1] = {
-      d = set_case('x'),
-      x = opts.col,
-    }
-  end
-  if opts.row then
-    keys_set[#keys_set+1] = {
-      d = set_case('y'),
-      y = opts.row,
-    }
-  end
-  if opts.cell then
-    keys_set[#keys_set+1] = {
-      d = set_case('p'),
-      x = opts.cell[1],
-      y = opts.cell[2],
-    }
-  end
+  -- print(vim.inspect(keys_to_string(keys)))
 
-  for _, keys in ipairs(keys_set) do
-    terminal.write('\x1b_Ga=d,' .. keys_to_string(keys) .. '\x1b\\')
-  end
+  terminal.write('\x1b_G' .. keys_to_string(keys) .. '\x1b\\')
 
   if opts.free and self.extmark then
     vim.api.nvim_buf_del_extmark(self.buffer, vim.g.kui_extmark_ns, self.extmark)

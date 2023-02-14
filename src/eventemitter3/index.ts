@@ -211,8 +211,8 @@ export class EventEmitter<
     const listeners = this._events[event];
 
     let i = 0
-      , events = []
-      , length = listeners.length
+    const events = []
+    const length = listeners.length ?? 0
     for (; i < length; i++) {
       if (
         listeners[i].fn !== fn ||
