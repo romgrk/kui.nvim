@@ -255,6 +255,7 @@ export class Input extends Container
             row: renderer.options.row + Math.round((bounds.y + this._paddingY) / settings.DIMENSIONS.cell_pixels.height),
             width:  (this.width  - 2 * this._paddingX) / settings.DIMENSIONS.cell_pixels.width,
             height: (this.height - 2 * this._paddingY) / settings.DIMENSIONS.cell_pixels.height,
+            noautocmd: true,
         }
 
         if (this._windowId === -1 || !vim.api.nvim_win_is_valid(this._windowId)) {
