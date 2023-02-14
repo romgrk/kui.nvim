@@ -98,15 +98,19 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
         })
 
         image.transmit(() => {
-            if (image.did_cancel) {
-                image.delete()
-                return
-            }
-
             image.display()
-            this._image?.delete()
+
+            const imageToClear = this._image
+
             this._image = image
             this._transmittingImage = null
+
+            if (imageToClear === null)
+                return
+
+            vim.defer_fn(() => {
+                imageToClear.delete()
+            }, 5)
         })
     }
 
@@ -141,7 +145,10 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
      */
     destroy(): void
     {
-        this._image?.delete({ free: true })
+        if (this._transmittingImage) {
+            this._transmittingImage.did_cancel = true
+        }
+        this._image?.delete()
         this.renderer.off('postrender', this.onPostRender)
     }
 }

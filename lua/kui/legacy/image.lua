@@ -96,6 +96,7 @@ local function create(opts)
     path = opts.path,
     data = opts.data,
     did_cancel = false,
+    did_transmit = false,
   }, Image)
   next_image_id = next_image_id + 1
 
@@ -262,6 +263,9 @@ function Image:transmit(and_then)
 end
 
 function Image:transmit_data(params, content, and_then)
+  if (self.did_cancel) then
+    return
+  end
 
   -- Encode in base64 format
   local data =
@@ -296,6 +300,8 @@ function Image:transmit_data(params, content, and_then)
   end
 
   terminal.write(parts)
+
+  self.did_transmit = true
 
   if and_then ~= nil then
     and_then()
