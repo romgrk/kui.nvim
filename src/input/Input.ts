@@ -276,7 +276,7 @@ export class Input extends Container
     }
 
     _attachBuffer() {
-        if (this._didAttachBuffer)
+        if (this._didAttachBuffer || !this._hasBuffer())
             return
         this._didAttachBuffer = true
         vim.api.nvim_buf_attach(this._bufferId, false, {

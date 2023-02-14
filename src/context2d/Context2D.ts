@@ -124,8 +124,8 @@ export class Context2D {
   get font() { return this._font }
   set font(value: string) {
     this._font = value
-    const [size, name, style, weight] = parseFont(value)
-    this.context.font_face(name, style, weight)
+    const [size, name, slant, weight] = parseFont(value)
+    this.context.font_face(name, slant, weight)
     this.context.font_size(size)
   }
 
@@ -384,7 +384,7 @@ const FONT_WEIGHT_NAMES = {
   900: 'bold',
 }
 
-const FONT_STYLE_NAMES = {
+const FONT_SLANT_NAMES = {
   italic:  'italic',
   oblique: 'oblique',
 }
@@ -392,7 +392,7 @@ const FONT_STYLE_NAMES = {
 function parseFont(fontStyle: string) {
   let size = 10
   let name = 'defaultFontName'
-  let style = 'normal'
+  let slant = 'normal'
   let weight = 'normal'
 
   let offset = 0
@@ -414,10 +414,10 @@ function parseFont(fontStyle: string) {
 
     if (part.endsWith('px'))
       size = parseInt(part.slice(0, -2), 10)
-    else if (part in FONT_STYLE_NAMES)
-      style = FONT_STYLE_NAMES[part as keyof typeof FONT_STYLE_NAMES]
+    else if (part in FONT_SLANT_NAMES)
+      slant = FONT_SLANT_NAMES[part as keyof typeof FONT_SLANT_NAMES]
     else if (part in FONT_WEIGHT_NAMES)
-      style = FONT_WEIGHT_NAMES[part as keyof typeof FONT_WEIGHT_NAMES]
+      weight = FONT_WEIGHT_NAMES[part as keyof typeof FONT_WEIGHT_NAMES]
     else if (part === 'normal')
       {}
     else
@@ -429,7 +429,7 @@ function parseFont(fontStyle: string) {
   return [
     size,
     FONT_NAMES[name as keyof typeof FONT_NAMES] ?? name,
-    style,
+    slant,
     weight
   ] as [number, string, string, string]
 }

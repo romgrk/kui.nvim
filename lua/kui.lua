@@ -6755,7 +6755,7 @@ local __TS__StringSlice = ____lualib.__TS__StringSlice
 local __TS__StringEndsWith = ____lualib.__TS__StringEndsWith
 local __TS__ParseInt = ____lualib.__TS__ParseInt
 local ____exports = {}
-local parseFont, FONT_NAMES, FONT_WEIGHT_NAMES, FONT_STYLE_NAMES
+local parseFont, FONT_NAMES, FONT_WEIGHT_NAMES, FONT_SLANT_NAMES
 local cairo = require("kui.cairo.cairo")
 local ____settings = require("settings")
 local settings = ____settings.settings
@@ -6764,7 +6764,7 @@ local Color = ____color.Color
 function parseFont(self, fontStyle)
     local size = 10
     local name = "defaultFontName"
-    local style = "normal"
+    local slant = "normal"
     local weight = "normal"
     local offset = 0
     while offset < #fontStyle do
@@ -6800,17 +6800,17 @@ function parseFont(self, fontStyle)
                 string.sub(part, 1, -3),
                 10
             )
-        elseif FONT_STYLE_NAMES[part] ~= nil then
-            style = FONT_STYLE_NAMES[part]
+        elseif FONT_SLANT_NAMES[part] ~= nil then
+            slant = FONT_SLANT_NAMES[part]
         elseif FONT_WEIGHT_NAMES[part] ~= nil then
-            style = FONT_WEIGHT_NAMES[part]
+            weight = FONT_WEIGHT_NAMES[part]
         elseif part == "normal" then
         else
             name = part
         end
         offset = endIndex
     end
-    return {size, FONT_NAMES[name] or name, style, weight}
+    return {size, FONT_NAMES[name] or name, slant, weight}
 end
 ____exports.Context2D = __TS__Class()
 local Context2D = ____exports.Context2D
@@ -6913,8 +6913,8 @@ __TS__SetDescriptor(
         end,
         set = function(self, value)
             self._font = value
-            local size, name, style, weight = unpack(parseFont(nil, value))
-            self.context:font_face(name, style, weight)
+            local size, name, slant, weight = unpack(parseFont(nil, value))
+            self.context:font_face(name, slant, weight)
             self.context:font_size(size)
         end
     },
@@ -7291,7 +7291,7 @@ FONT_WEIGHT_NAMES = {
     [800] = "bold",
     [900] = "bold"
 }
-FONT_STYLE_NAMES = {italic = "italic", oblique = "oblique"}
+FONT_SLANT_NAMES = {italic = "italic", oblique = "oblique"}
 return ____exports
  end,
 ["context2d.index"] = function(...) 
@@ -20180,7 +20180,8 @@ function Input.prototype._updateWindow(self, renderer)
         col = renderer.options.col + math.floor((bounds.x + self._paddingX) / settings.DIMENSIONS.cell_pixels.width + 0.5),
         row = renderer.options.row + math.floor((bounds.y + self._paddingY) / settings.DIMENSIONS.cell_pixels.height + 0.5),
         width = (self.width - 2 * self._paddingX) / settings.DIMENSIONS.cell_pixels.width,
-        height = (self.height - 2 * self._paddingY) / settings.DIMENSIONS.cell_pixels.height
+        height = (self.height - 2 * self._paddingY) / settings.DIMENSIONS.cell_pixels.height,
+        noautocmd = true
     }
     if self._windowId == -1 or not vim.api.nvim_win_is_valid(self._windowId) then
         self._windowId = vim.api.nvim_open_win(
@@ -20203,7 +20204,7 @@ function Input.prototype._updateWindow(self, renderer)
     self:_attachBuffer()
 end
 function Input.prototype._attachBuffer(self)
-    if self._didAttachBuffer then
+    if self._didAttachBuffer or not self:_hasBuffer() then
         return
     end
     self._didAttachBuffer = true
