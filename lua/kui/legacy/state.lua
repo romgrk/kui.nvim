@@ -25,11 +25,6 @@ local state = {
 }
 
 function state.update_dimensions()
-  if vim.fn.executable('kitty') ~= 1 then
-    vim.api.nvim_err_writeln('Unable to find Kitty executable')
-    return
-  end
-
   state.dimensions.screen_cells = {
     width  = vim.api.nvim_get_option('columns'),
     height = vim.api.nvim_get_option('lines'),

@@ -11650,107 +11650,6 @@ BatchSystem.systemName = "batch"
 systems:register(____exports.BatchSystem.systemName, ____exports.BatchSystem)
 return ____exports
  end,
-["animate.index"] = function(...) 
-local ____lualib = require("lualib_bundle")
-local __TS__Class = ____lualib.__TS__Class
-local __TS__New = ____lualib.__TS__New
-local ____exports = {}
-local ANIMATION_FREQUENCY = 30
---- The current time in milliseconds
-function ____exports.currentTime(self, start)
-    local t = vim.loop:hrtime() / 1000000
-    if start ~= nil then
-        t = t - start
-    end
-    return t
-end
-function ____exports.lerp(self, ratio, initial, final)
-    return (1 - ratio) * initial + ratio * final
-end
-____exports.Animation = __TS__Class()
-local Animation = ____exports.Animation
-Animation.name = "Animation"
-function Animation.prototype.____constructor(self, fn, duration, initial, final)
-    self.tick = function()
-        local duration = self.duration
-        local elapsed = ____exports.currentTime(nil, self.start)
-        local ratio = elapsed / duration
-        local fn = self.fn
-        if ratio < 1 then
-            local current = duration ~= math.huge and ____exports.lerp(nil, ratio, self.initial, self.final) or elapsed
-            fn(nil, current, false, self)
-        else
-            fn(nil, self.final, true, self)
-            self:stop()
-        end
-    end
-    self.fn = fn
-    self.duration = duration
-    self.initial = initial
-    self.final = final
-    self.start = ____exports.currentTime(nil)
-    self.timer = vim.loop:new_timer()
-    self.timer:start(
-        0,
-        ANIMATION_FREQUENCY,
-        vim.schedule_wrap(self.tick)
-    )
-end
-function Animation.prototype.stop(self)
-    if self.timer ~= nil then
-        self.timer:stop()
-        self.timer:close()
-        self.timer = nil
-    end
-end
-____exports.Timer = __TS__Class()
-local Timer = ____exports.Timer
-Timer.name = "Timer"
-function Timer.prototype.____constructor(self, fn, delay)
-    self.tick = function()
-        local fn = self.fn
-        fn(nil)
-        self:stop()
-    end
-    self.fn = fn
-    self.delay = delay
-    self.timer = vim.loop:new_timer()
-    self.timer:start(
-        delay,
-        0,
-        vim.schedule_wrap(self.tick)
-    )
-end
-function Timer.prototype.stop(self)
-    if self.timer ~= nil then
-        self.timer:stop()
-        self.timer:close()
-        self.timer = nil
-    end
-end
-function ____exports.animate(self, duration, initial, final, callback)
-    return __TS__New(
-        ____exports.Animation,
-        callback,
-        duration,
-        initial,
-        final
-    )
-end
-function ____exports.ticker(self, callback)
-    return __TS__New(
-        ____exports.Animation,
-        callback,
-        math.huge,
-        0,
-        0
-    )
-end
-function ____exports.timeout(self, delay, callback)
-    return __TS__New(____exports.Timer, callback, delay)
-end
-return ____exports
- end,
 ["core.view.ViewSystem"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -11760,15 +11659,10 @@ local api = require("kui.legacy.api")
 local ____kui_2Elegacy_2Eimage = require("kui.legacy.image")
 local Image = ____kui_2Elegacy_2Eimage.Image
 local systems = require("core.systems")
-local ____animate = require("animate.index")
-local timeout = ____animate.timeout
 local ____math = require("math.index")
 local Rectangle = ____math.Rectangle
 local ____settings = require("settings")
 local settings = ____settings.settings
-local ____temp_0 = {}
-_G.images = ____temp_0
-local images = ____temp_0
 api.setup()
 --- The view system manages the main canvas that is attached to the DOM.
 -- This main role is to deal with how the holding the view reference and dealing with how it is resized.
@@ -11783,11 +11677,10 @@ function ViewSystem.prototype.____constructor(self, renderer)
             self._transmittingImage.did_cancel = true
         end
         local surface = self.renderer.canvasContext.rootContext.surface
-        local ____Image_new_result_1 = Image.new(surface, {buffer = self._options.buffer, row = self._options.row, col = self._options.col})
-        self._transmittingImage = ____Image_new_result_1
-        local image = ____Image_new_result_1
+        local ____Image_new_result_0 = Image.new(surface, {buffer = self._options.buffer, row = self._options.row, col = self._options.col})
+        self._transmittingImage = ____Image_new_result_0
+        local image = ____Image_new_result_0
         image:transmit(function()
-            images[#images + 1] = {"display", image.id}
             image:display()
             local imageToClear = self._image
             self._image = image
@@ -11795,13 +11688,11 @@ function ViewSystem.prototype.____constructor(self, renderer)
             if imageToClear == nil then
                 return
             end
-            timeout(
-                nil,
-                1,
-                vim.schedule_wrap(function()
+            vim.defer_fn(
+                function()
                     imageToClear:delete()
-                    images[#images + 1] = {"delete", imageToClear.id}
-                end)
+                end,
+                5
             )
         end)
     end
@@ -11835,9 +11726,12 @@ function ViewSystem.prototype.resizeView(self, desiredScreenWidth, desiredScreen
     self.renderer.runners.resize:emit(self.screen.width, self.screen.height)
 end
 function ViewSystem.prototype.destroy(self)
-    local ____opt_2 = self._image
-    if ____opt_2 ~= nil then
-        ____opt_2:delete({free = true})
+    if self._transmittingImage then
+        self._transmittingImage.did_cancel = true
+    end
+    local ____opt_1 = self._image
+    if ____opt_1 ~= nil then
+        ____opt_1:delete()
     end
     self.renderer:off("postrender", self.onPostRender)
 end
@@ -18041,6 +17935,30 @@ ____exports.graphicsUtils = {
 }
 return ____exports
  end,
+["state.index"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local state = require("kui.legacy.state")
+do
+    local ____export = require("kui.legacy.state")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+____exports.default = state
+vim.api.nvim_create_autocmd(
+    "VimResized",
+    {
+        pattern = {"*"},
+        callback = function()
+            state:update_dimensions()
+        end
+    }
+)
+return ____exports
+ end,
 ["editor.index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
@@ -20322,6 +20240,79 @@ do
 end
 return ____exports
  end,
+["animate.index"] = function(...) 
+local ____lualib = require("lualib_bundle")
+local __TS__Class = ____lualib.__TS__Class
+local __TS__New = ____lualib.__TS__New
+local ____exports = {}
+local ANIMATION_FREQUENCY = 30
+--- The current time in milliseconds
+function ____exports.currentTime(self, start)
+    local t = vim.loop:hrtime() / 1000000
+    if start ~= nil then
+        t = t - start
+    end
+    return t
+end
+function ____exports.lerp(self, ratio, initial, final)
+    return (1 - ratio) * initial + ratio * final
+end
+local function tick(self, animation)
+    local duration = animation.duration
+    local elapsed = ____exports.currentTime(nil, animation.start)
+    local ratio = elapsed / duration
+    local fn = animation.fn
+    if ratio < 1 then
+        local current = duration ~= math.huge and ____exports.lerp(nil, ratio, animation.initial, animation.final) or elapsed
+        fn(nil, current, false, animation)
+    else
+        fn(nil, animation.final, true, animation)
+        animation:stop()
+    end
+end
+____exports.Animation = __TS__Class()
+local Animation = ____exports.Animation
+Animation.name = "Animation"
+function Animation.prototype.____constructor(self, fn, duration, initial, final)
+    self.fn = fn
+    self.duration = duration
+    self.initial = initial
+    self.final = final
+    self.start = ____exports.currentTime(nil)
+    self.timer = vim.loop:new_timer()
+    self.timer:start(
+        0,
+        ANIMATION_FREQUENCY,
+        vim.schedule_wrap(function() return tick(nil, self) end)
+    )
+end
+function Animation.prototype.stop(self)
+    if self.timer ~= nil then
+        self.timer:stop()
+        self.timer:close()
+        self.timer = nil
+    end
+end
+function ____exports.animate(self, duration, initial, final, callback)
+    return __TS__New(
+        ____exports.Animation,
+        callback,
+        duration,
+        initial,
+        final
+    )
+end
+function ____exports.ticker(self, callback)
+    return __TS__New(
+        ____exports.Animation,
+        callback,
+        math.huge,
+        0,
+        0
+    )
+end
+return ____exports
+ end,
 ["index"] = function(...) 
 local ____lualib = require("lualib_bundle")
 local __TS__ParseFloat = ____lualib.__TS__ParseFloat
@@ -20331,6 +20322,7 @@ require("setup")
 require("typedarray.index")
 require("graphics.index")
 require("canvas-renderer.index")
+require("state.index")
 local ____settings = require("settings")
 local settings = ____settings.settings
 local ____editor = require("editor.index")

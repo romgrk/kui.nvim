@@ -2,6 +2,7 @@ import './setup'
 import './typedarray'
 import './graphics'
 import './canvas-renderer'
+import './state'
 
 import { settings } from 'src/settings'
 import { editor } from 'src/editor'

@@ -945,7 +945,7 @@ export interface Api {
      * @reference |autocommand|
      * |nvim_del_autocmd()|
      */
-    nvim_create_autocmd: (event: string[], opts?: Record<string, unknown>, err?: unknown) => number;
+    nvim_create_autocmd: (event: string | string[], opts?: Record<string, unknown>, err?: unknown) => number;
     /**
      * Creates a new, empty, unnamed buffer.
      * @param listed Sets 'buflisted'

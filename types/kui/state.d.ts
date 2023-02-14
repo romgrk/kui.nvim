@@ -1,4 +1,5 @@
 declare module 'kui.legacy.state' {
+  export function update_dimensions(): void
   export const dimensions: {
     screen_cells: {
       width: number,
