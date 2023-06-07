@@ -75,3 +75,28 @@ export function animate(duration: number, initial: number, final: number, callba
 export function ticker(callback: (value: number, done: boolean, animation: Animation) => void) {
   return new Animation(callback, Infinity, 0, 0)
 }
+
+export class Timer {
+  fn: Function
+  duration: number
+  timer: vim.Timer | null
+
+  constructor(
+    duration: number,
+    fn: Function,
+  ) {
+    this.fn = fn
+    this.duration = duration
+    this.timer = vim.loop.new_timer()
+
+    this.timer.start(duration, 0, vim.schedule_wrap(fn))
+  }
+
+  stop() {
+    if (this.timer !== null) {
+      this.timer.stop()
+      this.timer.close()
+      this.timer = null
+    }
+  }
+}

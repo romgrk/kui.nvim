@@ -20330,6 +20330,26 @@ function ____exports.ticker(self, callback)
         0
     )
 end
+____exports.Timer = __TS__Class()
+local Timer = ____exports.Timer
+Timer.name = "Timer"
+function Timer.prototype.____constructor(self, duration, fn)
+    self.fn = fn
+    self.duration = duration
+    self.timer = vim.loop:new_timer()
+    self.timer:start(
+        duration,
+        0,
+        vim.schedule_wrap(fn)
+    )
+end
+function Timer.prototype.stop(self)
+    if self.timer ~= nil then
+        self.timer:stop()
+        self.timer:close()
+        self.timer = nil
+    end
+end
 return ____exports
  end,
 ["index"] = function(...) 
