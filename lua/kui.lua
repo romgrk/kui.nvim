@@ -20263,6 +20263,7 @@ return ____exports
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
+local __TS__Promise = ____lualib.__TS__Promise
 local ____exports = {}
 local ANIMATION_FREQUENCY = 30
 --- The current time in milliseconds
@@ -20341,6 +20342,14 @@ function Timer.prototype.____constructor(self, duration, fn)
         duration,
         0,
         vim.schedule_wrap(fn)
+    )
+end
+function Timer.wait(self, duration)
+    return __TS__New(
+        __TS__Promise,
+        function(____, resolve)
+            __TS__New(____exports.Timer, duration, resolve)
+        end
     )
 end
 function Timer.prototype.stop(self)
