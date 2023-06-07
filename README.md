@@ -4,6 +4,8 @@ This project is a neovim UI framework, aiming to use the Kitty graphics protocol
 This depends on the user having a terminal with support for the [kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
 as well as [libcairo](https://www.cairographics.org/) installed.
 
+See [kirby.nvim](https://github.com/romgrk/kirby.nvim) for a more complex example.
+
 ![demo](./assets/kui-demo.gif)
 
 See https://github.com/romgrk/kui-demo.nvim for a template showing how to implement the demo above.
