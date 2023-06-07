@@ -81,6 +81,12 @@ export class Timer {
   duration: number
   timer: vim.Timer | null
 
+  static wait(duration: number): Promise<void> {
+    return new Promise((resolve) => {
+      new Timer(duration, resolve)
+    })
+  }
+
   constructor(
     duration: number,
     fn: Function,
