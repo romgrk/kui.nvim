@@ -15,7 +15,19 @@ export function readKittyConfig(): Record<string, string | undefined> {
     return [key, value]
   })
 
-  return Object.fromEntries(entries)
+  const config = Object.fromEntries(entries)
+
+  const guifont = vim.api.nvim_get_option('guifont') as unknown as string
+  if (guifont && guifont !== '') {
+    const [fontName, ...params] = guifont.split(':')
+    const h = params.find(p => p.startsWith('h'))
+
+    config.font_family = fontName
+    if (h)
+      config.font_size = h.slice(1)
+  }
+
+  return config
 }
 
 

@@ -8755,6 +8755,9 @@ local __TS__ArrayFilter = ____lualib.__TS__ArrayFilter
 local __TS__StringSlice = ____lualib.__TS__StringSlice
 local __TS__ArrayMap = ____lualib.__TS__ArrayMap
 local __TS__ObjectFromEntries = ____lualib.__TS__ObjectFromEntries
+local __TS__StringSplit = ____lualib.__TS__StringSplit
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local __TS__ArrayFind = ____lualib.__TS__ArrayFind
 local ____exports = {}
 local fileExists, readLines
 function fileExists(self, path)
@@ -8795,7 +8798,22 @@ function ____exports.readKittyConfig(self)
             return {key, value}
         end
     )
-    return __TS__ObjectFromEntries(entries)
+    local config = __TS__ObjectFromEntries(entries)
+    local guifont = vim.api.nvim_get_option("guifont")
+    if guifont and guifont ~= "" then
+        local ____TS__StringSplit_result_0 = __TS__StringSplit(guifont, ":")
+        local fontName = ____TS__StringSplit_result_0[1]
+        local params = __TS__ArraySlice(____TS__StringSplit_result_0, 1)
+        local h = __TS__ArrayFind(
+            params,
+            function(____, p) return __TS__StringStartsWith(p, "h") end
+        )
+        config.font_family = fontName
+        if h then
+            config.font_size = string.sub(h, 2)
+        end
+    end
+    return config
 end
 return ____exports
  end,
