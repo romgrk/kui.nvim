@@ -1,5 +1,6 @@
 import { Loop, Timer as LoopTimer } from './loop.d';
 import { Api } from './api.d';
+import { Json } from './json.d';
 import { Lsp } from './lsp.d';
 import { Treesitter } from './treesitter.d';
 import { Diagnostic } from './diagnostic.d';
@@ -21,6 +22,7 @@ declare global {
     const api: Api;
     const lsp: Lsp;
     const loop: Loop;
+    const json: Json;
     const diagnostic: Diagnostic;
     const treesitter: Treesitter;
     const fn: Fn;
