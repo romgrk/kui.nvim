@@ -25,10 +25,8 @@ local state = {
 }
 
 function state.update_dimensions()
-  state.dimensions.screen_cells = {
-    width  = vim.api.nvim_get_option('columns'),
-    height = vim.api.nvim_get_option('lines'),
-  }
+  state.dimensions.screen_cells.width  = vim.api.nvim_get_option('columns')
+  state.dimensions.screen_cells.height = vim.api.nvim_get_option('lines')
 
   -- Use `ioctl` to retrieve the current window size
   -- https://sw.kovidgoyal.net/kitty/graphics-protocol/#getting-the-window-size
@@ -51,10 +49,8 @@ function state.update_dimensions()
   state.dimensions.screen_pixels.width  = x_pixels
   state.dimensions.screen_pixels.height = y_pixels
 
-  state.dimensions.cell_pixels = {
-    width  = state.dimensions.screen_pixels.width  / state.dimensions.screen_cells.width,
-    height = state.dimensions.screen_pixels.height / state.dimensions.screen_cells.height,
-  }
+  state.dimensions.cell_pixels.width  = state.dimensions.screen_pixels.width  / state.dimensions.screen_cells.width
+  state.dimensions.cell_pixels.height = state.dimensions.screen_pixels.height / state.dimensions.screen_cells.height
 
   state.dimensions.screen = Rectangle.new(
     0, 0, state.dimensions.screen_pixels.width, state.dimensions.screen_pixels.height)
