@@ -2,9 +2,15 @@ local ffi = require('ffi')
 local Rectangle = require('kui.legacy.rectangle')
 
 ffi.cdef[[
-  int ioctl(int fildes, int request, uint16_t *winsize);
-]]
+  typedef struct {
+      unsigned short row;
+      unsigned short col;
+      unsigned short xpixel;
+      unsigned short ypixel;
+  } winsize;
 
+  int ioctl(int, int, ...);
+]]
 
 local state = {
   dimensions = {
@@ -25,9 +31,6 @@ local state = {
 }
 
 function state.update_dimensions()
-  state.dimensions.screen_cells.width  = vim.api.nvim_get_option('columns')
-  state.dimensions.screen_cells.height = vim.api.nvim_get_option('lines')
-
   -- Use `ioctl` to retrieve the current window size
   -- https://sw.kovidgoyal.net/kitty/graphics-protocol/#getting-the-window-size
 
@@ -41,19 +44,19 @@ function state.update_dimensions()
   end
 
   local libc = ffi.load('c')
-  local winsize = ffi.new('uint16_t[?]', 4)
-  libc.ioctl(0, TIOCGWINSZ, winsize)
-  local x_pixels = winsize[2]
-  local y_pixels = winsize[3]
+  local sz = ffi.new('winsize')
+  libc.ioctl(1, TIOCGWINSZ, sz)
 
-  state.dimensions.screen_pixels.width  = x_pixels
-  state.dimensions.screen_pixels.height = y_pixels
+  state.dimensions.screen_cells.width  = sz.col
+  state.dimensions.screen_cells.height = sz.row
 
-  state.dimensions.cell_pixels.width  = state.dimensions.screen_pixels.width  / state.dimensions.screen_cells.width
-  state.dimensions.cell_pixels.height = state.dimensions.screen_pixels.height / state.dimensions.screen_cells.height
+  state.dimensions.screen_pixels.width  = sz.xpixel
+  state.dimensions.screen_pixels.height = sz.ypixel
 
-  state.dimensions.screen = Rectangle.new(
-    0, 0, state.dimensions.screen_pixels.width, state.dimensions.screen_pixels.height)
+  state.dimensions.cell_pixels.width  = sz.xpixel / sz.col
+  state.dimensions.cell_pixels.height = sz.ypixel / sz.row
+
+  state.dimensions.screen = Rectangle.new(0, 0, sz.xpixel, sz.ypixel)
 end
 
 function state.pixels_to_cells(point)
